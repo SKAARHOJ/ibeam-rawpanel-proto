@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+message HardwareEvent {
+  uint32 seconds = 1;
+  uint32 minutes = 2;
+}
+
+message Button {
+}
+
+message Analog {
+}
+
+message Encoder {
+}
