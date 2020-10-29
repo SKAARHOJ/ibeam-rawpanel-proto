@@ -1,15 +1,25 @@
 syntax = "proto3";
 
-message HardwareEvent {
-  uint32 seconds = 1;
-  uint32 minutes = 2;
+option go_package = ".;ibeam_hw";
+package ibeam_hw;
+
+message Event {
+  oneof event {
+    Connect connect = 1;
+    Button button = 2;
+    Encoder encoder = 3;
+    Analog analog = 4;
+  };
+}
+
+message Connected {
 }
 
 message Button {
 }
 
-message Analog {
+message Encoder {
 }
 
-message Encoder {
+message Analog {
 }
