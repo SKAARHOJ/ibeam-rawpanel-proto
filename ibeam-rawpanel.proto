@@ -144,7 +144,7 @@ message HWCText {
     sint32 IntegerValue = 2;    // Index 0
     enum Formatting {
         FMT_INTEGER = 0;
-        //OFF = 1; Use 9
+        FMT_FLOAT_2DEZ = 1; 
         FMT_PERCENTAGE = 2;
         FMT_DB = 3;
         FMT_FRAMES = 4;
