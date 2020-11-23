@@ -1,0 +1,351 @@
+syntax = "proto3";
+package ibeam_rawpanel;
+
+option go_package = "./ibeam_rawpanel;ibeam_rawpanel";
+
+
+// Generally, if a field of another message type is not nil
+// that whole message with all it's fields (except other messages) shall be accepted as values (including default false/zeros)
+
+// Wrapper for all incoming messages:
+message InboundMessage {
+    enum FlowMsg {
+        NONE = 0;
+        PING = 1;   // "ping",
+        ACK = 2;    // "ack",
+        NACK = 3;   // "nack",
+    }
+    FlowMsg flowMessage = 1;    // Only non-zero values is acted upon
+
+    Command Command = 2;
+
+    repeated HWCState States = 8;
+}
+
+// All the bools in the Command section is like a trigger when true
+message Command {
+    bool ActivatePanel = 1; // "ActivePanel=1",
+    bool SendPanelInfo = 2; // "list",
+    bool SendPanelTopology = 3; // "PanelTopology?",
+    bool ReportHWCavailability = 4; // "map" -> "avail",   - changes it's meaning in v2.0: 
+
+    bool ClearAll = 10; // "Clear",
+    bool ClearLEDs = 11; // "ClearLEDs",
+    bool ClearDisplays = 12;    // "ClearDisplays",
+    
+    bool WakeUp = 5;   // "WakeUp!",
+    
+    bool GetSleepTimeout = 20;  // "SleepTimer?",
+    SleepTimeout SetSleepTimeout = 21;  // SleepTimer=xx
+
+    WebserverState SetWebserverEnabled = 22;    // Webserver=x
+
+    Brightness PanelBrightness = 23;        // PanelBrightness=x,y
+}
+message SleepTimeout {
+    uint32 Value = 1;
+}
+message WebserverState {
+    bool Enabled = 1;
+}
+message Brightness {
+    uint32 OLEDs = 1;
+    uint32 LEDs = 2;
+}
+
+message HWCState {
+    repeated uint32 HWCIDs = 1;
+
+    HWCMode HWCMode = 2;                // HWC#xx=yy
+    HWCColor HWCColor = 3;              // HWCc#xx=yy
+    HWCExtended HWCExtended = 4;        // HWCx#xx=yy
+    HWCText HWCText = 5;                // HWCt#xx=yy
+    HWCGfx HWCGfx = 6;                  // HWCg#xx=yy   + HWCgRGB#xx=yy
+}
+
+// HWC#xx=yy
+// Changes from UniSketch TCP Clinent/RawPanel 1.0:
+// Intensity values 1,2,3 are left out in v2.0 - legacy
+// Blink bit 4 is left out in v2.0 - legacy
+// Bit 5 is automatically set for states ON and DIMMED in v2.0 - simplification
+message HWCMode {
+    enum State {
+        OFF = 0;
+        ON = 4;
+        DIMMED = 5;
+      }
+    State state = 2;            // Intensity
+    uint32 BlinkPattern = 3;    // Blink pattern, 4 bits
+}
+
+// Extended state of hardware component
+message HWCExtended {
+    enum Interpretation {
+        NONE = 0;
+        STRENGTH = 1;
+        STEPS = 3;
+        VU = 4;
+        FADER = 5;
+      }
+    Interpretation interpretation = 2;      // Value type
+    uint32 Value = 3;    // Value, 10 bits
+}
+
+// Color. 
+// Could have used "oneof" but disliked because of the extra convolution
+// colorRGB takes precedence over colorIndex
+message HWCColor {
+    // One of:
+    ColorRGB colorRGB = 1;
+    ColorIndex colorIndex = 2;
+}
+
+// Color, but used in HWCText. Same as HWCColor
+message Color {
+    // One of:
+    ColorRGB colorRGB = 1;
+    ColorIndex colorIndex = 2;
+}
+
+// Color as RGB (3x2 bits)
+message ColorRGB {
+    uint32 Red = 1;
+    uint32 Green = 2;
+    uint32 Blue = 3;
+}
+
+// Color as a name/index:
+message ColorIndex {
+    enum Colors {
+        DEFAULT = 0;
+        OFF = 1;
+        WHITE = 2;
+        WARM = 3;
+        RED = 4;
+        ROSE = 5;
+        PINK = 6;
+        PURPLE = 7;
+        AMBER = 8;
+        YELLOW = 9;
+        DARKBLUE = 10;
+        BLUE = 11;
+        ICE = 12;
+        CYAN = 13;
+        SPRING = 14;
+        GREEN = 15;
+        MINT = 16;
+    }
+
+    Colors Index = 1;
+}
+
+// Text
+message HWCText {
+    sint32 IntegerValue = 2;    // Index 0
+    enum Formatting {
+        FMT_INTEGER = 0;
+        //OFF = 1; Use 9
+        FMT_PERCENTAGE = 2;
+        FMT_DB = 3;
+        FMT_FRAMES = 4;
+        FMT_ONEOVERX = 5;
+        FMT_KELVIN = 6;
+        FMT_HIDE = 7;
+        FMT_FLOAT_X_XXX = 8;
+        FMT_FLOAT_XX_XX = 9;
+        FMT_ONELINE = 10;
+        FMT_TWOLINES = 11;
+        FMT_FLOAT_XXX_X = 12;
+    }
+    Formatting formatting = 3;    // Index 1
+    
+    enum StateIcon {
+        SI_NONE = 0;
+        SI_FINE = 1;
+        SI_LOCK = 2;
+        SI_NOACCESS = 3;
+    }
+    StateIcon stateIcon = 5;       // Index 2
+
+    enum ModifierIcon {
+        MI_NONE = 0;
+        MI_CYCLE = 1;
+        MI_DOWN = 2;
+        MI_UP = 3;
+        MI_HOLD = 4;
+        MI_TOGGLE = 5;
+        MI_OK = 6;
+        MI_QUESTION = 7;
+    }
+    ModifierIcon modifierIcon = 6;       // Index 2
+
+    string Title = 7;                   // Index 3
+    bool SolidHeaderBar = 8;            // Index 4
+    string Textline1 = 9;               // Index 5
+    string Textline2 = 10;              // Index 6
+    sint32 IntegerValue2 = 11;            // Index 7
+
+    enum PairMode {
+        PM_OFF = 0;
+        PM_UNMARKED = 1;
+        PM_UPPER_MARKED = 2;
+        PM_LOWER_MARKED = 3;
+        PM_BOTH_MARKED = 4;
+    }
+    PairMode pairMode = 12;              // Index 8
+
+    message Scale {
+        enum ScaleType {
+            ST_OFF = 0;
+            ST_STRENGTH = 1;
+            ST_CENTER_MARKER = 2;
+            ST_CENTER_BAR = 3;
+        }
+        ScaleType scaleType = 1;              
+        sint32 RangeLow = 2;
+        sint32 RangeHigh = 3;
+        sint32 LimitLow = 4;
+        sint32 LimitHigh = 5;
+    }
+    Scale scale = 13;         // Index 9-13
+        // 14 is ignored
+
+    message TextStyle {
+        message Font {
+            enum FontFace {
+                ST_DEFAULT = 0;
+                ST_BOLD = 1;
+                ST_TINY = 2;
+            }
+            FontFace fontFace = 1;              
+            uint32 TextHeight = 2;
+            uint32 TextWidth = 3;
+        }
+        Font TitleFont = 1;        
+        Font TextFont = 2;         
+        bool FixedWidth = 3;
+        uint32 TitleBarPadding = 4;
+        uint32 ExtraCharacterSpacing = 5;
+        uint32 UnformattedFontSize = 6;
+    }
+    TextStyle TextStyling = 14;     // Index 15-17
+    
+    bool Inverted = 15;             // Index 18
+    Color PixelColor = 16;          // Index 19
+    Color BackgroundColor = 17;     // Index 20
+}
+
+// Graphics
+message HWCGfx {
+    enum ImageType {
+        MONO = 0;
+        RGB16bit = 1;
+    }
+    ImageType imageType = 1;    
+    uint32 W = 2;       // Must always be set (and match size of image in ImageData)
+    uint32 H = 3;       // Must always be set (and match size of image in ImageData)
+    bool XYoffset = 4;  // Enables whether the X/Y offset is taken into account (default is to center the image)
+    uint32 X = 5;
+    uint32 Y = 6;
+
+    bytes ImageData = 16;
+    //ImgConvert inputConversion = 17;    // Todo. If !=nil, will contain information about input conversion of the Image Data content (PNG / JPG + scaling)
+}
+message ImgConvert{
+    enum FileType {
+        PNG = 0;
+        JPEG = 1;
+    }
+    FileType fileType = 1;
+    
+    enum Scaling {
+        FILL = 0;   // Scales (out of proportions if necessary) to exact output image dimensions
+        FIT = 1;    // Preserves the full image, leaving either letter boxing or pillar boxing. Image will be centered.
+        CROP = 2;   // Fills out image dimensions, but preserves proportions, leading to possible cropping in one of the dimensions. Image will be centered.
+    }
+    Scaling scaling = 2;
+
+    bool Grayscale = 3; // If set, will convert to grayscale (for RGB images going out as 16 bit)
+}
+
+
+
+
+// Wrapper for all outgoing messages:
+message OutboundMessage {
+    enum FlowMsg {
+        NONE = 0;
+        PING = 1;   // "ping",
+        ACK = 2;    // "ack",
+        NACK = 3;   // "nack",
+
+        HELLO = 100;    // Hi there, I'm a panel!
+    }
+    FlowMsg FlowMessage = 1;
+
+    enum HWCavail {
+        HIDDEN = 0;
+        ON = 1;
+        OFF = 2;
+    }
+    map<uint32, HWCavail> HWCavailability = 2;
+    //repeated HWCEvent LastKnownValues = 3;    // TODO
+
+    PanelInfo PanelInfo = 4;
+    PanelTopology PanelTopology = 5;
+    
+    SleepTimeout sleepTimeout = 6;
+    SleepState sleepState = 7;
+
+    repeated HWCEvent Events = 8;
+}
+message SleepState {
+    bool IsSleeping = 1;
+}
+
+message HWCEvent {
+    uint32 HWCID = 1;
+    uint32 Timestamp = 6;   // Systems time in milliseconds the moment of the trigger
+
+    // one of:
+    BinaryEvent Binary = 2;
+    PulsedEvent Pulsed = 3;
+    AbsoluteEvent Absolute = 4;
+    SpeedEvent Speed = 5;
+}
+
+message BinaryEvent {
+    enum EdgeID {
+        UNKNOWN = 0;
+        TOP = 1;
+        LEFT = 2;
+        BOTTOM = 4;
+        RIGHT = 8;
+    }
+
+    bool Pressed = 1;
+    EdgeID Edge = 2;
+}
+
+message PulsedEvent {
+    sint32 Value = 1;
+}
+
+message AbsoluteEvent {
+    uint32 Value = 1;
+}
+
+message SpeedEvent {
+    sint32 Value = 1;
+}
+
+message PanelInfo { //  Values only used if not empty
+    string Model = 1;
+    string Serial = 2;
+    //string Name = 3;        // TODO
+    string SoftwareVersion = 4;
+}
+message PanelTopology { //  Values only used if not empty
+    string Svgbase = 1;
+    string Json = 2;
+}
