@@ -28,6 +28,7 @@ message Command {
     bool SendPanelInfo = 2; // "list",
     bool SendPanelTopology = 3; // "PanelTopology?",
     bool ReportHWCavailability = 4; // "map" -> "avail",   - changes it's meaning in v2.0: 
+    bool SendBurninProfile = 6;
 
     bool ClearAll = 10; // "Clear",
     bool ClearLEDs = 11; // "ClearLEDs",
@@ -295,6 +296,7 @@ message OutboundMessage {
 
     PanelInfo PanelInfo = 4;
     PanelTopology PanelTopology = 5;
+    BurninProfile BurninProfile = 9;
     
     SleepTimeout SleepTimeout = 6;
     SleepState SleepState = 7;
@@ -344,10 +346,16 @@ message SpeedEvent {
 message PanelInfo { //  Values only used if not empty
     string Model = 1;
     string Serial = 2;
-    //string Name = 3;        // TODO
+    string Name = 3;
     string SoftwareVersion = 4;
+    string Platform = 5;
 }
+
 message PanelTopology { //  Values only used if not empty
     string Svgbase = 1;
     string Json = 2;
+}
+
+message BurninProfile { //  Values only used if not empty
+    string Json = 1;
 }
