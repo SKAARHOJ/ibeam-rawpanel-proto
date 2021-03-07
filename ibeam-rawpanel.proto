@@ -7,7 +7,7 @@ option go_package = "./ibeam_rawpanel;ibeam_rawpanel";
 // Generally, if a field of another message type is not nil
 // that whole message with all it's fields (except other messages) shall be accepted as values (including default false/zeros)
 
-// Wrapper for all incoming messages:
+// Wrapper for all incoming messages (Incoming = to Panel from System)
 message InboundMessage {
     enum FlowMsg {
         NONE = 0;
@@ -28,7 +28,7 @@ message Command {
     bool SendPanelInfo = 2; // "list",
     bool SendPanelTopology = 3; // "PanelTopology?",
     bool ReportHWCavailability = 4; // "map" -> "avail",   - changes it's meaning in v2.0: 
-    bool SendBurninProfile = 6;
+    bool SendBurninProfile = 6; // Return the burnin json profiles of a controller (Only for ibeam panels)
 
     bool ClearAll = 10; // "Clear",
     bool ClearLEDs = 11; // "ClearLEDs",
@@ -72,10 +72,14 @@ message HWCState {
 message HWCMode {
     enum StateE {
         OFF = 0;
+        ON_YELLOW = 1;  // Legacy support
+        ON_RED = 2;  // Legacy support
+        ON_GREEN = 3;  // Legacy support
         ON = 4;
         DIMMED = 5;
       }
     StateE State = 2;            // Intensity
+    bool Output = 4;            // Output on/off (like relays). This should (probably) always follow State values 1-4 = true, 0 and 5 (anything else) = false
     uint32 BlinkPattern = 3;    // Blink pattern, 4 bits
 }
 
@@ -274,24 +278,21 @@ message ImgConvert{
 
 
 
-// Wrapper for all outgoing messages:
+// Wrapper for all outgoing messages (Outgoing = from Panel to System)
 message OutboundMessage {
     enum FlowMsg {
         NONE = 0;
         PING = 1;   // "ping",
         ACK = 2;    // "ack",
         NACK = 3;   // "nack",
+        BSY = 4;    // "BSY",
+        RDY = 5;    // "RDY",
 
         HELLO = 100;    // Hi there, I'm a panel!
     }
     FlowMsg FlowMessage = 1;
 
-    enum HWCavail {
-        HIDDEN = 0;
-        ON = 1;
-        OFF = 2;
-    }
-    map<uint32, HWCavail> HWCavailability = 2;
+    map<uint32, uint32> HWCavailability = 2;
     //repeated HWCEvent LastKnownValues = 3;    // TODO
 
     PanelInfo PanelInfo = 4;
