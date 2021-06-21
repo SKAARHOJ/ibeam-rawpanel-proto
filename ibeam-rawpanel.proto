@@ -62,6 +62,12 @@ message HWCState {
     HWCExtended HWCExtended = 4;        // HWCx#xx=yy
     HWCText HWCText = 5;                // HWCt#xx=yy
     HWCGfx HWCGfx = 6;                  // HWCg#xx=yy   + HWCgRGB#xx=yy
+
+    HWCOptions HWCOptions = 7;
+}
+
+message HWCOptions {
+    bool PublishRawADCValues = 1;
 }
 
 // HWC#xx=yy
@@ -276,8 +282,6 @@ message ImgConvert{
 }
 
 
-
-
 // Wrapper for all outgoing messages (Outgoing = from Panel to System)
 message OutboundMessage {
     enum FlowMsg {
@@ -317,6 +321,7 @@ message HWCEvent {
     PulsedEvent Pulsed = 3;
     AbsoluteEvent Absolute = 4;
     SpeedEvent Speed = 5;
+    RawAnalogEvent RawAnalog = 7;
 }
 
 message BinaryEvent {
@@ -342,6 +347,10 @@ message AbsoluteEvent {
 
 message SpeedEvent {
     sint32 Value = 1;
+}
+
+message RawAnalogEvent {
+    uint32 Value = 1;
 }
 
 message PanelInfo { //  Values only used if not empty
