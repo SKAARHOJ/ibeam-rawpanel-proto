@@ -42,6 +42,8 @@ message Command {
     WebserverState SetWebserverEnabled = 22;    // Webserver=x
 
     Brightness PanelBrightness = 23;        // PanelBrightness=x,y
+
+    PublishSystemStat PublishSystemStat = 30;
 }
 message SleepTimeout {
     uint32 Value = 1;
@@ -52,6 +54,10 @@ message WebserverState {
 message Brightness {
     uint32 OLEDs = 1;
     uint32 LEDs = 2;
+}
+
+message PublishSystemStat {
+    uint32 PeriodSec = 2; // Disabled when 0
 }
 
 message HWCState {
@@ -67,7 +73,7 @@ message HWCState {
 }
 
 message PublishRawADCValues {
-    bool enable = 1;
+    bool Enabled = 1;
 }
 
 // HWC#xx=yy
@@ -322,6 +328,7 @@ message HWCEvent {
     AbsoluteEvent Absolute = 4;
     SpeedEvent Speed = 5;
     RawAnalogEvent RawAnalog = 7;
+    SystemStat SysStat = 8;
 }
 
 message BinaryEvent {
@@ -351,6 +358,12 @@ message SpeedEvent {
 
 message RawAnalogEvent {
     uint32 Value = 1;
+}
+
+message SystemStat {
+    uint32 CPUUsage = 1; // 0..100%
+    float CPUTemp = 2; // degrees Celsius
+    float ExtTemp = 3; // degrees Celsius, external sensor (-100 if not available)
 }
 
 message PanelInfo { //  Values only used if not empty

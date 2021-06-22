@@ -23,9 +23,9 @@ extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<2> scc_info_Color_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ColorIndex_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ColorRGB_ibeam_2drawpanel_2eproto;
-extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<3> scc_info_Command_ibeam_2drawpanel_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<4> scc_info_Command_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<2> scc_info_HWCColor_ibeam_2drawpanel_2eproto;
-extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<5> scc_info_HWCEvent_ibeam_2drawpanel_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<6> scc_info_HWCEvent_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_HWCExtended_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_HWCGfx_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_HWCMode_ibeam_2drawpanel_2eproto;
@@ -38,11 +38,13 @@ extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_PanelInfo_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_PanelTopology_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_PublishRawADCValues_ibeam_2drawpanel_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_PublishSystemStat_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_PulsedEvent_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_RawAnalogEvent_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_SleepState_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_SleepTimeout_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_SpeedEvent_ibeam_2drawpanel_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_SystemStat_ibeam_2drawpanel_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_ibeam_2drawpanel_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_WebserverState_ibeam_2drawpanel_2eproto;
 namespace ibeam_rawpanel {
 class InboundMessageDefaultTypeInternal {
@@ -65,6 +67,10 @@ class BrightnessDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<Brightness> _instance;
 } _Brightness_default_instance_;
+class PublishSystemStatDefaultTypeInternal {
+ public:
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<PublishSystemStat> _instance;
+} _PublishSystemStat_default_instance_;
 class HWCStateDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<HWCState> _instance;
@@ -157,6 +163,10 @@ class RawAnalogEventDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<RawAnalogEvent> _instance;
 } _RawAnalogEvent_default_instance_;
+class SystemStatDefaultTypeInternal {
+ public:
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<SystemStat> _instance;
+} _SystemStat_default_instance_;
 class PanelInfoDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<PanelInfo> _instance;
@@ -273,11 +283,12 @@ static void InitDefaultsscc_info_Command_ibeam_2drawpanel_2eproto() {
   }
 }
 
-::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<3> scc_info_Command_ibeam_2drawpanel_2eproto =
-    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 3, 0, InitDefaultsscc_info_Command_ibeam_2drawpanel_2eproto}, {
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<4> scc_info_Command_ibeam_2drawpanel_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 4, 0, InitDefaultsscc_info_Command_ibeam_2drawpanel_2eproto}, {
       &scc_info_SleepTimeout_ibeam_2drawpanel_2eproto.base,
       &scc_info_WebserverState_ibeam_2drawpanel_2eproto.base,
-      &scc_info_Brightness_ibeam_2drawpanel_2eproto.base,}};
+      &scc_info_Brightness_ibeam_2drawpanel_2eproto.base,
+      &scc_info_PublishSystemStat_ibeam_2drawpanel_2eproto.base,}};
 
 static void InitDefaultsscc_info_HWCColor_ibeam_2drawpanel_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -304,13 +315,14 @@ static void InitDefaultsscc_info_HWCEvent_ibeam_2drawpanel_2eproto() {
   }
 }
 
-::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<5> scc_info_HWCEvent_ibeam_2drawpanel_2eproto =
-    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 5, 0, InitDefaultsscc_info_HWCEvent_ibeam_2drawpanel_2eproto}, {
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<6> scc_info_HWCEvent_ibeam_2drawpanel_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 6, 0, InitDefaultsscc_info_HWCEvent_ibeam_2drawpanel_2eproto}, {
       &scc_info_BinaryEvent_ibeam_2drawpanel_2eproto.base,
       &scc_info_PulsedEvent_ibeam_2drawpanel_2eproto.base,
       &scc_info_AbsoluteEvent_ibeam_2drawpanel_2eproto.base,
       &scc_info_SpeedEvent_ibeam_2drawpanel_2eproto.base,
-      &scc_info_RawAnalogEvent_ibeam_2drawpanel_2eproto.base,}};
+      &scc_info_RawAnalogEvent_ibeam_2drawpanel_2eproto.base,
+      &scc_info_SystemStat_ibeam_2drawpanel_2eproto.base,}};
 
 static void InitDefaultsscc_info_HWCExtended_ibeam_2drawpanel_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -525,6 +537,19 @@ static void InitDefaultsscc_info_PublishRawADCValues_ibeam_2drawpanel_2eproto() 
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_PublishRawADCValues_ibeam_2drawpanel_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_PublishRawADCValues_ibeam_2drawpanel_2eproto}, {}};
 
+static void InitDefaultsscc_info_PublishSystemStat_ibeam_2drawpanel_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::ibeam_rawpanel::_PublishSystemStat_default_instance_;
+    new (ptr) ::ibeam_rawpanel::PublishSystemStat();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_PublishSystemStat_ibeam_2drawpanel_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_PublishSystemStat_ibeam_2drawpanel_2eproto}, {}};
+
 static void InitDefaultsscc_info_PulsedEvent_ibeam_2drawpanel_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -590,6 +615,19 @@ static void InitDefaultsscc_info_SpeedEvent_ibeam_2drawpanel_2eproto() {
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_SpeedEvent_ibeam_2drawpanel_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_SpeedEvent_ibeam_2drawpanel_2eproto}, {}};
 
+static void InitDefaultsscc_info_SystemStat_ibeam_2drawpanel_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::ibeam_rawpanel::_SystemStat_default_instance_;
+    new (ptr) ::ibeam_rawpanel::SystemStat();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_SystemStat_ibeam_2drawpanel_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_SystemStat_ibeam_2drawpanel_2eproto}, {}};
+
 static void InitDefaultsscc_info_WebserverState_ibeam_2drawpanel_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -603,7 +641,7 @@ static void InitDefaultsscc_info_WebserverState_ibeam_2drawpanel_2eproto() {
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_WebserverState_ibeam_2drawpanel_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_WebserverState_ibeam_2drawpanel_2eproto}, {}};
 
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_ibeam_2drawpanel_2eproto[31];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_ibeam_2drawpanel_2eproto[33];
 static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_ibeam_2drawpanel_2eproto[15];
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_ibeam_2drawpanel_2eproto = nullptr;
 
@@ -634,6 +672,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ibeam_2drawpanel_2eproto::offs
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::Command, setsleeptimeout_),
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::Command, setwebserverenabled_),
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::Command, panelbrightness_),
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::Command, publishsystemstat_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::SleepTimeout, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -654,6 +693,13 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ibeam_2drawpanel_2eproto::offs
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::Brightness, oleds_),
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::Brightness, leds_),
   ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::PublishSystemStat, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::PublishSystemStat, enabled_),
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::PublishSystemStat, periodsec_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::HWCState, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -670,7 +716,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ibeam_2drawpanel_2eproto::offs
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::PublishRawADCValues, enable_),
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::PublishRawADCValues, enabled_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::HWCMode, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -823,6 +869,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ibeam_2drawpanel_2eproto::offs
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::HWCEvent, absolute_),
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::HWCEvent, speed_),
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::HWCEvent, rawanalog_),
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::HWCEvent, sysstat_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::BinaryEvent, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -855,6 +902,14 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ibeam_2drawpanel_2eproto::offs
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::RawAnalogEvent, value_),
   ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::SystemStat, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::SystemStat, cpuusage_),
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::SystemStat, cputemp_),
+  PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::SystemStat, exttemp_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::ibeam_rawpanel::PanelInfo, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -881,35 +936,37 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ibeam_2drawpanel_2eproto::offs
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::ibeam_rawpanel::InboundMessage)},
   { 8, -1, sizeof(::ibeam_rawpanel::Command)},
-  { 26, -1, sizeof(::ibeam_rawpanel::SleepTimeout)},
-  { 32, -1, sizeof(::ibeam_rawpanel::WebserverState)},
-  { 38, -1, sizeof(::ibeam_rawpanel::Brightness)},
-  { 45, -1, sizeof(::ibeam_rawpanel::HWCState)},
-  { 57, -1, sizeof(::ibeam_rawpanel::PublishRawADCValues)},
-  { 63, -1, sizeof(::ibeam_rawpanel::HWCMode)},
-  { 71, -1, sizeof(::ibeam_rawpanel::HWCExtended)},
-  { 78, -1, sizeof(::ibeam_rawpanel::HWCColor)},
-  { 85, -1, sizeof(::ibeam_rawpanel::Color)},
-  { 92, -1, sizeof(::ibeam_rawpanel::ColorRGB)},
-  { 100, -1, sizeof(::ibeam_rawpanel::ColorIndex)},
-  { 106, -1, sizeof(::ibeam_rawpanel::HWCText_ScaleM)},
-  { 116, -1, sizeof(::ibeam_rawpanel::HWCText_TextStyle_Font)},
-  { 124, -1, sizeof(::ibeam_rawpanel::HWCText_TextStyle)},
-  { 135, -1, sizeof(::ibeam_rawpanel::HWCText)},
-  { 155, -1, sizeof(::ibeam_rawpanel::HWCGfx)},
-  { 167, -1, sizeof(::ibeam_rawpanel::ImgConvert)},
-  { 175, 182, sizeof(::ibeam_rawpanel::OutboundMessage_HWCavailabilityEntry_DoNotUse)},
-  { 184, -1, sizeof(::ibeam_rawpanel::OutboundMessage)},
-  { 197, -1, sizeof(::ibeam_rawpanel::SleepState)},
-  { 203, -1, sizeof(::ibeam_rawpanel::HWCEvent)},
-  { 215, -1, sizeof(::ibeam_rawpanel::BinaryEvent)},
-  { 222, -1, sizeof(::ibeam_rawpanel::PulsedEvent)},
-  { 228, -1, sizeof(::ibeam_rawpanel::AbsoluteEvent)},
-  { 234, -1, sizeof(::ibeam_rawpanel::SpeedEvent)},
-  { 240, -1, sizeof(::ibeam_rawpanel::RawAnalogEvent)},
-  { 246, -1, sizeof(::ibeam_rawpanel::PanelInfo)},
-  { 256, -1, sizeof(::ibeam_rawpanel::PanelTopology)},
-  { 263, -1, sizeof(::ibeam_rawpanel::BurninProfile)},
+  { 27, -1, sizeof(::ibeam_rawpanel::SleepTimeout)},
+  { 33, -1, sizeof(::ibeam_rawpanel::WebserverState)},
+  { 39, -1, sizeof(::ibeam_rawpanel::Brightness)},
+  { 46, -1, sizeof(::ibeam_rawpanel::PublishSystemStat)},
+  { 53, -1, sizeof(::ibeam_rawpanel::HWCState)},
+  { 65, -1, sizeof(::ibeam_rawpanel::PublishRawADCValues)},
+  { 71, -1, sizeof(::ibeam_rawpanel::HWCMode)},
+  { 79, -1, sizeof(::ibeam_rawpanel::HWCExtended)},
+  { 86, -1, sizeof(::ibeam_rawpanel::HWCColor)},
+  { 93, -1, sizeof(::ibeam_rawpanel::Color)},
+  { 100, -1, sizeof(::ibeam_rawpanel::ColorRGB)},
+  { 108, -1, sizeof(::ibeam_rawpanel::ColorIndex)},
+  { 114, -1, sizeof(::ibeam_rawpanel::HWCText_ScaleM)},
+  { 124, -1, sizeof(::ibeam_rawpanel::HWCText_TextStyle_Font)},
+  { 132, -1, sizeof(::ibeam_rawpanel::HWCText_TextStyle)},
+  { 143, -1, sizeof(::ibeam_rawpanel::HWCText)},
+  { 163, -1, sizeof(::ibeam_rawpanel::HWCGfx)},
+  { 175, -1, sizeof(::ibeam_rawpanel::ImgConvert)},
+  { 183, 190, sizeof(::ibeam_rawpanel::OutboundMessage_HWCavailabilityEntry_DoNotUse)},
+  { 192, -1, sizeof(::ibeam_rawpanel::OutboundMessage)},
+  { 205, -1, sizeof(::ibeam_rawpanel::SleepState)},
+  { 211, -1, sizeof(::ibeam_rawpanel::HWCEvent)},
+  { 224, -1, sizeof(::ibeam_rawpanel::BinaryEvent)},
+  { 231, -1, sizeof(::ibeam_rawpanel::PulsedEvent)},
+  { 237, -1, sizeof(::ibeam_rawpanel::AbsoluteEvent)},
+  { 243, -1, sizeof(::ibeam_rawpanel::SpeedEvent)},
+  { 249, -1, sizeof(::ibeam_rawpanel::RawAnalogEvent)},
+  { 255, -1, sizeof(::ibeam_rawpanel::SystemStat)},
+  { 263, -1, sizeof(::ibeam_rawpanel::PanelInfo)},
+  { 273, -1, sizeof(::ibeam_rawpanel::PanelTopology)},
+  { 280, -1, sizeof(::ibeam_rawpanel::BurninProfile)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -918,6 +975,7 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_SleepTimeout_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_WebserverState_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_Brightness_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_PublishSystemStat_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_HWCState_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_PublishRawADCValues_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_HWCMode_default_instance_),
@@ -941,6 +999,7 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_AbsoluteEvent_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_SpeedEvent_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_RawAnalogEvent_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_SystemStat_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_PanelInfo_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_PanelTopology_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ibeam_rawpanel::_BurninProfile_default_instance_),
@@ -953,7 +1012,7 @@ const char descriptor_table_protodef_ibeam_2drawpanel_2eproto[] PROTOBUF_SECTION
   "\n\007Command\030\002 \001(\0132\027.ibeam_rawpanel.Command"
   "\022(\n\006States\030\010 \003(\0132\030.ibeam_rawpanel.HWCSta"
   "te\"0\n\007FlowMsg\022\010\n\004NONE\020\000\022\010\n\004PING\020\001\022\007\n\003ACK"
-  "\020\002\022\010\n\004NACK\020\003\"\232\003\n\007Command\022\025\n\rActivatePane"
+  "\020\002\022\010\n\004NACK\020\003\"\330\003\n\007Command\022\025\n\rActivatePane"
   "l\030\001 \001(\010\022\025\n\rSendPanelInfo\030\002 \001(\010\022\031\n\021SendPa"
   "nelTopology\030\003 \001(\010\022\035\n\025ReportHWCavailabili"
   "ty\030\004 \001(\010\022\031\n\021SendBurninProfile\030\006 \001(\010\022\020\n\010C"
@@ -963,18 +1022,21 @@ const char descriptor_table_protodef_ibeam_2drawpanel_2eproto[] PROTOBUF_SECTION
   "\0132\034.ibeam_rawpanel.SleepTimeout\022;\n\023SetWe"
   "bserverEnabled\030\026 \001(\0132\036.ibeam_rawpanel.We"
   "bserverState\0223\n\017PanelBrightness\030\027 \001(\0132\032."
-  "ibeam_rawpanel.Brightness\"\035\n\014SleepTimeou"
-  "t\022\r\n\005Value\030\001 \001(\r\"!\n\016WebserverState\022\017\n\007En"
-  "abled\030\001 \001(\010\")\n\nBrightness\022\r\n\005OLEDs\030\001 \001(\r"
-  "\022\014\n\004LEDs\030\002 \001(\r\"\266\002\n\010HWCState\022\016\n\006HWCIDs\030\001 "
-  "\003(\r\022(\n\007HWCMode\030\002 \001(\0132\027.ibeam_rawpanel.HW"
-  "CMode\022*\n\010HWCColor\030\003 \001(\0132\030.ibeam_rawpanel"
-  ".HWCColor\0220\n\013HWCExtended\030\004 \001(\0132\033.ibeam_r"
-  "awpanel.HWCExtended\022(\n\007HWCText\030\005 \001(\0132\027.i"
-  "beam_rawpanel.HWCText\022&\n\006HWCGfx\030\006 \001(\0132\026."
-  "ibeam_rawpanel.HWCGfx\022@\n\023PublishRawADCVa"
-  "lues\030\007 \001(\0132#.ibeam_rawpanel.PublishRawAD"
-  "CValues\"%\n\023PublishRawADCValues\022\016\n\006enable"
+  "ibeam_rawpanel.Brightness\022<\n\021PublishSyst"
+  "emStat\030\036 \001(\0132!.ibeam_rawpanel.PublishSys"
+  "temStat\"\035\n\014SleepTimeout\022\r\n\005Value\030\001 \001(\r\"!"
+  "\n\016WebserverState\022\017\n\007Enabled\030\001 \001(\010\")\n\nBri"
+  "ghtness\022\r\n\005OLEDs\030\001 \001(\r\022\014\n\004LEDs\030\002 \001(\r\"7\n\021"
+  "PublishSystemStat\022\017\n\007Enabled\030\001 \001(\010\022\021\n\tPe"
+  "riodSec\030\002 \001(\r\"\266\002\n\010HWCState\022\016\n\006HWCIDs\030\001 \003"
+  "(\r\022(\n\007HWCMode\030\002 \001(\0132\027.ibeam_rawpanel.HWC"
+  "Mode\022*\n\010HWCColor\030\003 \001(\0132\030.ibeam_rawpanel."
+  "HWCColor\0220\n\013HWCExtended\030\004 \001(\0132\033.ibeam_ra"
+  "wpanel.HWCExtended\022(\n\007HWCText\030\005 \001(\0132\027.ib"
+  "eam_rawpanel.HWCText\022&\n\006HWCGfx\030\006 \001(\0132\026.i"
+  "beam_rawpanel.HWCGfx\022@\n\023PublishRawADCVal"
+  "ues\030\007 \001(\0132#.ibeam_rawpanel.PublishRawADC"
+  "Values\"&\n\023PublishRawADCValues\022\017\n\007Enabled"
   "\030\001 \001(\010\"\256\001\n\007HWCMode\022-\n\005State\030\002 \001(\0162\036.ibea"
   "m_rawpanel.HWCMode.StateE\022\016\n\006Output\030\004 \001("
   "\010\022\024\n\014BlinkPattern\030\003 \001(\r\"N\n\006StateE\022\007\n\003OFF"
@@ -1066,30 +1128,33 @@ const char descriptor_table_protodef_ibeam_2drawpanel_2eproto[] PROTOBUF_SECTION
   " \001(\r\022\r\n\005value\030\002 \001(\r:\0028\001\"M\n\007FlowMsg\022\010\n\004NO"
   "NE\020\000\022\010\n\004PING\020\001\022\007\n\003ACK\020\002\022\010\n\004NACK\020\003\022\007\n\003BSY"
   "\020\004\022\007\n\003RDY\020\005\022\t\n\005HELLO\020d\" \n\nSleepState\022\022\n\n"
-  "IsSleeping\030\001 \001(\010\"\225\002\n\010HWCEvent\022\r\n\005HWCID\030\001"
+  "IsSleeping\030\001 \001(\010\"\302\002\n\010HWCEvent\022\r\n\005HWCID\030\001"
   " \001(\r\022\021\n\tTimestamp\030\006 \001(\r\022+\n\006Binary\030\002 \001(\0132"
   "\033.ibeam_rawpanel.BinaryEvent\022+\n\006Pulsed\030\003"
   " \001(\0132\033.ibeam_rawpanel.PulsedEvent\022/\n\010Abs"
   "olute\030\004 \001(\0132\035.ibeam_rawpanel.AbsoluteEve"
   "nt\022)\n\005Speed\030\005 \001(\0132\032.ibeam_rawpanel.Speed"
   "Event\0221\n\tRawAnalog\030\007 \001(\0132\036.ibeam_rawpane"
-  "l.RawAnalogEvent\"\221\001\n\013BinaryEvent\022\017\n\007Pres"
-  "sed\030\001 \001(\010\0220\n\004Edge\030\002 \001(\0162\".ibeam_rawpanel"
-  ".BinaryEvent.EdgeID\"\?\n\006EdgeID\022\013\n\007UNKNOWN"
-  "\020\000\022\007\n\003TOP\020\001\022\010\n\004LEFT\020\002\022\n\n\006BOTTOM\020\004\022\t\n\005RIG"
-  "HT\020\010\"\034\n\013PulsedEvent\022\r\n\005Value\030\001 \001(\021\"\036\n\rAb"
-  "soluteEvent\022\r\n\005Value\030\001 \001(\r\"\033\n\nSpeedEvent"
-  "\022\r\n\005Value\030\001 \001(\021\"\037\n\016RawAnalogEvent\022\r\n\005Val"
-  "ue\030\001 \001(\r\"c\n\tPanelInfo\022\r\n\005Model\030\001 \001(\t\022\016\n\006"
-  "Serial\030\002 \001(\t\022\014\n\004Name\030\003 \001(\t\022\027\n\017SoftwareVe"
-  "rsion\030\004 \001(\t\022\020\n\010Platform\030\005 \001(\t\".\n\rPanelTo"
-  "pology\022\017\n\007Svgbase\030\001 \001(\t\022\014\n\004Json\030\002 \001(\t\"\035\n"
-  "\rBurninProfile\022\014\n\004Json\030\001 \001(\tB!Z\037./ibeam_"
-  "rawpanel;ibeam_rawpanelb\006proto3"
+  "l.RawAnalogEvent\022+\n\007SysStat\030\010 \001(\0132\032.ibea"
+  "m_rawpanel.SystemStat\"\221\001\n\013BinaryEvent\022\017\n"
+  "\007Pressed\030\001 \001(\010\0220\n\004Edge\030\002 \001(\0162\".ibeam_raw"
+  "panel.BinaryEvent.EdgeID\"\?\n\006EdgeID\022\013\n\007UN"
+  "KNOWN\020\000\022\007\n\003TOP\020\001\022\010\n\004LEFT\020\002\022\n\n\006BOTTOM\020\004\022\t"
+  "\n\005RIGHT\020\010\"\034\n\013PulsedEvent\022\r\n\005Value\030\001 \001(\021\""
+  "\036\n\rAbsoluteEvent\022\r\n\005Value\030\001 \001(\r\"\033\n\nSpeed"
+  "Event\022\r\n\005Value\030\001 \001(\021\"\037\n\016RawAnalogEvent\022\r"
+  "\n\005Value\030\001 \001(\r\"@\n\nSystemStat\022\020\n\010CPUUsage\030"
+  "\001 \001(\r\022\017\n\007CPUTemp\030\002 \001(\002\022\017\n\007ExtTemp\030\003 \001(\002\""
+  "c\n\tPanelInfo\022\r\n\005Model\030\001 \001(\t\022\016\n\006Serial\030\002 "
+  "\001(\t\022\014\n\004Name\030\003 \001(\t\022\027\n\017SoftwareVersion\030\004 \001"
+  "(\t\022\020\n\010Platform\030\005 \001(\t\".\n\rPanelTopology\022\017\n"
+  "\007Svgbase\030\001 \001(\t\022\014\n\004Json\030\002 \001(\t\"\035\n\rBurninPr"
+  "ofile\022\014\n\004Json\030\001 \001(\tB!Z\037./ibeam_rawpanel;"
+  "ibeam_rawpanelb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_ibeam_2drawpanel_2eproto_deps[1] = {
 };
-static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_ibeam_2drawpanel_2eproto_sccs[31] = {
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_ibeam_2drawpanel_2eproto_sccs[33] = {
   &scc_info_AbsoluteEvent_ibeam_2drawpanel_2eproto.base,
   &scc_info_BinaryEvent_ibeam_2drawpanel_2eproto.base,
   &scc_info_Brightness_ibeam_2drawpanel_2eproto.base,
@@ -1115,19 +1180,21 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_ibe
   &scc_info_PanelInfo_ibeam_2drawpanel_2eproto.base,
   &scc_info_PanelTopology_ibeam_2drawpanel_2eproto.base,
   &scc_info_PublishRawADCValues_ibeam_2drawpanel_2eproto.base,
+  &scc_info_PublishSystemStat_ibeam_2drawpanel_2eproto.base,
   &scc_info_PulsedEvent_ibeam_2drawpanel_2eproto.base,
   &scc_info_RawAnalogEvent_ibeam_2drawpanel_2eproto.base,
   &scc_info_SleepState_ibeam_2drawpanel_2eproto.base,
   &scc_info_SleepTimeout_ibeam_2drawpanel_2eproto.base,
   &scc_info_SpeedEvent_ibeam_2drawpanel_2eproto.base,
+  &scc_info_SystemStat_ibeam_2drawpanel_2eproto.base,
   &scc_info_WebserverState_ibeam_2drawpanel_2eproto.base,
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_ibeam_2drawpanel_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ibeam_2drawpanel_2eproto = {
-  false, false, descriptor_table_protodef_ibeam_2drawpanel_2eproto, "ibeam-rawpanel.proto", 5551,
-  &descriptor_table_ibeam_2drawpanel_2eproto_once, descriptor_table_ibeam_2drawpanel_2eproto_sccs, descriptor_table_ibeam_2drawpanel_2eproto_deps, 31, 0,
+  false, false, descriptor_table_protodef_ibeam_2drawpanel_2eproto, "ibeam-rawpanel.proto", 5782,
+  &descriptor_table_ibeam_2drawpanel_2eproto_once, descriptor_table_ibeam_2drawpanel_2eproto_sccs, descriptor_table_ibeam_2drawpanel_2eproto_deps, 33, 0,
   schemas, file_default_instances, TableStruct_ibeam_2drawpanel_2eproto::offsets,
-  file_level_metadata_ibeam_2drawpanel_2eproto, 31, file_level_enum_descriptors_ibeam_2drawpanel_2eproto, file_level_service_descriptors_ibeam_2drawpanel_2eproto,
+  file_level_metadata_ibeam_2drawpanel_2eproto, 33, file_level_enum_descriptors_ibeam_2drawpanel_2eproto, file_level_service_descriptors_ibeam_2drawpanel_2eproto,
 };
 
 // Force running AddDescriptors() at dynamic initialization time.
@@ -1848,6 +1915,7 @@ class Command::_Internal {
   static const ::ibeam_rawpanel::SleepTimeout& setsleeptimeout(const Command* msg);
   static const ::ibeam_rawpanel::WebserverState& setwebserverenabled(const Command* msg);
   static const ::ibeam_rawpanel::Brightness& panelbrightness(const Command* msg);
+  static const ::ibeam_rawpanel::PublishSystemStat& publishsystemstat(const Command* msg);
 };
 
 const ::ibeam_rawpanel::SleepTimeout&
@@ -1861,6 +1929,10 @@ Command::_Internal::setwebserverenabled(const Command* msg) {
 const ::ibeam_rawpanel::Brightness&
 Command::_Internal::panelbrightness(const Command* msg) {
   return *msg->panelbrightness_;
+}
+const ::ibeam_rawpanel::PublishSystemStat&
+Command::_Internal::publishsystemstat(const Command* msg) {
+  return *msg->publishsystemstat_;
 }
 Command::Command(::PROTOBUF_NAMESPACE_ID::Arena* arena)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
@@ -1885,6 +1957,11 @@ Command::Command(const Command& from)
     panelbrightness_ = new ::ibeam_rawpanel::Brightness(*from.panelbrightness_);
   } else {
     panelbrightness_ = nullptr;
+  }
+  if (from._internal_has_publishsystemstat()) {
+    publishsystemstat_ = new ::ibeam_rawpanel::PublishSystemStat(*from.publishsystemstat_);
+  } else {
+    publishsystemstat_ = nullptr;
   }
   ::memcpy(&activatepanel_, &from.activatepanel_,
     static_cast<size_t>(reinterpret_cast<char*>(&getsleeptimeout_) -
@@ -1911,6 +1988,7 @@ void Command::SharedDtor() {
   if (this != internal_default_instance()) delete setsleeptimeout_;
   if (this != internal_default_instance()) delete setwebserverenabled_;
   if (this != internal_default_instance()) delete panelbrightness_;
+  if (this != internal_default_instance()) delete publishsystemstat_;
 }
 
 void Command::ArenaDtor(void* object) {
@@ -1946,6 +2024,10 @@ void Command::Clear() {
     delete panelbrightness_;
   }
   panelbrightness_ = nullptr;
+  if (GetArena() == nullptr && publishsystemstat_ != nullptr) {
+    delete publishsystemstat_;
+  }
+  publishsystemstat_ = nullptr;
   ::memset(&activatepanel_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&getsleeptimeout_) -
       reinterpret_cast<char*>(&activatepanel_)) + sizeof(getsleeptimeout_));
@@ -2047,6 +2129,13 @@ const char* Command::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::in
       case 23:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 186)) {
           ptr = ctx->ParseMessage(_internal_mutable_panelbrightness(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // .ibeam_rawpanel.PublishSystemStat PublishSystemStat = 30;
+      case 30:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 242)) {
+          ptr = ctx->ParseMessage(_internal_mutable_publishsystemstat(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -2162,6 +2251,14 @@ failure:
         23, _Internal::panelbrightness(this), target, stream);
   }
 
+  // .ibeam_rawpanel.PublishSystemStat PublishSystemStat = 30;
+  if (this->has_publishsystemstat()) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(
+        30, _Internal::publishsystemstat(this), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -2197,6 +2294,13 @@ size_t Command::ByteSizeLong() const {
     total_size += 2 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *panelbrightness_);
+  }
+
+  // .ibeam_rawpanel.PublishSystemStat PublishSystemStat = 30;
+  if (this->has_publishsystemstat()) {
+    total_size += 2 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *publishsystemstat_);
   }
 
   // bool ActivatePanel = 1;
@@ -2288,6 +2392,9 @@ void Command::MergeFrom(const Command& from) {
   }
   if (from.has_panelbrightness()) {
     _internal_mutable_panelbrightness()->::ibeam_rawpanel::Brightness::MergeFrom(from._internal_panelbrightness());
+  }
+  if (from.has_publishsystemstat()) {
+    _internal_mutable_publishsystemstat()->::ibeam_rawpanel::PublishSystemStat::MergeFrom(from._internal_publishsystemstat());
   }
   if (from.activatepanel() != 0) {
     _internal_set_activatepanel(from._internal_activatepanel());
@@ -2972,6 +3079,233 @@ void Brightness::InternalSwap(Brightness* other) {
 
 // ===================================================================
 
+class PublishSystemStat::_Internal {
+ public:
+};
+
+PublishSystemStat::PublishSystemStat(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  SharedCtor();
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:ibeam_rawpanel.PublishSystemStat)
+}
+PublishSystemStat::PublishSystemStat(const PublishSystemStat& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&enabled_, &from.enabled_,
+    static_cast<size_t>(reinterpret_cast<char*>(&periodsec_) -
+    reinterpret_cast<char*>(&enabled_)) + sizeof(periodsec_));
+  // @@protoc_insertion_point(copy_constructor:ibeam_rawpanel.PublishSystemStat)
+}
+
+void PublishSystemStat::SharedCtor() {
+  ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+      reinterpret_cast<char*>(&enabled_) - reinterpret_cast<char*>(this)),
+      0, static_cast<size_t>(reinterpret_cast<char*>(&periodsec_) -
+      reinterpret_cast<char*>(&enabled_)) + sizeof(periodsec_));
+}
+
+PublishSystemStat::~PublishSystemStat() {
+  // @@protoc_insertion_point(destructor:ibeam_rawpanel.PublishSystemStat)
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+void PublishSystemStat::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
+}
+
+void PublishSystemStat::ArenaDtor(void* object) {
+  PublishSystemStat* _this = reinterpret_cast< PublishSystemStat* >(object);
+  (void)_this;
+}
+void PublishSystemStat::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void PublishSystemStat::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const PublishSystemStat& PublishSystemStat::default_instance() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_PublishSystemStat_ibeam_2drawpanel_2eproto.base);
+  return *internal_default_instance();
+}
+
+
+void PublishSystemStat::Clear() {
+// @@protoc_insertion_point(message_clear_start:ibeam_rawpanel.PublishSystemStat)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&enabled_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&periodsec_) -
+      reinterpret_cast<char*>(&enabled_)) + sizeof(periodsec_));
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* PublishSystemStat::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
+      // bool Enabled = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          enabled_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint32 PeriodSec = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          periodsec_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* PublishSystemStat::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:ibeam_rawpanel.PublishSystemStat)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // bool Enabled = 1;
+  if (this->enabled() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(1, this->_internal_enabled(), target);
+  }
+
+  // uint32 PeriodSec = 2;
+  if (this->periodsec() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(2, this->_internal_periodsec(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:ibeam_rawpanel.PublishSystemStat)
+  return target;
+}
+
+size_t PublishSystemStat::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:ibeam_rawpanel.PublishSystemStat)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // bool Enabled = 1;
+  if (this->enabled() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // uint32 PeriodSec = 2;
+  if (this->periodsec() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_periodsec());
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void PublishSystemStat::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:ibeam_rawpanel.PublishSystemStat)
+  GOOGLE_DCHECK_NE(&from, this);
+  const PublishSystemStat* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<PublishSystemStat>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:ibeam_rawpanel.PublishSystemStat)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:ibeam_rawpanel.PublishSystemStat)
+    MergeFrom(*source);
+  }
+}
+
+void PublishSystemStat::MergeFrom(const PublishSystemStat& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:ibeam_rawpanel.PublishSystemStat)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.enabled() != 0) {
+    _internal_set_enabled(from._internal_enabled());
+  }
+  if (from.periodsec() != 0) {
+    _internal_set_periodsec(from._internal_periodsec());
+  }
+}
+
+void PublishSystemStat::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:ibeam_rawpanel.PublishSystemStat)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void PublishSystemStat::CopyFrom(const PublishSystemStat& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:ibeam_rawpanel.PublishSystemStat)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool PublishSystemStat::IsInitialized() const {
+  return true;
+}
+
+void PublishSystemStat::InternalSwap(PublishSystemStat* other) {
+  using std::swap;
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(PublishSystemStat, periodsec_)
+      + sizeof(PublishSystemStat::periodsec_)
+      - PROTOBUF_FIELD_OFFSET(PublishSystemStat, enabled_)>(
+          reinterpret_cast<char*>(&enabled_),
+          reinterpret_cast<char*>(&other->enabled_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata PublishSystemStat::GetMetadata() const {
+  return GetMetadataStatic();
+}
+
+
+// ===================================================================
+
 class HWCState::_Internal {
  public:
   static const ::ibeam_rawpanel::HWCMode& hwcmode(const HWCState* msg);
@@ -3442,12 +3776,12 @@ PublishRawADCValues::PublishRawADCValues(::PROTOBUF_NAMESPACE_ID::Arena* arena)
 PublishRawADCValues::PublishRawADCValues(const PublishRawADCValues& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  enable_ = from.enable_;
+  enabled_ = from.enabled_;
   // @@protoc_insertion_point(copy_constructor:ibeam_rawpanel.PublishRawADCValues)
 }
 
 void PublishRawADCValues::SharedCtor() {
-  enable_ = false;
+  enabled_ = false;
 }
 
 PublishRawADCValues::~PublishRawADCValues() {
@@ -3481,7 +3815,7 @@ void PublishRawADCValues::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  enable_ = false;
+  enabled_ = false;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -3492,10 +3826,10 @@ const char* PublishRawADCValues::_InternalParse(const char* ptr, ::PROTOBUF_NAME
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     CHK_(ptr);
     switch (tag >> 3) {
-      // bool enable = 1;
+      // bool Enabled = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
-          enable_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          enabled_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -3527,10 +3861,10 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // bool enable = 1;
-  if (this->enable() != 0) {
+  // bool Enabled = 1;
+  if (this->enabled() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(1, this->_internal_enable(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(1, this->_internal_enabled(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -3549,8 +3883,8 @@ size_t PublishRawADCValues::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // bool enable = 1;
-  if (this->enable() != 0) {
+  // bool Enabled = 1;
+  if (this->enabled() != 0) {
     total_size += 1 + 1;
   }
 
@@ -3585,8 +3919,8 @@ void PublishRawADCValues::MergeFrom(const PublishRawADCValues& from) {
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.enable() != 0) {
-    _internal_set_enable(from._internal_enable());
+  if (from.enabled() != 0) {
+    _internal_set_enabled(from._internal_enabled());
   }
 }
 
@@ -3611,7 +3945,7 @@ bool PublishRawADCValues::IsInitialized() const {
 void PublishRawADCValues::InternalSwap(PublishRawADCValues* other) {
   using std::swap;
   _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
-  swap(enable_, other->enable_);
+  swap(enabled_, other->enabled_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata PublishRawADCValues::GetMetadata() const {
@@ -7928,6 +8262,7 @@ class HWCEvent::_Internal {
   static const ::ibeam_rawpanel::AbsoluteEvent& absolute(const HWCEvent* msg);
   static const ::ibeam_rawpanel::SpeedEvent& speed(const HWCEvent* msg);
   static const ::ibeam_rawpanel::RawAnalogEvent& rawanalog(const HWCEvent* msg);
+  static const ::ibeam_rawpanel::SystemStat& sysstat(const HWCEvent* msg);
 };
 
 const ::ibeam_rawpanel::BinaryEvent&
@@ -7949,6 +8284,10 @@ HWCEvent::_Internal::speed(const HWCEvent* msg) {
 const ::ibeam_rawpanel::RawAnalogEvent&
 HWCEvent::_Internal::rawanalog(const HWCEvent* msg) {
   return *msg->rawanalog_;
+}
+const ::ibeam_rawpanel::SystemStat&
+HWCEvent::_Internal::sysstat(const HWCEvent* msg) {
+  return *msg->sysstat_;
 }
 HWCEvent::HWCEvent(::PROTOBUF_NAMESPACE_ID::Arena* arena)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
@@ -7984,6 +8323,11 @@ HWCEvent::HWCEvent(const HWCEvent& from)
   } else {
     rawanalog_ = nullptr;
   }
+  if (from._internal_has_sysstat()) {
+    sysstat_ = new ::ibeam_rawpanel::SystemStat(*from.sysstat_);
+  } else {
+    sysstat_ = nullptr;
+  }
   ::memcpy(&hwcid_, &from.hwcid_,
     static_cast<size_t>(reinterpret_cast<char*>(&timestamp_) -
     reinterpret_cast<char*>(&hwcid_)) + sizeof(timestamp_));
@@ -8011,6 +8355,7 @@ void HWCEvent::SharedDtor() {
   if (this != internal_default_instance()) delete absolute_;
   if (this != internal_default_instance()) delete speed_;
   if (this != internal_default_instance()) delete rawanalog_;
+  if (this != internal_default_instance()) delete sysstat_;
 }
 
 void HWCEvent::ArenaDtor(void* object) {
@@ -8054,6 +8399,10 @@ void HWCEvent::Clear() {
     delete rawanalog_;
   }
   rawanalog_ = nullptr;
+  if (GetArena() == nullptr && sysstat_ != nullptr) {
+    delete sysstat_;
+  }
+  sysstat_ = nullptr;
   ::memset(&hwcid_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&timestamp_) -
       reinterpret_cast<char*>(&hwcid_)) + sizeof(timestamp_));
@@ -8113,6 +8462,13 @@ const char* HWCEvent::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
       case 7:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 58)) {
           ptr = ctx->ParseMessage(_internal_mutable_rawanalog(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // .ibeam_rawpanel.SystemStat SysStat = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 66)) {
+          ptr = ctx->ParseMessage(_internal_mutable_sysstat(), ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -8196,6 +8552,14 @@ failure:
         7, _Internal::rawanalog(this), target, stream);
   }
 
+  // .ibeam_rawpanel.SystemStat SysStat = 8;
+  if (this->has_sysstat()) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(
+        8, _Internal::sysstat(this), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -8245,6 +8609,13 @@ size_t HWCEvent::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *rawanalog_);
+  }
+
+  // .ibeam_rawpanel.SystemStat SysStat = 8;
+  if (this->has_sysstat()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *sysstat_);
   }
 
   // uint32 HWCID = 1;
@@ -8306,6 +8677,9 @@ void HWCEvent::MergeFrom(const HWCEvent& from) {
   }
   if (from.has_rawanalog()) {
     _internal_mutable_rawanalog()->::ibeam_rawpanel::RawAnalogEvent::MergeFrom(from._internal_rawanalog());
+  }
+  if (from.has_sysstat()) {
+    _internal_mutable_sysstat()->::ibeam_rawpanel::SystemStat::MergeFrom(from._internal_sysstat());
   }
   if (from.hwcid() != 0) {
     _internal_set_hwcid(from._internal_hwcid());
@@ -9355,6 +9729,254 @@ void RawAnalogEvent::InternalSwap(RawAnalogEvent* other) {
 
 // ===================================================================
 
+class SystemStat::_Internal {
+ public:
+};
+
+SystemStat::SystemStat(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  SharedCtor();
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:ibeam_rawpanel.SystemStat)
+}
+SystemStat::SystemStat(const SystemStat& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&cpuusage_, &from.cpuusage_,
+    static_cast<size_t>(reinterpret_cast<char*>(&exttemp_) -
+    reinterpret_cast<char*>(&cpuusage_)) + sizeof(exttemp_));
+  // @@protoc_insertion_point(copy_constructor:ibeam_rawpanel.SystemStat)
+}
+
+void SystemStat::SharedCtor() {
+  ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+      reinterpret_cast<char*>(&cpuusage_) - reinterpret_cast<char*>(this)),
+      0, static_cast<size_t>(reinterpret_cast<char*>(&exttemp_) -
+      reinterpret_cast<char*>(&cpuusage_)) + sizeof(exttemp_));
+}
+
+SystemStat::~SystemStat() {
+  // @@protoc_insertion_point(destructor:ibeam_rawpanel.SystemStat)
+  SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+void SystemStat::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
+}
+
+void SystemStat::ArenaDtor(void* object) {
+  SystemStat* _this = reinterpret_cast< SystemStat* >(object);
+  (void)_this;
+}
+void SystemStat::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
+void SystemStat::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const SystemStat& SystemStat::default_instance() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_SystemStat_ibeam_2drawpanel_2eproto.base);
+  return *internal_default_instance();
+}
+
+
+void SystemStat::Clear() {
+// @@protoc_insertion_point(message_clear_start:ibeam_rawpanel.SystemStat)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&cpuusage_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&exttemp_) -
+      reinterpret_cast<char*>(&cpuusage_)) + sizeof(exttemp_));
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* SystemStat::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
+      // uint32 CPUUsage = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          cpuusage_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // float CPUTemp = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 21)) {
+          cputemp_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else goto handle_unusual;
+        continue;
+      // float ExtTemp = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 29)) {
+          exttemp_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* SystemStat::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:ibeam_rawpanel.SystemStat)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // uint32 CPUUsage = 1;
+  if (this->cpuusage() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->_internal_cpuusage(), target);
+  }
+
+  // float CPUTemp = 2;
+  if (!(this->cputemp() <= 0 && this->cputemp() >= 0)) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(2, this->_internal_cputemp(), target);
+  }
+
+  // float ExtTemp = 3;
+  if (!(this->exttemp() <= 0 && this->exttemp() >= 0)) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(3, this->_internal_exttemp(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:ibeam_rawpanel.SystemStat)
+  return target;
+}
+
+size_t SystemStat::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:ibeam_rawpanel.SystemStat)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // uint32 CPUUsage = 1;
+  if (this->cpuusage() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
+        this->_internal_cpuusage());
+  }
+
+  // float CPUTemp = 2;
+  if (!(this->cputemp() <= 0 && this->cputemp() >= 0)) {
+    total_size += 1 + 4;
+  }
+
+  // float ExtTemp = 3;
+  if (!(this->exttemp() <= 0 && this->exttemp() >= 0)) {
+    total_size += 1 + 4;
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void SystemStat::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:ibeam_rawpanel.SystemStat)
+  GOOGLE_DCHECK_NE(&from, this);
+  const SystemStat* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<SystemStat>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:ibeam_rawpanel.SystemStat)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:ibeam_rawpanel.SystemStat)
+    MergeFrom(*source);
+  }
+}
+
+void SystemStat::MergeFrom(const SystemStat& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:ibeam_rawpanel.SystemStat)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.cpuusage() != 0) {
+    _internal_set_cpuusage(from._internal_cpuusage());
+  }
+  if (!(from.cputemp() <= 0 && from.cputemp() >= 0)) {
+    _internal_set_cputemp(from._internal_cputemp());
+  }
+  if (!(from.exttemp() <= 0 && from.exttemp() >= 0)) {
+    _internal_set_exttemp(from._internal_exttemp());
+  }
+}
+
+void SystemStat::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:ibeam_rawpanel.SystemStat)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SystemStat::CopyFrom(const SystemStat& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:ibeam_rawpanel.SystemStat)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SystemStat::IsInitialized() const {
+  return true;
+}
+
+void SystemStat::InternalSwap(SystemStat* other) {
+  using std::swap;
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SystemStat, exttemp_)
+      + sizeof(SystemStat::exttemp_)
+      - PROTOBUF_FIELD_OFFSET(SystemStat, cpuusage_)>(
+          reinterpret_cast<char*>(&cpuusage_),
+          reinterpret_cast<char*>(&other->cpuusage_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata SystemStat::GetMetadata() const {
+  return GetMetadataStatic();
+}
+
+
+// ===================================================================
+
 class PanelInfo::_Internal {
  public:
 };
@@ -10179,6 +10801,9 @@ template<> PROTOBUF_NOINLINE ::ibeam_rawpanel::WebserverState* Arena::CreateMayb
 template<> PROTOBUF_NOINLINE ::ibeam_rawpanel::Brightness* Arena::CreateMaybeMessage< ::ibeam_rawpanel::Brightness >(Arena* arena) {
   return Arena::CreateMessageInternal< ::ibeam_rawpanel::Brightness >(arena);
 }
+template<> PROTOBUF_NOINLINE ::ibeam_rawpanel::PublishSystemStat* Arena::CreateMaybeMessage< ::ibeam_rawpanel::PublishSystemStat >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::ibeam_rawpanel::PublishSystemStat >(arena);
+}
 template<> PROTOBUF_NOINLINE ::ibeam_rawpanel::HWCState* Arena::CreateMaybeMessage< ::ibeam_rawpanel::HWCState >(Arena* arena) {
   return Arena::CreateMessageInternal< ::ibeam_rawpanel::HWCState >(arena);
 }
@@ -10247,6 +10872,9 @@ template<> PROTOBUF_NOINLINE ::ibeam_rawpanel::SpeedEvent* Arena::CreateMaybeMes
 }
 template<> PROTOBUF_NOINLINE ::ibeam_rawpanel::RawAnalogEvent* Arena::CreateMaybeMessage< ::ibeam_rawpanel::RawAnalogEvent >(Arena* arena) {
   return Arena::CreateMessageInternal< ::ibeam_rawpanel::RawAnalogEvent >(arena);
+}
+template<> PROTOBUF_NOINLINE ::ibeam_rawpanel::SystemStat* Arena::CreateMaybeMessage< ::ibeam_rawpanel::SystemStat >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::ibeam_rawpanel::SystemStat >(arena);
 }
 template<> PROTOBUF_NOINLINE ::ibeam_rawpanel::PanelInfo* Arena::CreateMaybeMessage< ::ibeam_rawpanel::PanelInfo >(Arena* arena) {
   return Arena::CreateMessageInternal< ::ibeam_rawpanel::PanelInfo >(arena);

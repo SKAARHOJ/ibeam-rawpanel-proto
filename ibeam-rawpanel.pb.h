@@ -50,7 +50,7 @@ struct TableStruct_ibeam_2drawpanel_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxiliaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[31]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[33]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -133,6 +133,9 @@ extern PanelTopologyDefaultTypeInternal _PanelTopology_default_instance_;
 class PublishRawADCValues;
 class PublishRawADCValuesDefaultTypeInternal;
 extern PublishRawADCValuesDefaultTypeInternal _PublishRawADCValues_default_instance_;
+class PublishSystemStat;
+class PublishSystemStatDefaultTypeInternal;
+extern PublishSystemStatDefaultTypeInternal _PublishSystemStat_default_instance_;
 class PulsedEvent;
 class PulsedEventDefaultTypeInternal;
 extern PulsedEventDefaultTypeInternal _PulsedEvent_default_instance_;
@@ -148,6 +151,9 @@ extern SleepTimeoutDefaultTypeInternal _SleepTimeout_default_instance_;
 class SpeedEvent;
 class SpeedEventDefaultTypeInternal;
 extern SpeedEventDefaultTypeInternal _SpeedEvent_default_instance_;
+class SystemStat;
+class SystemStatDefaultTypeInternal;
+extern SystemStatDefaultTypeInternal _SystemStat_default_instance_;
 class WebserverState;
 class WebserverStateDefaultTypeInternal;
 extern WebserverStateDefaultTypeInternal _WebserverState_default_instance_;
@@ -178,11 +184,13 @@ template<> ::ibeam_rawpanel::OutboundMessage_HWCavailabilityEntry_DoNotUse* Aren
 template<> ::ibeam_rawpanel::PanelInfo* Arena::CreateMaybeMessage<::ibeam_rawpanel::PanelInfo>(Arena*);
 template<> ::ibeam_rawpanel::PanelTopology* Arena::CreateMaybeMessage<::ibeam_rawpanel::PanelTopology>(Arena*);
 template<> ::ibeam_rawpanel::PublishRawADCValues* Arena::CreateMaybeMessage<::ibeam_rawpanel::PublishRawADCValues>(Arena*);
+template<> ::ibeam_rawpanel::PublishSystemStat* Arena::CreateMaybeMessage<::ibeam_rawpanel::PublishSystemStat>(Arena*);
 template<> ::ibeam_rawpanel::PulsedEvent* Arena::CreateMaybeMessage<::ibeam_rawpanel::PulsedEvent>(Arena*);
 template<> ::ibeam_rawpanel::RawAnalogEvent* Arena::CreateMaybeMessage<::ibeam_rawpanel::RawAnalogEvent>(Arena*);
 template<> ::ibeam_rawpanel::SleepState* Arena::CreateMaybeMessage<::ibeam_rawpanel::SleepState>(Arena*);
 template<> ::ibeam_rawpanel::SleepTimeout* Arena::CreateMaybeMessage<::ibeam_rawpanel::SleepTimeout>(Arena*);
 template<> ::ibeam_rawpanel::SpeedEvent* Arena::CreateMaybeMessage<::ibeam_rawpanel::SpeedEvent>(Arena*);
+template<> ::ibeam_rawpanel::SystemStat* Arena::CreateMaybeMessage<::ibeam_rawpanel::SystemStat>(Arena*);
 template<> ::ibeam_rawpanel::WebserverState* Arena::CreateMaybeMessage<::ibeam_rawpanel::WebserverState>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace ibeam_rawpanel {
@@ -947,6 +955,7 @@ class Command PROTOBUF_FINAL :
     kSetSleepTimeoutFieldNumber = 21,
     kSetWebserverEnabledFieldNumber = 22,
     kPanelBrightnessFieldNumber = 23,
+    kPublishSystemStatFieldNumber = 30,
     kActivatePanelFieldNumber = 1,
     kSendPanelInfoFieldNumber = 2,
     kSendPanelTopologyFieldNumber = 3,
@@ -1011,6 +1020,24 @@ class Command PROTOBUF_FINAL :
   void unsafe_arena_set_allocated_panelbrightness(
       ::ibeam_rawpanel::Brightness* panelbrightness);
   ::ibeam_rawpanel::Brightness* unsafe_arena_release_panelbrightness();
+
+  // .ibeam_rawpanel.PublishSystemStat PublishSystemStat = 30;
+  bool has_publishsystemstat() const;
+  private:
+  bool _internal_has_publishsystemstat() const;
+  public:
+  void clear_publishsystemstat();
+  const ::ibeam_rawpanel::PublishSystemStat& publishsystemstat() const;
+  ::ibeam_rawpanel::PublishSystemStat* release_publishsystemstat();
+  ::ibeam_rawpanel::PublishSystemStat* mutable_publishsystemstat();
+  void set_allocated_publishsystemstat(::ibeam_rawpanel::PublishSystemStat* publishsystemstat);
+  private:
+  const ::ibeam_rawpanel::PublishSystemStat& _internal_publishsystemstat() const;
+  ::ibeam_rawpanel::PublishSystemStat* _internal_mutable_publishsystemstat();
+  public:
+  void unsafe_arena_set_allocated_publishsystemstat(
+      ::ibeam_rawpanel::PublishSystemStat* publishsystemstat);
+  ::ibeam_rawpanel::PublishSystemStat* unsafe_arena_release_publishsystemstat();
 
   // bool ActivatePanel = 1;
   void clear_activatepanel();
@@ -1112,6 +1139,7 @@ class Command PROTOBUF_FINAL :
   ::ibeam_rawpanel::SleepTimeout* setsleeptimeout_;
   ::ibeam_rawpanel::WebserverState* setwebserverenabled_;
   ::ibeam_rawpanel::Brightness* panelbrightness_;
+  ::ibeam_rawpanel::PublishSystemStat* publishsystemstat_;
   bool activatepanel_;
   bool sendpanelinfo_;
   bool sendpaneltopology_;
@@ -1546,6 +1574,153 @@ class Brightness PROTOBUF_FINAL :
 };
 // -------------------------------------------------------------------
 
+class PublishSystemStat PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ibeam_rawpanel.PublishSystemStat) */ {
+ public:
+  inline PublishSystemStat() : PublishSystemStat(nullptr) {}
+  virtual ~PublishSystemStat();
+
+  PublishSystemStat(const PublishSystemStat& from);
+  PublishSystemStat(PublishSystemStat&& from) noexcept
+    : PublishSystemStat() {
+    *this = ::std::move(from);
+  }
+
+  inline PublishSystemStat& operator=(const PublishSystemStat& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline PublishSystemStat& operator=(PublishSystemStat&& from) noexcept {
+    if (GetArena() == from.GetArena()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const PublishSystemStat& default_instance();
+
+  static inline const PublishSystemStat* internal_default_instance() {
+    return reinterpret_cast<const PublishSystemStat*>(
+               &_PublishSystemStat_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  friend void swap(PublishSystemStat& a, PublishSystemStat& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(PublishSystemStat* other) {
+    if (other == this) return;
+    if (GetArena() == other->GetArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(PublishSystemStat* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline PublishSystemStat* New() const final {
+    return CreateMaybeMessage<PublishSystemStat>(nullptr);
+  }
+
+  PublishSystemStat* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<PublishSystemStat>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const PublishSystemStat& from);
+  void MergeFrom(const PublishSystemStat& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(PublishSystemStat* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "ibeam_rawpanel.PublishSystemStat";
+  }
+  protected:
+  explicit PublishSystemStat(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ibeam_2drawpanel_2eproto);
+    return ::descriptor_table_ibeam_2drawpanel_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kEnabledFieldNumber = 1,
+    kPeriodSecFieldNumber = 2,
+  };
+  // bool Enabled = 1;
+  void clear_enabled();
+  bool enabled() const;
+  void set_enabled(bool value);
+  private:
+  bool _internal_enabled() const;
+  void _internal_set_enabled(bool value);
+  public:
+
+  // uint32 PeriodSec = 2;
+  void clear_periodsec();
+  ::PROTOBUF_NAMESPACE_ID::uint32 periodsec() const;
+  void set_periodsec(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_periodsec() const;
+  void _internal_set_periodsec(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:ibeam_rawpanel.PublishSystemStat)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  bool enabled_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 periodsec_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ibeam_2drawpanel_2eproto;
+};
+// -------------------------------------------------------------------
+
 class HWCState PROTOBUF_FINAL :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ibeam_rawpanel.HWCState) */ {
  public:
@@ -1587,7 +1762,7 @@ class HWCState PROTOBUF_FINAL :
                &_HWCState_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(HWCState& a, HWCState& b) {
     a.Swap(&b);
@@ -1857,7 +2032,7 @@ class PublishRawADCValues PROTOBUF_FINAL :
                &_PublishRawADCValues_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(PublishRawADCValues& a, PublishRawADCValues& b) {
     a.Swap(&b);
@@ -1928,15 +2103,15 @@ class PublishRawADCValues PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kEnableFieldNumber = 1,
+    kEnabledFieldNumber = 1,
   };
-  // bool enable = 1;
-  void clear_enable();
-  bool enable() const;
-  void set_enable(bool value);
+  // bool Enabled = 1;
+  void clear_enabled();
+  bool enabled() const;
+  void set_enabled(bool value);
   private:
-  bool _internal_enable() const;
-  void _internal_set_enable(bool value);
+  bool _internal_enabled() const;
+  void _internal_set_enabled(bool value);
   public:
 
   // @@protoc_insertion_point(class_scope:ibeam_rawpanel.PublishRawADCValues)
@@ -1946,7 +2121,7 @@ class PublishRawADCValues PROTOBUF_FINAL :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  bool enable_;
+  bool enabled_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ibeam_2drawpanel_2eproto;
 };
@@ -1993,7 +2168,7 @@ class HWCMode PROTOBUF_FINAL :
                &_HWCMode_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   friend void swap(HWCMode& a, HWCMode& b) {
     a.Swap(&b);
@@ -2189,7 +2364,7 @@ class HWCExtended PROTOBUF_FINAL :
                &_HWCExtended_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   friend void swap(HWCExtended& a, HWCExtended& b) {
     a.Swap(&b);
@@ -2372,7 +2547,7 @@ class HWCColor PROTOBUF_FINAL :
                &_HWCColor_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    10;
 
   friend void swap(HWCColor& a, HWCColor& b) {
     a.Swap(&b);
@@ -2537,7 +2712,7 @@ class Color PROTOBUF_FINAL :
                &_Color_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    11;
 
   friend void swap(Color& a, Color& b) {
     a.Swap(&b);
@@ -2702,7 +2877,7 @@ class ColorRGB PROTOBUF_FINAL :
                &_ColorRGB_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    12;
 
   friend void swap(ColorRGB& a, ColorRGB& b) {
     a.Swap(&b);
@@ -2860,7 +3035,7 @@ class ColorIndex PROTOBUF_FINAL :
                &_ColorIndex_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    13;
 
   friend void swap(ColorIndex& a, ColorIndex& b) {
     a.Swap(&b);
@@ -3056,7 +3231,7 @@ class HWCText_ScaleM PROTOBUF_FINAL :
                &_HWCText_ScaleM_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    14;
 
   friend void swap(HWCText_ScaleM& a, HWCText_ScaleM& b) {
     a.Swap(&b);
@@ -3270,7 +3445,7 @@ class HWCText_TextStyle_Font PROTOBUF_FINAL :
                &_HWCText_TextStyle_Font_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    15;
 
   friend void swap(HWCText_TextStyle_Font& a, HWCText_TextStyle_Font& b) {
     a.Swap(&b);
@@ -3460,7 +3635,7 @@ class HWCText_TextStyle PROTOBUF_FINAL :
                &_HWCText_TextStyle_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    16;
 
   friend void swap(HWCText_TextStyle& a, HWCText_TextStyle& b) {
     a.Swap(&b);
@@ -3671,7 +3846,7 @@ class HWCText PROTOBUF_FINAL :
                &_HWCText_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    17;
 
   friend void swap(HWCText& a, HWCText& b) {
     a.Swap(&b);
@@ -4185,7 +4360,7 @@ class HWCGfx PROTOBUF_FINAL :
                &_HWCGfx_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    18;
 
   friend void swap(HWCGfx& a, HWCGfx& b) {
     a.Swap(&b);
@@ -4424,7 +4599,7 @@ class ImgConvert PROTOBUF_FINAL :
                &_ImgConvert_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    19;
 
   friend void swap(ImgConvert& a, ImgConvert& b) {
     a.Swap(&b);
@@ -4623,7 +4798,7 @@ public:
   private:
   static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
     ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ibeam_2drawpanel_2eproto);
-    return ::descriptor_table_ibeam_2drawpanel_2eproto.file_level_metadata[19];
+    return ::descriptor_table_ibeam_2drawpanel_2eproto.file_level_metadata[20];
   }
 
   public:
@@ -4672,7 +4847,7 @@ class OutboundMessage PROTOBUF_FINAL :
                &_OutboundMessage_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    20;
+    21;
 
   friend void swap(OutboundMessage& a, OutboundMessage& b) {
     a.Swap(&b);
@@ -4992,7 +5167,7 @@ class SleepState PROTOBUF_FINAL :
                &_SleepState_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    21;
+    22;
 
   friend void swap(SleepState& a, SleepState& b) {
     a.Swap(&b);
@@ -5128,7 +5303,7 @@ class HWCEvent PROTOBUF_FINAL :
                &_HWCEvent_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    22;
+    23;
 
   friend void swap(HWCEvent& a, HWCEvent& b) {
     a.Swap(&b);
@@ -5204,6 +5379,7 @@ class HWCEvent PROTOBUF_FINAL :
     kAbsoluteFieldNumber = 4,
     kSpeedFieldNumber = 5,
     kRawAnalogFieldNumber = 7,
+    kSysStatFieldNumber = 8,
     kHWCIDFieldNumber = 1,
     kTimestampFieldNumber = 6,
   };
@@ -5297,6 +5473,24 @@ class HWCEvent PROTOBUF_FINAL :
       ::ibeam_rawpanel::RawAnalogEvent* rawanalog);
   ::ibeam_rawpanel::RawAnalogEvent* unsafe_arena_release_rawanalog();
 
+  // .ibeam_rawpanel.SystemStat SysStat = 8;
+  bool has_sysstat() const;
+  private:
+  bool _internal_has_sysstat() const;
+  public:
+  void clear_sysstat();
+  const ::ibeam_rawpanel::SystemStat& sysstat() const;
+  ::ibeam_rawpanel::SystemStat* release_sysstat();
+  ::ibeam_rawpanel::SystemStat* mutable_sysstat();
+  void set_allocated_sysstat(::ibeam_rawpanel::SystemStat* sysstat);
+  private:
+  const ::ibeam_rawpanel::SystemStat& _internal_sysstat() const;
+  ::ibeam_rawpanel::SystemStat* _internal_mutable_sysstat();
+  public:
+  void unsafe_arena_set_allocated_sysstat(
+      ::ibeam_rawpanel::SystemStat* sysstat);
+  ::ibeam_rawpanel::SystemStat* unsafe_arena_release_sysstat();
+
   // uint32 HWCID = 1;
   void clear_hwcid();
   ::PROTOBUF_NAMESPACE_ID::uint32 hwcid() const;
@@ -5327,6 +5521,7 @@ class HWCEvent PROTOBUF_FINAL :
   ::ibeam_rawpanel::AbsoluteEvent* absolute_;
   ::ibeam_rawpanel::SpeedEvent* speed_;
   ::ibeam_rawpanel::RawAnalogEvent* rawanalog_;
+  ::ibeam_rawpanel::SystemStat* sysstat_;
   ::PROTOBUF_NAMESPACE_ID::uint32 hwcid_;
   ::PROTOBUF_NAMESPACE_ID::uint32 timestamp_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
@@ -5375,7 +5570,7 @@ class BinaryEvent PROTOBUF_FINAL :
                &_BinaryEvent_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    23;
+    24;
 
   friend void swap(BinaryEvent& a, BinaryEvent& b) {
     a.Swap(&b);
@@ -5558,7 +5753,7 @@ class PulsedEvent PROTOBUF_FINAL :
                &_PulsedEvent_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    24;
+    25;
 
   friend void swap(PulsedEvent& a, PulsedEvent& b) {
     a.Swap(&b);
@@ -5694,7 +5889,7 @@ class AbsoluteEvent PROTOBUF_FINAL :
                &_AbsoluteEvent_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    25;
+    26;
 
   friend void swap(AbsoluteEvent& a, AbsoluteEvent& b) {
     a.Swap(&b);
@@ -5830,7 +6025,7 @@ class SpeedEvent PROTOBUF_FINAL :
                &_SpeedEvent_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    26;
+    27;
 
   friend void swap(SpeedEvent& a, SpeedEvent& b) {
     a.Swap(&b);
@@ -5966,7 +6161,7 @@ class RawAnalogEvent PROTOBUF_FINAL :
                &_RawAnalogEvent_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    27;
+    28;
 
   friend void swap(RawAnalogEvent& a, RawAnalogEvent& b) {
     a.Swap(&b);
@@ -6061,6 +6256,164 @@ class RawAnalogEvent PROTOBUF_FINAL :
 };
 // -------------------------------------------------------------------
 
+class SystemStat PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ibeam_rawpanel.SystemStat) */ {
+ public:
+  inline SystemStat() : SystemStat(nullptr) {}
+  virtual ~SystemStat();
+
+  SystemStat(const SystemStat& from);
+  SystemStat(SystemStat&& from) noexcept
+    : SystemStat() {
+    *this = ::std::move(from);
+  }
+
+  inline SystemStat& operator=(const SystemStat& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SystemStat& operator=(SystemStat&& from) noexcept {
+    if (GetArena() == from.GetArena()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const SystemStat& default_instance();
+
+  static inline const SystemStat* internal_default_instance() {
+    return reinterpret_cast<const SystemStat*>(
+               &_SystemStat_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    29;
+
+  friend void swap(SystemStat& a, SystemStat& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(SystemStat* other) {
+    if (other == this) return;
+    if (GetArena() == other->GetArena()) {
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SystemStat* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline SystemStat* New() const final {
+    return CreateMaybeMessage<SystemStat>(nullptr);
+  }
+
+  SystemStat* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<SystemStat>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const SystemStat& from);
+  void MergeFrom(const SystemStat& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SystemStat* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "ibeam_rawpanel.SystemStat";
+  }
+  protected:
+  explicit SystemStat(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  private:
+  static void ArenaDtor(void* object);
+  inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ibeam_2drawpanel_2eproto);
+    return ::descriptor_table_ibeam_2drawpanel_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kCPUUsageFieldNumber = 1,
+    kCPUTempFieldNumber = 2,
+    kExtTempFieldNumber = 3,
+  };
+  // uint32 CPUUsage = 1;
+  void clear_cpuusage();
+  ::PROTOBUF_NAMESPACE_ID::uint32 cpuusage() const;
+  void set_cpuusage(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_cpuusage() const;
+  void _internal_set_cpuusage(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // float CPUTemp = 2;
+  void clear_cputemp();
+  float cputemp() const;
+  void set_cputemp(float value);
+  private:
+  float _internal_cputemp() const;
+  void _internal_set_cputemp(float value);
+  public:
+
+  // float ExtTemp = 3;
+  void clear_exttemp();
+  float exttemp() const;
+  void set_exttemp(float value);
+  private:
+  float _internal_exttemp() const;
+  void _internal_set_exttemp(float value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:ibeam_rawpanel.SystemStat)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cpuusage_;
+  float cputemp_;
+  float exttemp_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ibeam_2drawpanel_2eproto;
+};
+// -------------------------------------------------------------------
+
 class PanelInfo PROTOBUF_FINAL :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ibeam_rawpanel.PanelInfo) */ {
  public:
@@ -6102,7 +6455,7 @@ class PanelInfo PROTOBUF_FINAL :
                &_PanelInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    28;
+    30;
 
   friend void swap(PanelInfo& a, PanelInfo& b) {
     a.Swap(&b);
@@ -6317,7 +6670,7 @@ class PanelTopology PROTOBUF_FINAL :
                &_PanelTopology_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    29;
+    31;
 
   friend void swap(PanelTopology& a, PanelTopology& b) {
     a.Swap(&b);
@@ -6478,7 +6831,7 @@ class BurninProfile PROTOBUF_FINAL :
                &_BurninProfile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    30;
+    32;
 
   friend void swap(BurninProfile& a, BurninProfile& b) {
     a.Swap(&b);
@@ -7184,6 +7537,89 @@ inline void Command::set_allocated_panelbrightness(::ibeam_rawpanel::Brightness*
   // @@protoc_insertion_point(field_set_allocated:ibeam_rawpanel.Command.PanelBrightness)
 }
 
+// .ibeam_rawpanel.PublishSystemStat PublishSystemStat = 30;
+inline bool Command::_internal_has_publishsystemstat() const {
+  return this != internal_default_instance() && publishsystemstat_ != nullptr;
+}
+inline bool Command::has_publishsystemstat() const {
+  return _internal_has_publishsystemstat();
+}
+inline void Command::clear_publishsystemstat() {
+  if (GetArena() == nullptr && publishsystemstat_ != nullptr) {
+    delete publishsystemstat_;
+  }
+  publishsystemstat_ = nullptr;
+}
+inline const ::ibeam_rawpanel::PublishSystemStat& Command::_internal_publishsystemstat() const {
+  const ::ibeam_rawpanel::PublishSystemStat* p = publishsystemstat_;
+  return p != nullptr ? *p : reinterpret_cast<const ::ibeam_rawpanel::PublishSystemStat&>(
+      ::ibeam_rawpanel::_PublishSystemStat_default_instance_);
+}
+inline const ::ibeam_rawpanel::PublishSystemStat& Command::publishsystemstat() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.Command.PublishSystemStat)
+  return _internal_publishsystemstat();
+}
+inline void Command::unsafe_arena_set_allocated_publishsystemstat(
+    ::ibeam_rawpanel::PublishSystemStat* publishsystemstat) {
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(publishsystemstat_);
+  }
+  publishsystemstat_ = publishsystemstat;
+  if (publishsystemstat) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:ibeam_rawpanel.Command.PublishSystemStat)
+}
+inline ::ibeam_rawpanel::PublishSystemStat* Command::release_publishsystemstat() {
+  
+  ::ibeam_rawpanel::PublishSystemStat* temp = publishsystemstat_;
+  publishsystemstat_ = nullptr;
+  if (GetArena() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+  return temp;
+}
+inline ::ibeam_rawpanel::PublishSystemStat* Command::unsafe_arena_release_publishsystemstat() {
+  // @@protoc_insertion_point(field_release:ibeam_rawpanel.Command.PublishSystemStat)
+  
+  ::ibeam_rawpanel::PublishSystemStat* temp = publishsystemstat_;
+  publishsystemstat_ = nullptr;
+  return temp;
+}
+inline ::ibeam_rawpanel::PublishSystemStat* Command::_internal_mutable_publishsystemstat() {
+  
+  if (publishsystemstat_ == nullptr) {
+    auto* p = CreateMaybeMessage<::ibeam_rawpanel::PublishSystemStat>(GetArena());
+    publishsystemstat_ = p;
+  }
+  return publishsystemstat_;
+}
+inline ::ibeam_rawpanel::PublishSystemStat* Command::mutable_publishsystemstat() {
+  // @@protoc_insertion_point(field_mutable:ibeam_rawpanel.Command.PublishSystemStat)
+  return _internal_mutable_publishsystemstat();
+}
+inline void Command::set_allocated_publishsystemstat(::ibeam_rawpanel::PublishSystemStat* publishsystemstat) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
+  if (message_arena == nullptr) {
+    delete publishsystemstat_;
+  }
+  if (publishsystemstat) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(publishsystemstat);
+    if (message_arena != submessage_arena) {
+      publishsystemstat = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, publishsystemstat, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  publishsystemstat_ = publishsystemstat;
+  // @@protoc_insertion_point(field_set_allocated:ibeam_rawpanel.Command.PublishSystemStat)
+}
+
 // -------------------------------------------------------------------
 
 // SleepTimeout
@@ -7274,6 +7710,50 @@ inline void Brightness::_internal_set_leds(::PROTOBUF_NAMESPACE_ID::uint32 value
 inline void Brightness::set_leds(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_leds(value);
   // @@protoc_insertion_point(field_set:ibeam_rawpanel.Brightness.LEDs)
+}
+
+// -------------------------------------------------------------------
+
+// PublishSystemStat
+
+// bool Enabled = 1;
+inline void PublishSystemStat::clear_enabled() {
+  enabled_ = false;
+}
+inline bool PublishSystemStat::_internal_enabled() const {
+  return enabled_;
+}
+inline bool PublishSystemStat::enabled() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.PublishSystemStat.Enabled)
+  return _internal_enabled();
+}
+inline void PublishSystemStat::_internal_set_enabled(bool value) {
+  
+  enabled_ = value;
+}
+inline void PublishSystemStat::set_enabled(bool value) {
+  _internal_set_enabled(value);
+  // @@protoc_insertion_point(field_set:ibeam_rawpanel.PublishSystemStat.Enabled)
+}
+
+// uint32 PeriodSec = 2;
+inline void PublishSystemStat::clear_periodsec() {
+  periodsec_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 PublishSystemStat::_internal_periodsec() const {
+  return periodsec_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 PublishSystemStat::periodsec() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.PublishSystemStat.PeriodSec)
+  return _internal_periodsec();
+}
+inline void PublishSystemStat::_internal_set_periodsec(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  periodsec_ = value;
+}
+inline void PublishSystemStat::set_periodsec(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_periodsec(value);
+  // @@protoc_insertion_point(field_set:ibeam_rawpanel.PublishSystemStat.PeriodSec)
 }
 
 // -------------------------------------------------------------------
@@ -7829,24 +8309,24 @@ inline void HWCState::set_allocated_publishrawadcvalues(::ibeam_rawpanel::Publis
 
 // PublishRawADCValues
 
-// bool enable = 1;
-inline void PublishRawADCValues::clear_enable() {
-  enable_ = false;
+// bool Enabled = 1;
+inline void PublishRawADCValues::clear_enabled() {
+  enabled_ = false;
 }
-inline bool PublishRawADCValues::_internal_enable() const {
-  return enable_;
+inline bool PublishRawADCValues::_internal_enabled() const {
+  return enabled_;
 }
-inline bool PublishRawADCValues::enable() const {
-  // @@protoc_insertion_point(field_get:ibeam_rawpanel.PublishRawADCValues.enable)
-  return _internal_enable();
+inline bool PublishRawADCValues::enabled() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.PublishRawADCValues.Enabled)
+  return _internal_enabled();
 }
-inline void PublishRawADCValues::_internal_set_enable(bool value) {
+inline void PublishRawADCValues::_internal_set_enabled(bool value) {
   
-  enable_ = value;
+  enabled_ = value;
 }
-inline void PublishRawADCValues::set_enable(bool value) {
-  _internal_set_enable(value);
-  // @@protoc_insertion_point(field_set:ibeam_rawpanel.PublishRawADCValues.enable)
+inline void PublishRawADCValues::set_enabled(bool value) {
+  _internal_set_enabled(value);
+  // @@protoc_insertion_point(field_set:ibeam_rawpanel.PublishRawADCValues.Enabled)
 }
 
 // -------------------------------------------------------------------
@@ -10723,6 +11203,89 @@ inline void HWCEvent::set_allocated_rawanalog(::ibeam_rawpanel::RawAnalogEvent* 
   // @@protoc_insertion_point(field_set_allocated:ibeam_rawpanel.HWCEvent.RawAnalog)
 }
 
+// .ibeam_rawpanel.SystemStat SysStat = 8;
+inline bool HWCEvent::_internal_has_sysstat() const {
+  return this != internal_default_instance() && sysstat_ != nullptr;
+}
+inline bool HWCEvent::has_sysstat() const {
+  return _internal_has_sysstat();
+}
+inline void HWCEvent::clear_sysstat() {
+  if (GetArena() == nullptr && sysstat_ != nullptr) {
+    delete sysstat_;
+  }
+  sysstat_ = nullptr;
+}
+inline const ::ibeam_rawpanel::SystemStat& HWCEvent::_internal_sysstat() const {
+  const ::ibeam_rawpanel::SystemStat* p = sysstat_;
+  return p != nullptr ? *p : reinterpret_cast<const ::ibeam_rawpanel::SystemStat&>(
+      ::ibeam_rawpanel::_SystemStat_default_instance_);
+}
+inline const ::ibeam_rawpanel::SystemStat& HWCEvent::sysstat() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.HWCEvent.SysStat)
+  return _internal_sysstat();
+}
+inline void HWCEvent::unsafe_arena_set_allocated_sysstat(
+    ::ibeam_rawpanel::SystemStat* sysstat) {
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(sysstat_);
+  }
+  sysstat_ = sysstat;
+  if (sysstat) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:ibeam_rawpanel.HWCEvent.SysStat)
+}
+inline ::ibeam_rawpanel::SystemStat* HWCEvent::release_sysstat() {
+  
+  ::ibeam_rawpanel::SystemStat* temp = sysstat_;
+  sysstat_ = nullptr;
+  if (GetArena() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+  return temp;
+}
+inline ::ibeam_rawpanel::SystemStat* HWCEvent::unsafe_arena_release_sysstat() {
+  // @@protoc_insertion_point(field_release:ibeam_rawpanel.HWCEvent.SysStat)
+  
+  ::ibeam_rawpanel::SystemStat* temp = sysstat_;
+  sysstat_ = nullptr;
+  return temp;
+}
+inline ::ibeam_rawpanel::SystemStat* HWCEvent::_internal_mutable_sysstat() {
+  
+  if (sysstat_ == nullptr) {
+    auto* p = CreateMaybeMessage<::ibeam_rawpanel::SystemStat>(GetArena());
+    sysstat_ = p;
+  }
+  return sysstat_;
+}
+inline ::ibeam_rawpanel::SystemStat* HWCEvent::mutable_sysstat() {
+  // @@protoc_insertion_point(field_mutable:ibeam_rawpanel.HWCEvent.SysStat)
+  return _internal_mutable_sysstat();
+}
+inline void HWCEvent::set_allocated_sysstat(::ibeam_rawpanel::SystemStat* sysstat) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
+  if (message_arena == nullptr) {
+    delete sysstat_;
+  }
+  if (sysstat) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(sysstat);
+    if (message_arena != submessage_arena) {
+      sysstat = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, sysstat, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  sysstat_ = sysstat;
+  // @@protoc_insertion_point(field_set_allocated:ibeam_rawpanel.HWCEvent.SysStat)
+}
+
 // -------------------------------------------------------------------
 
 // BinaryEvent
@@ -10861,6 +11424,70 @@ inline void RawAnalogEvent::_internal_set_value(::PROTOBUF_NAMESPACE_ID::uint32 
 inline void RawAnalogEvent::set_value(::PROTOBUF_NAMESPACE_ID::uint32 value) {
   _internal_set_value(value);
   // @@protoc_insertion_point(field_set:ibeam_rawpanel.RawAnalogEvent.Value)
+}
+
+// -------------------------------------------------------------------
+
+// SystemStat
+
+// uint32 CPUUsage = 1;
+inline void SystemStat::clear_cpuusage() {
+  cpuusage_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 SystemStat::_internal_cpuusage() const {
+  return cpuusage_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 SystemStat::cpuusage() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.SystemStat.CPUUsage)
+  return _internal_cpuusage();
+}
+inline void SystemStat::_internal_set_cpuusage(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  cpuusage_ = value;
+}
+inline void SystemStat::set_cpuusage(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_cpuusage(value);
+  // @@protoc_insertion_point(field_set:ibeam_rawpanel.SystemStat.CPUUsage)
+}
+
+// float CPUTemp = 2;
+inline void SystemStat::clear_cputemp() {
+  cputemp_ = 0;
+}
+inline float SystemStat::_internal_cputemp() const {
+  return cputemp_;
+}
+inline float SystemStat::cputemp() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.SystemStat.CPUTemp)
+  return _internal_cputemp();
+}
+inline void SystemStat::_internal_set_cputemp(float value) {
+  
+  cputemp_ = value;
+}
+inline void SystemStat::set_cputemp(float value) {
+  _internal_set_cputemp(value);
+  // @@protoc_insertion_point(field_set:ibeam_rawpanel.SystemStat.CPUTemp)
+}
+
+// float ExtTemp = 3;
+inline void SystemStat::clear_exttemp() {
+  exttemp_ = 0;
+}
+inline float SystemStat::_internal_exttemp() const {
+  return exttemp_;
+}
+inline float SystemStat::exttemp() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.SystemStat.ExtTemp)
+  return _internal_exttemp();
+}
+inline void SystemStat::_internal_set_exttemp(float value) {
+  
+  exttemp_ = value;
+}
+inline void SystemStat::set_exttemp(float value) {
+  _internal_set_exttemp(value);
+  // @@protoc_insertion_point(field_set:ibeam_rawpanel.SystemStat.ExtTemp)
 }
 
 // -------------------------------------------------------------------
@@ -11366,6 +11993,10 @@ inline void BurninProfile::set_allocated_json(std::string* json) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
