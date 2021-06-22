@@ -97,9 +97,6 @@ extern HWCGfxDefaultTypeInternal _HWCGfx_default_instance_;
 class HWCMode;
 class HWCModeDefaultTypeInternal;
 extern HWCModeDefaultTypeInternal _HWCMode_default_instance_;
-class HWCOptions;
-class HWCOptionsDefaultTypeInternal;
-extern HWCOptionsDefaultTypeInternal _HWCOptions_default_instance_;
 class HWCState;
 class HWCStateDefaultTypeInternal;
 extern HWCStateDefaultTypeInternal _HWCState_default_instance_;
@@ -133,6 +130,9 @@ extern PanelInfoDefaultTypeInternal _PanelInfo_default_instance_;
 class PanelTopology;
 class PanelTopologyDefaultTypeInternal;
 extern PanelTopologyDefaultTypeInternal _PanelTopology_default_instance_;
+class PublishRawADCValues;
+class PublishRawADCValuesDefaultTypeInternal;
+extern PublishRawADCValuesDefaultTypeInternal _PublishRawADCValues_default_instance_;
 class PulsedEvent;
 class PulsedEventDefaultTypeInternal;
 extern PulsedEventDefaultTypeInternal _PulsedEvent_default_instance_;
@@ -166,7 +166,6 @@ template<> ::ibeam_rawpanel::HWCEvent* Arena::CreateMaybeMessage<::ibeam_rawpane
 template<> ::ibeam_rawpanel::HWCExtended* Arena::CreateMaybeMessage<::ibeam_rawpanel::HWCExtended>(Arena*);
 template<> ::ibeam_rawpanel::HWCGfx* Arena::CreateMaybeMessage<::ibeam_rawpanel::HWCGfx>(Arena*);
 template<> ::ibeam_rawpanel::HWCMode* Arena::CreateMaybeMessage<::ibeam_rawpanel::HWCMode>(Arena*);
-template<> ::ibeam_rawpanel::HWCOptions* Arena::CreateMaybeMessage<::ibeam_rawpanel::HWCOptions>(Arena*);
 template<> ::ibeam_rawpanel::HWCState* Arena::CreateMaybeMessage<::ibeam_rawpanel::HWCState>(Arena*);
 template<> ::ibeam_rawpanel::HWCText* Arena::CreateMaybeMessage<::ibeam_rawpanel::HWCText>(Arena*);
 template<> ::ibeam_rawpanel::HWCText_ScaleM* Arena::CreateMaybeMessage<::ibeam_rawpanel::HWCText_ScaleM>(Arena*);
@@ -178,6 +177,7 @@ template<> ::ibeam_rawpanel::OutboundMessage* Arena::CreateMaybeMessage<::ibeam_
 template<> ::ibeam_rawpanel::OutboundMessage_HWCavailabilityEntry_DoNotUse* Arena::CreateMaybeMessage<::ibeam_rawpanel::OutboundMessage_HWCavailabilityEntry_DoNotUse>(Arena*);
 template<> ::ibeam_rawpanel::PanelInfo* Arena::CreateMaybeMessage<::ibeam_rawpanel::PanelInfo>(Arena*);
 template<> ::ibeam_rawpanel::PanelTopology* Arena::CreateMaybeMessage<::ibeam_rawpanel::PanelTopology>(Arena*);
+template<> ::ibeam_rawpanel::PublishRawADCValues* Arena::CreateMaybeMessage<::ibeam_rawpanel::PublishRawADCValues>(Arena*);
 template<> ::ibeam_rawpanel::PulsedEvent* Arena::CreateMaybeMessage<::ibeam_rawpanel::PulsedEvent>(Arena*);
 template<> ::ibeam_rawpanel::RawAnalogEvent* Arena::CreateMaybeMessage<::ibeam_rawpanel::RawAnalogEvent>(Arena*);
 template<> ::ibeam_rawpanel::SleepState* Arena::CreateMaybeMessage<::ibeam_rawpanel::SleepState>(Arena*);
@@ -1664,7 +1664,7 @@ class HWCState PROTOBUF_FINAL :
     kHWCExtendedFieldNumber = 4,
     kHWCTextFieldNumber = 5,
     kHWCGfxFieldNumber = 6,
-    kHWCOptionsFieldNumber = 7,
+    kPublishRawADCValuesFieldNumber = 7,
   };
   // repeated uint32 HWCIDs = 1;
   int hwcids_size() const;
@@ -1778,23 +1778,23 @@ class HWCState PROTOBUF_FINAL :
       ::ibeam_rawpanel::HWCGfx* hwcgfx);
   ::ibeam_rawpanel::HWCGfx* unsafe_arena_release_hwcgfx();
 
-  // .ibeam_rawpanel.HWCOptions HWCOptions = 7;
-  bool has_hwcoptions() const;
+  // .ibeam_rawpanel.PublishRawADCValues PublishRawADCValues = 7;
+  bool has_publishrawadcvalues() const;
   private:
-  bool _internal_has_hwcoptions() const;
+  bool _internal_has_publishrawadcvalues() const;
   public:
-  void clear_hwcoptions();
-  const ::ibeam_rawpanel::HWCOptions& hwcoptions() const;
-  ::ibeam_rawpanel::HWCOptions* release_hwcoptions();
-  ::ibeam_rawpanel::HWCOptions* mutable_hwcoptions();
-  void set_allocated_hwcoptions(::ibeam_rawpanel::HWCOptions* hwcoptions);
+  void clear_publishrawadcvalues();
+  const ::ibeam_rawpanel::PublishRawADCValues& publishrawadcvalues() const;
+  ::ibeam_rawpanel::PublishRawADCValues* release_publishrawadcvalues();
+  ::ibeam_rawpanel::PublishRawADCValues* mutable_publishrawadcvalues();
+  void set_allocated_publishrawadcvalues(::ibeam_rawpanel::PublishRawADCValues* publishrawadcvalues);
   private:
-  const ::ibeam_rawpanel::HWCOptions& _internal_hwcoptions() const;
-  ::ibeam_rawpanel::HWCOptions* _internal_mutable_hwcoptions();
+  const ::ibeam_rawpanel::PublishRawADCValues& _internal_publishrawadcvalues() const;
+  ::ibeam_rawpanel::PublishRawADCValues* _internal_mutable_publishrawadcvalues();
   public:
-  void unsafe_arena_set_allocated_hwcoptions(
-      ::ibeam_rawpanel::HWCOptions* hwcoptions);
-  ::ibeam_rawpanel::HWCOptions* unsafe_arena_release_hwcoptions();
+  void unsafe_arena_set_allocated_publishrawadcvalues(
+      ::ibeam_rawpanel::PublishRawADCValues* publishrawadcvalues);
+  ::ibeam_rawpanel::PublishRawADCValues* unsafe_arena_release_publishrawadcvalues();
 
   // @@protoc_insertion_point(class_scope:ibeam_rawpanel.HWCState)
  private:
@@ -1810,29 +1810,29 @@ class HWCState PROTOBUF_FINAL :
   ::ibeam_rawpanel::HWCExtended* hwcextended_;
   ::ibeam_rawpanel::HWCText* hwctext_;
   ::ibeam_rawpanel::HWCGfx* hwcgfx_;
-  ::ibeam_rawpanel::HWCOptions* hwcoptions_;
+  ::ibeam_rawpanel::PublishRawADCValues* publishrawadcvalues_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ibeam_2drawpanel_2eproto;
 };
 // -------------------------------------------------------------------
 
-class HWCOptions PROTOBUF_FINAL :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ibeam_rawpanel.HWCOptions) */ {
+class PublishRawADCValues PROTOBUF_FINAL :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:ibeam_rawpanel.PublishRawADCValues) */ {
  public:
-  inline HWCOptions() : HWCOptions(nullptr) {}
-  virtual ~HWCOptions();
+  inline PublishRawADCValues() : PublishRawADCValues(nullptr) {}
+  virtual ~PublishRawADCValues();
 
-  HWCOptions(const HWCOptions& from);
-  HWCOptions(HWCOptions&& from) noexcept
-    : HWCOptions() {
+  PublishRawADCValues(const PublishRawADCValues& from);
+  PublishRawADCValues(PublishRawADCValues&& from) noexcept
+    : PublishRawADCValues() {
     *this = ::std::move(from);
   }
 
-  inline HWCOptions& operator=(const HWCOptions& from) {
+  inline PublishRawADCValues& operator=(const PublishRawADCValues& from) {
     CopyFrom(from);
     return *this;
   }
-  inline HWCOptions& operator=(HWCOptions&& from) noexcept {
+  inline PublishRawADCValues& operator=(PublishRawADCValues&& from) noexcept {
     if (GetArena() == from.GetArena()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -1850,19 +1850,19 @@ class HWCOptions PROTOBUF_FINAL :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return GetMetadataStatic().reflection;
   }
-  static const HWCOptions& default_instance();
+  static const PublishRawADCValues& default_instance();
 
-  static inline const HWCOptions* internal_default_instance() {
-    return reinterpret_cast<const HWCOptions*>(
-               &_HWCOptions_default_instance_);
+  static inline const PublishRawADCValues* internal_default_instance() {
+    return reinterpret_cast<const PublishRawADCValues*>(
+               &_PublishRawADCValues_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     6;
 
-  friend void swap(HWCOptions& a, HWCOptions& b) {
+  friend void swap(PublishRawADCValues& a, PublishRawADCValues& b) {
     a.Swap(&b);
   }
-  inline void Swap(HWCOptions* other) {
+  inline void Swap(PublishRawADCValues* other) {
     if (other == this) return;
     if (GetArena() == other->GetArena()) {
       InternalSwap(other);
@@ -1870,7 +1870,7 @@ class HWCOptions PROTOBUF_FINAL :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(HWCOptions* other) {
+  void UnsafeArenaSwap(PublishRawADCValues* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -1878,17 +1878,17 @@ class HWCOptions PROTOBUF_FINAL :
 
   // implements Message ----------------------------------------------
 
-  inline HWCOptions* New() const final {
-    return CreateMaybeMessage<HWCOptions>(nullptr);
+  inline PublishRawADCValues* New() const final {
+    return CreateMaybeMessage<PublishRawADCValues>(nullptr);
   }
 
-  HWCOptions* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<HWCOptions>(arena);
+  PublishRawADCValues* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<PublishRawADCValues>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const HWCOptions& from);
-  void MergeFrom(const HWCOptions& from);
+  void CopyFrom(const PublishRawADCValues& from);
+  void MergeFrom(const PublishRawADCValues& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -1902,13 +1902,13 @@ class HWCOptions PROTOBUF_FINAL :
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(HWCOptions* other);
+  void InternalSwap(PublishRawADCValues* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "ibeam_rawpanel.HWCOptions";
+    return "ibeam_rawpanel.PublishRawADCValues";
   }
   protected:
-  explicit HWCOptions(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit PublishRawADCValues(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -1928,25 +1928,25 @@ class HWCOptions PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kPublishRawADCValuesFieldNumber = 1,
+    kEnableFieldNumber = 1,
   };
-  // bool PublishRawADCValues = 1;
-  void clear_publishrawadcvalues();
-  bool publishrawadcvalues() const;
-  void set_publishrawadcvalues(bool value);
+  // bool enable = 1;
+  void clear_enable();
+  bool enable() const;
+  void set_enable(bool value);
   private:
-  bool _internal_publishrawadcvalues() const;
-  void _internal_set_publishrawadcvalues(bool value);
+  bool _internal_enable() const;
+  void _internal_set_enable(bool value);
   public:
 
-  // @@protoc_insertion_point(class_scope:ibeam_rawpanel.HWCOptions)
+  // @@protoc_insertion_point(class_scope:ibeam_rawpanel.PublishRawADCValues)
  private:
   class _Internal;
 
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  bool publishrawadcvalues_;
+  bool enable_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ibeam_2drawpanel_2eproto;
 };
@@ -7742,111 +7742,111 @@ inline void HWCState::set_allocated_hwcgfx(::ibeam_rawpanel::HWCGfx* hwcgfx) {
   // @@protoc_insertion_point(field_set_allocated:ibeam_rawpanel.HWCState.HWCGfx)
 }
 
-// .ibeam_rawpanel.HWCOptions HWCOptions = 7;
-inline bool HWCState::_internal_has_hwcoptions() const {
-  return this != internal_default_instance() && hwcoptions_ != nullptr;
+// .ibeam_rawpanel.PublishRawADCValues PublishRawADCValues = 7;
+inline bool HWCState::_internal_has_publishrawadcvalues() const {
+  return this != internal_default_instance() && publishrawadcvalues_ != nullptr;
 }
-inline bool HWCState::has_hwcoptions() const {
-  return _internal_has_hwcoptions();
+inline bool HWCState::has_publishrawadcvalues() const {
+  return _internal_has_publishrawadcvalues();
 }
-inline void HWCState::clear_hwcoptions() {
-  if (GetArena() == nullptr && hwcoptions_ != nullptr) {
-    delete hwcoptions_;
+inline void HWCState::clear_publishrawadcvalues() {
+  if (GetArena() == nullptr && publishrawadcvalues_ != nullptr) {
+    delete publishrawadcvalues_;
   }
-  hwcoptions_ = nullptr;
+  publishrawadcvalues_ = nullptr;
 }
-inline const ::ibeam_rawpanel::HWCOptions& HWCState::_internal_hwcoptions() const {
-  const ::ibeam_rawpanel::HWCOptions* p = hwcoptions_;
-  return p != nullptr ? *p : reinterpret_cast<const ::ibeam_rawpanel::HWCOptions&>(
-      ::ibeam_rawpanel::_HWCOptions_default_instance_);
+inline const ::ibeam_rawpanel::PublishRawADCValues& HWCState::_internal_publishrawadcvalues() const {
+  const ::ibeam_rawpanel::PublishRawADCValues* p = publishrawadcvalues_;
+  return p != nullptr ? *p : reinterpret_cast<const ::ibeam_rawpanel::PublishRawADCValues&>(
+      ::ibeam_rawpanel::_PublishRawADCValues_default_instance_);
 }
-inline const ::ibeam_rawpanel::HWCOptions& HWCState::hwcoptions() const {
-  // @@protoc_insertion_point(field_get:ibeam_rawpanel.HWCState.HWCOptions)
-  return _internal_hwcoptions();
+inline const ::ibeam_rawpanel::PublishRawADCValues& HWCState::publishrawadcvalues() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.HWCState.PublishRawADCValues)
+  return _internal_publishrawadcvalues();
 }
-inline void HWCState::unsafe_arena_set_allocated_hwcoptions(
-    ::ibeam_rawpanel::HWCOptions* hwcoptions) {
+inline void HWCState::unsafe_arena_set_allocated_publishrawadcvalues(
+    ::ibeam_rawpanel::PublishRawADCValues* publishrawadcvalues) {
   if (GetArena() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(hwcoptions_);
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(publishrawadcvalues_);
   }
-  hwcoptions_ = hwcoptions;
-  if (hwcoptions) {
+  publishrawadcvalues_ = publishrawadcvalues;
+  if (publishrawadcvalues) {
     
   } else {
     
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:ibeam_rawpanel.HWCState.HWCOptions)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:ibeam_rawpanel.HWCState.PublishRawADCValues)
 }
-inline ::ibeam_rawpanel::HWCOptions* HWCState::release_hwcoptions() {
+inline ::ibeam_rawpanel::PublishRawADCValues* HWCState::release_publishrawadcvalues() {
   
-  ::ibeam_rawpanel::HWCOptions* temp = hwcoptions_;
-  hwcoptions_ = nullptr;
+  ::ibeam_rawpanel::PublishRawADCValues* temp = publishrawadcvalues_;
+  publishrawadcvalues_ = nullptr;
   if (GetArena() != nullptr) {
     temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
   return temp;
 }
-inline ::ibeam_rawpanel::HWCOptions* HWCState::unsafe_arena_release_hwcoptions() {
-  // @@protoc_insertion_point(field_release:ibeam_rawpanel.HWCState.HWCOptions)
+inline ::ibeam_rawpanel::PublishRawADCValues* HWCState::unsafe_arena_release_publishrawadcvalues() {
+  // @@protoc_insertion_point(field_release:ibeam_rawpanel.HWCState.PublishRawADCValues)
   
-  ::ibeam_rawpanel::HWCOptions* temp = hwcoptions_;
-  hwcoptions_ = nullptr;
+  ::ibeam_rawpanel::PublishRawADCValues* temp = publishrawadcvalues_;
+  publishrawadcvalues_ = nullptr;
   return temp;
 }
-inline ::ibeam_rawpanel::HWCOptions* HWCState::_internal_mutable_hwcoptions() {
+inline ::ibeam_rawpanel::PublishRawADCValues* HWCState::_internal_mutable_publishrawadcvalues() {
   
-  if (hwcoptions_ == nullptr) {
-    auto* p = CreateMaybeMessage<::ibeam_rawpanel::HWCOptions>(GetArena());
-    hwcoptions_ = p;
+  if (publishrawadcvalues_ == nullptr) {
+    auto* p = CreateMaybeMessage<::ibeam_rawpanel::PublishRawADCValues>(GetArena());
+    publishrawadcvalues_ = p;
   }
-  return hwcoptions_;
+  return publishrawadcvalues_;
 }
-inline ::ibeam_rawpanel::HWCOptions* HWCState::mutable_hwcoptions() {
-  // @@protoc_insertion_point(field_mutable:ibeam_rawpanel.HWCState.HWCOptions)
-  return _internal_mutable_hwcoptions();
+inline ::ibeam_rawpanel::PublishRawADCValues* HWCState::mutable_publishrawadcvalues() {
+  // @@protoc_insertion_point(field_mutable:ibeam_rawpanel.HWCState.PublishRawADCValues)
+  return _internal_mutable_publishrawadcvalues();
 }
-inline void HWCState::set_allocated_hwcoptions(::ibeam_rawpanel::HWCOptions* hwcoptions) {
+inline void HWCState::set_allocated_publishrawadcvalues(::ibeam_rawpanel::PublishRawADCValues* publishrawadcvalues) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArena();
   if (message_arena == nullptr) {
-    delete hwcoptions_;
+    delete publishrawadcvalues_;
   }
-  if (hwcoptions) {
+  if (publishrawadcvalues) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(hwcoptions);
+      ::PROTOBUF_NAMESPACE_ID::Arena::GetArena(publishrawadcvalues);
     if (message_arena != submessage_arena) {
-      hwcoptions = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, hwcoptions, submessage_arena);
+      publishrawadcvalues = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, publishrawadcvalues, submessage_arena);
     }
     
   } else {
     
   }
-  hwcoptions_ = hwcoptions;
-  // @@protoc_insertion_point(field_set_allocated:ibeam_rawpanel.HWCState.HWCOptions)
+  publishrawadcvalues_ = publishrawadcvalues;
+  // @@protoc_insertion_point(field_set_allocated:ibeam_rawpanel.HWCState.PublishRawADCValues)
 }
 
 // -------------------------------------------------------------------
 
-// HWCOptions
+// PublishRawADCValues
 
-// bool PublishRawADCValues = 1;
-inline void HWCOptions::clear_publishrawadcvalues() {
-  publishrawadcvalues_ = false;
+// bool enable = 1;
+inline void PublishRawADCValues::clear_enable() {
+  enable_ = false;
 }
-inline bool HWCOptions::_internal_publishrawadcvalues() const {
-  return publishrawadcvalues_;
+inline bool PublishRawADCValues::_internal_enable() const {
+  return enable_;
 }
-inline bool HWCOptions::publishrawadcvalues() const {
-  // @@protoc_insertion_point(field_get:ibeam_rawpanel.HWCOptions.PublishRawADCValues)
-  return _internal_publishrawadcvalues();
+inline bool PublishRawADCValues::enable() const {
+  // @@protoc_insertion_point(field_get:ibeam_rawpanel.PublishRawADCValues.enable)
+  return _internal_enable();
 }
-inline void HWCOptions::_internal_set_publishrawadcvalues(bool value) {
+inline void PublishRawADCValues::_internal_set_enable(bool value) {
   
-  publishrawadcvalues_ = value;
+  enable_ = value;
 }
-inline void HWCOptions::set_publishrawadcvalues(bool value) {
-  _internal_set_publishrawadcvalues(value);
-  // @@protoc_insertion_point(field_set:ibeam_rawpanel.HWCOptions.PublishRawADCValues)
+inline void PublishRawADCValues::set_enable(bool value) {
+  _internal_set_enable(value);
+  // @@protoc_insertion_point(field_set:ibeam_rawpanel.PublishRawADCValues.enable)
 }
 
 // -------------------------------------------------------------------

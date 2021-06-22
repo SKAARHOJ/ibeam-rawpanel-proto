@@ -63,11 +63,11 @@ message HWCState {
     HWCText HWCText = 5;                // HWCt#xx=yy
     HWCGfx HWCGfx = 6;                  // HWCg#xx=yy   + HWCgRGB#xx=yy
 
-    HWCOptions HWCOptions = 7;
+    PublishRawADCValues PublishRawADCValues = 7;
 }
 
-message HWCOptions {
-    bool PublishRawADCValues = 1;
+message PublishRawADCValues {
+    bool enable = 1;
 }
 
 // HWC#xx=yy
