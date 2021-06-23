@@ -15,7 +15,7 @@ message InboundMessage {
         ACK = 2;    // "ack",
         NACK = 3;   // "nack",
     }
-    FlowMsg FlowMessage = 1;    // Only non-zero values is acted upon
+    FlowMsg FlowMessage = 1;    // Only non-zero values are acted upon
 
     Command Command = 2;
 
@@ -27,7 +27,7 @@ message Command {
     bool ActivatePanel = 1; // "ActivePanel=1",
     bool SendPanelInfo = 2; // "list",
     bool SendPanelTopology = 3; // "PanelTopology?",
-    bool ReportHWCavailability = 4; // "map" -> "avail",   - changes it's meaning in v2.0: 
+    bool ReportHWCavailability = 4; // "map" -> "avail"
     bool SendBurninProfile = 6; // Return the burnin json profiles of a controller (Only for ibeam panels)
 
     bool ClearAll = 10; // "Clear",
@@ -77,10 +77,8 @@ message PublishRawADCValues {
 }
 
 // HWC#xx=yy
-// Changes from UniSketch TCP Clinent/RawPanel 1.0:
-// Intensity values 1,2,3 are left out in v2.0 - legacy
+// Changes from UniSketch TCP Client/RawPanel 1.0:
 // Blink bit 4 is left out in v2.0 - legacy
-// Bit 5 is automatically set for states ON and DIMMED in v2.0 - simplification
 message HWCMode {
     enum StateE {
         OFF = 0;
@@ -338,6 +336,7 @@ message BinaryEvent {
         LEFT = 2;
         BOTTOM = 4;
         RIGHT = 8;
+        ENCODER = 16;
     }
 
     bool Pressed = 1;
