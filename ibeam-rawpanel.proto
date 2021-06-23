@@ -44,6 +44,7 @@ message Command {
     Brightness PanelBrightness = 23;        // PanelBrightness=x,y
 
     PublishSystemStat PublishSystemStat = 30;
+    LoadCPU LoadCPU = 31;
 }
 message SleepTimeout {
     uint32 Value = 1;
@@ -58,6 +59,17 @@ message Brightness {
 
 message PublishSystemStat {
     uint32 PeriodSec = 2; // Disabled when 0
+}
+
+message LoadCPU {
+    enum LevelE {
+        OFF = 0;
+        ON_1CORE = 1;
+        ON_2CORES = 2;
+        ON_3CORES = 3;
+        ON_4CORES = 4;
+    }
+    LevelE Level = 1;
 }
 
 message HWCState {
