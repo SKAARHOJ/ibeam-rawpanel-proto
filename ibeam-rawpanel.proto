@@ -361,10 +361,12 @@ message PulsedEvent {
 
 message AbsoluteEvent {
     uint32 Value = 1;
+    uint32 PrevValue = 2;   // Can hold previously sent value
 }
 
 message SpeedEvent {
     sint32 Value = 1;
+    sint32 PrevValue = 2;   // Can hold previously sent value
 }
 
 message RawAnalogEvent {
