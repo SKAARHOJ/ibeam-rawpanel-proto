@@ -79,7 +79,7 @@ message HWCState {
     HWCColor HWCColor = 3;              // HWCc#xx=yy
     HWCExtended HWCExtended = 4;        // HWCx#xx=yy
     HWCText HWCText = 5;                // HWCt#xx=yy
-    HWCGfx HWCGfx = 6;                  // HWCg#xx=yy   + HWCgRGB#xx=yy
+    HWCGfx HWCGfx = 6;                  // HWCg#xx=yy   + HWCgRGB#xx=yy+ HWCgGray#xx=yy
 
     PublishRawADCValues PublishRawADCValues = 7;
 }
@@ -161,6 +161,9 @@ message ColorIndex {
         SPRING = 14;
         GREEN = 15;
         MINT = 16;
+
+        // Light Gray = 17 (for displays)
+        // Dark Gray = 18 (for displays)
     }
 
     Colors Index = 1;
@@ -267,6 +270,7 @@ message HWCGfx {
     enum ImageTypeE {
         MONO = 0;
         RGB16bit = 1;
+        Gray4bit = 2;
     }
     ImageTypeE ImageType = 1;    
     uint32 W = 2;       // Must always be set (and match size of image in ImageData)
@@ -280,6 +284,7 @@ message HWCGfx {
     bytes ImageData = 16;
     //ImgConvert inputConversion = 17;    // Todo. If !=nil, will contain information about input conversion of the Image Data content (PNG / JPG + scaling)
 }
+/*
 message ImgConvert{
     enum FileTypeE {
         PNG = 0;
@@ -296,7 +301,7 @@ message ImgConvert{
 
     bool Grayscale = 3; // If set, will convert to grayscale (for RGB images going out as 16 bit)
 }
-
+*/
 
 // Wrapper for all outgoing messages (Outgoing = from Panel to System)
 message OutboundMessage {
