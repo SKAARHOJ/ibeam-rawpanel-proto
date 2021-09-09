@@ -100,8 +100,7 @@ message HWCMode {
         ON = 4;
         DIMMED = 5;
       }
-    StateE State = 2;            // Intensity
-    bool Output = 4;            // Output on/off (like relays). This should (probably) always follow State values 1-4 = true, 0 and 5 (anything else) = false
+    StateE State = 2;           // Intensity for LEDs or ON/OFF state for digital outputs (like relays)
     uint32 BlinkPattern = 3;    // Blink pattern, 4 bits
 }
 
