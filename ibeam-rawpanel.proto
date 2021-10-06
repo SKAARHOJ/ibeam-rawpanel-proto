@@ -112,6 +112,7 @@ message HWCExtended {
         STEPS = 3;
         VU = 4;
         FADER = 5;
+        BUZZER = 6;
       }
     InterpretationE Interpretation = 2;      // Value type
     uint32 Value = 3;    // Value, 10 bits
