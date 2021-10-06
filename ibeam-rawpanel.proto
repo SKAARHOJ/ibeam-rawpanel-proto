@@ -327,10 +327,17 @@ message OutboundMessage {
     SleepTimeout SleepTimeout = 6;
     SleepState SleepState = 7;
 
+    BusStatus BusStatus = 10;
+
     repeated HWCEvent Events = 8;
 }
+
 message SleepState {
     bool IsSleeping = 1;
+}
+
+message BusStatus {
+    bool Fault = 1;
 }
 
 message HWCEvent {
