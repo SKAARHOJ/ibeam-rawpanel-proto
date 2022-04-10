@@ -43,14 +43,26 @@ message Command {
 
     Brightness PanelBrightness = 23;        // PanelBrightness=x,y
 
+    HeartBeatTimer SetHeartBeatTimer = 24;  // HeartBeatTimer=
+    bool GetConnections = 25;  // "Connections?",
+    DimmedGain SetDimmedGain = 26;  // DimmedGain=
+    bool GetRunTimeStats = 27;  // "RunTimeStats?"
+
     PublishSystemStat PublishSystemStat = 30;
     LoadCPU LoadCPU = 31;
+    bool Reboot = 32;   // "Reboot",
 }
 message SleepTimeout {
     uint32 Value = 1;
 }
 message WebserverState {
     bool Enabled = 1;
+}
+message HeartBeatTimer {
+    uint32 Value = 1;
+}
+message DimmedGain {
+    uint32 Value = 1;
 }
 message Brightness {
     uint32 OLEDs = 1;
@@ -94,13 +106,14 @@ message PublishRawADCValues {
 message HWCMode {
     enum StateE {
         OFF = 0;
-        ON_YELLOW = 1;  // Legacy support
-        ON_RED = 2;  // Legacy support
-        ON_GREEN = 3;  // Legacy support
+        ON_YELLOW = 1;  // Actually shall be Amber
+        ON_RED = 2;
+        ON_GREEN = 3;
         ON = 4;
         DIMMED = 5;
       }
     StateE State = 2;           // Intensity for LEDs or ON/OFF state for digital outputs (like relays)
+    bool Output = 4;            // Output on/off (like relays). This should (probably) always follow State values 1-4 = true, 0 and 5 (anything else) = false
     uint32 BlinkPattern = 3;    // Blink pattern, 4 bits
 }
 
@@ -161,9 +174,8 @@ message ColorIndex {
         SPRING = 14;
         GREEN = 15;
         MINT = 16;
-
-        // Light Gray = 17 (for displays)
-        // Dark Gray = 18 (for displays)
+        LIGHTGRAY = 17; // For displays / backgrounds
+        DARKGRAY = 18; // For displays / backgrounds
     }
 
     Colors Index = 1;
@@ -303,6 +315,11 @@ message ImgConvert{
 }
 */
 
+
+
+
+
+
 // Wrapper for all outgoing messages (Outgoing = from Panel to System)
 message OutboundMessage {
     enum FlowMsg {
@@ -318,7 +335,6 @@ message OutboundMessage {
     FlowMsg FlowMessage = 1;
 
     map<uint32, uint32> HWCavailability = 2;
-    //repeated HWCEvent LastKnownValues = 3;    // TODO
 
     PanelInfo PanelInfo = 4;
     PanelTopology PanelTopology = 5;
@@ -330,10 +346,33 @@ message OutboundMessage {
     BusStatus BusStatus = 10;
 
     repeated HWCEvent Events = 8;
+
+    Connections Connections = 20;
+    HeartBeatTimer HeartBeatTimer = 21;
+    DimmedGain DimmedGain = 22;
+    RunTimeStats RunTimeStats = 23;
+
+    Message Message = 30;
+    Message ErrorMessage = 31;
 }
 
 message SleepState {
     bool IsSleeping = 1;
+}
+
+message Connections {
+    repeated string Connection = 1;
+}
+
+message Message {
+    string Message = 1;
+}
+
+message RunTimeStats {
+    uint32 BootsCount = 1;
+    uint32 TotalUptime = 2;
+    uint32 SessionUptime = 3;
+    uint32 ScreenSaveOnTime = 4;
 }
 
 message BusStatus {
@@ -397,6 +436,9 @@ message PanelInfo { //  Values only used if not empty
     string Name = 3;
     string SoftwareVersion = 4;
     string Platform = 5;
+    bool BluePillReady = 6;
+    uint32 MaxClients = 7;
+    repeated string LockedToIPs = 8;
 }
 
 message PanelTopology { //  Values only used if not empty
