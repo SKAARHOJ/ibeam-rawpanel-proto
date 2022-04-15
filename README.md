@@ -1,1 +1,1 @@
-# IBeam Hardware Protocol
+# Raw Panel Protocol in Protobuf form
