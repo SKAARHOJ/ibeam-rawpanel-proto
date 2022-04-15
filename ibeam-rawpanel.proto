@@ -38,6 +38,8 @@ message Command {
     
     bool GetSleepTimeout = 20;  // "SleepTimer?",
     SleepTimeout SetSleepTimeout = 21;  // SleepTimer=xx
+    SleepMode SetSleepMode = 28;  // SleepMode=xx
+    SleepScreenSaver SetSleepScreenSaver = 29;  // SleepScreenSaver=xx
 
     WebserverState SetWebserverEnabled = 22;    // Webserver=x
 
@@ -54,6 +56,22 @@ message Command {
 }
 message SleepTimeout {
     uint32 Value = 1;
+}
+message SleepMode {
+    enum SlpMode {
+        FIREWORKS = 0;
+        OFF = 1;
+    }
+    SlpMode Mode = 1;
+}
+message SleepScreenSaver {
+    enum SlpScrSaver {
+        WAKEUPONKEYPRESS = 0;   // "Wake Up On Key Press" message (default)
+        SHEEPANDGOATS = 1;  // Classic UniSketch funtime screen saver, counting sheep and goats
+        SAVETHEOLEDS = 2;   // "Save The Oleds" message
+        JUSTDIMMED = 3; // keeps content, dims buttons and panel
+    }
+    SlpScrSaver Type = 1;
 }
 message WebserverState {
     bool Enabled = 1;
