@@ -446,6 +446,23 @@ message SystemStat {
     uint32 CPUUsage = 1; // 0..100%
     float CPUTemp = 2; // degrees Celsius
     float ExtTemp = 3; // degrees Celsius, external sensor (-100 if not available)
+    float CPUVoltage = 4; // CPU voltage
+    sint32 CPUFreqCurrent = 5; // CPU current frequency (-1 if not available) 
+    sint32 CPUFreqMin = 6; // CPU min frequency (-1 if not available)
+    sint32 CPUFreqMax = 7; // CPU max frequency (-1 if not available)
+    sint32 MemTotal = 8; // total memmory in kB 
+    sint32 MemFree = 9; // free memmory 
+    sint32 MemAvailable = 10; // available memmory
+    sint32 MemBuffers = 11; // buffered
+    sint32 MemCached = 12; // cached
+    bool UnderVoltageNow = 13; // Under voltage condition detected now, under-voltage occurs when voltage drops below 4.63V. The Pi is throttled
+    bool UnderVoltage = 14; //  Under voltage condition detected since boot
+    bool FreqCapNow = 15; // Frequency cap reached now , arm frequency capped occurs with temp > 80'C
+    bool FreqCap = 16; // Frequency cap reached since boot 
+    bool ThrottledNow = 17; // CPU Throttling now , over-temperature occurs with temp > 85'C. The Pi is throttled
+    bool Throttled = 18; // CPU Throttled since boot
+    bool SoftTempLimitNow = 19; //
+    bool SoftTempLimit = 20; //
 }
 
 message PanelInfo { //  Values only used if not empty
