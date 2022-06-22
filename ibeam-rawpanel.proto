@@ -112,6 +112,7 @@ message HWCState {
     HWCGfx HWCGfx = 6;                  // HWCg#xx=yy   + HWCgRGB#xx=yy+ HWCgGray#xx=yy
 
     PublishRawADCValues PublishRawADCValues = 7;
+    HWCGfxConverter HWCGfxConverter = 8; 
 }
 
 message PublishRawADCValues {
@@ -293,6 +294,8 @@ message HWCText {
     bool Inverted = 15;             // Index 18
     Color PixelColor = 16;          // Index 19
     Color BackgroundColor = 17;     // Index 20
+
+    //bool Convert = 18;  // If set, rawpanelhelpers will try to convert to image and in the process check if the title and textline 1 + 2 contains UTF8 in which case 
 }
 
 // Graphics
@@ -312,26 +315,30 @@ message HWCGfx {
     uint32 Y = 6;
 
     bytes ImageData = 16;
-    //ImgConvert inputConversion = 17;    // Todo. If !=nil, will contain information about input conversion of the Image Data content (PNG / JPG + scaling)
 }
-/*
-message ImgConvert{
-    enum FileTypeE {
-        PNG = 0;
-        JPEG = 1;
-    }
-    FileTypeE FileType = 1;
-    
-    enum ScalingE {
-        FILL = 0;   // Scales (out of proportions if necessary) to exact output image dimensions
-        FIT = 1;    // Preserves the full image, leaving either letter boxing or pillar boxing. Image will be centered.
-        CROP = 2;   // Fills out image dimensions, but preserves proportions, leading to possible cropping in one of the dimensions. Image will be centered.
-    }
-    ScalingE Scaling = 2;
 
-    bool Grayscale = 3; // If set, will convert to grayscale (for RGB images going out as 16 bit)
+// 
+message HWCGfxConverter {
+    enum ImageTypeE {
+        MONO = 0;
+        RGB16bit = 1;
+        Gray4bit = 2;
+    }
+    ImageTypeE ImageType = 1;    
+    uint32 W = 2;       
+    uint32 H = 3;       
+
+    bytes ImageData = 16;
+
+    enum ScalingE {
+        NONE = 0;
+        FILL = 1;   // 
+        FIT = 2;    // 
+        STRETCH = 3;   // 
+    }
+    ScalingE Scaling = 18;
 }
-*/
+
 
 
 
