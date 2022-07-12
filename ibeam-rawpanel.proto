@@ -376,6 +376,7 @@ message OutboundMessage {
     HeartBeatTimer HeartBeatTimer = 21;
     DimmedGain DimmedGain = 22;
     RunTimeStats RunTimeStats = 23;
+    SystemStat SysStat = 24;
 
     Message Message = 30;
     Message ErrorMessage = 31;
@@ -414,7 +415,6 @@ message HWCEvent {
     AbsoluteEvent Absolute = 4;
     SpeedEvent Speed = 5;
     RawAnalogEvent RawAnalog = 7;
-    SystemStat SysStat = 8;
 }
 
 message BinaryEvent {
