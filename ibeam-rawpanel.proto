@@ -476,11 +476,40 @@ message PanelInfo { //  Values only used if not empty
     string Model = 1;
     string Serial = 2;
     string Name = 3;
-    string SoftwareVersion = 4;
-    string Platform = 5;
-    bool BluePillReady = 6;
+    string SoftwareVersion = 4; // Depends on context...
+    string Platform = 5;    // "core" = device core, "ibeam" = bluepill products, "xpanel" = external panel, "simulator"...?
+    bool BluePillReady = 6; // Early version of support description, more details would be inside RawPanelSupport.
     uint32 MaxClients = 7;
     repeated string LockedToIPs = 8;
+
+    enum PanelTypeE {
+        UNKNOWN = 0;
+        BLUEPILLINSIDE = 1;   // Physical panel; All SKAARHOJ panels on Blue Pill
+        PHYSICAL = 2;   // Other physical panel; StreamDeck, XKeys, Joysticks etc.
+        EMULATION = 3;    // Simulated software panel: Raw Panel Dummies, Raw Panel Device Core
+        TOUCH = 4;  // Touch screen panel
+        COMPOSITE = 5; // Composite panel of other panels - eg. Monopanel
+    }
+    PanelTypeE PanelType = 9;
+
+    RawPanelSupport RawPanelSupport = 10;
+}
+
+message RawPanelSupport {
+    bool ASCII = 10; // Whether ASCII protocol mode is available
+    bool Binary = 11; // Whether binary protobuf protocol mode is available
+    bool ASCII_JSONfeedback = 12; // Whether ASCII mode supports JSON encoded state feedback messages in addition to normal encoding
+    bool ASCII_Inbound = 13; // Whether ASCII mode exclusively JSON decodes all feedback messages (has to be enabled by JSONconfig)
+    bool ASCII_Outbound = 14; // Whether ASCII mode exclusively JSON encodes all command messages (has to be enabled by JSONconfig)
+
+    //bool ImageConversion = 14; // Whether Image Conversion for file formats such as PNG and JPG into Raw Panel encoded images is available
+    //bool UTF8 = 15; // Whether UTF8 strings in text can ...
+    bool System = 16; // Whether system features like SystemStat and CPU is available (limited to physical Blue Pill panels)
+    bool RawADCValues = 17; // Whether raw ADC values are available (limited to physical Blue Pill panels)
+    bool BurninProfile = 18; // Whether a burn-in profile is supported (limited to physical Blue Pill panels + emulator)
+    bool EnvHealth = 19; // Whether environmental health is reported (physical Blue Pill panels + emulator)
+    bool Registers = 20; // Whether registers are supported
+    bool Calibration = 21; // Whether calibration is available
 }
 
 message PanelTopology { //  Values only used if not empty
