@@ -54,7 +54,14 @@ message Command {
     PublishSystemStat PublishSystemStat = 30;
     LoadCPU LoadCPU = 31;
     bool Reboot = 32;   // "Reboot",
+    JSONconfig JSONconfig = 33; // Configuration of JSON handling in ASCII mode
+
     CalibrationProfile SetCalibrationProfile = 35;
+    Environment SimulateEnvironmentalHealth = 40;
+}
+message JSONconfig {
+    bool Outbound = 1;  // All Command messages
+}
 }
 message SleepTimeout {
     uint32 Value = 1;
@@ -383,6 +390,7 @@ message OutboundMessage {
     Message Message = 30;
     Message ErrorMessage = 31;
 
+    Environment EnvironmentalHealth = 32;
     CalibrationProfile CalibrationProfile = 34;
     CalibrationProfile DefaultCalibrationProfile = 35;
 }
@@ -397,6 +405,15 @@ message Connections {
 
 message Message {
     string Message = 1;
+}
+
+message Environment {
+    RunModeE RunMode = 1;
+    enum RunModeE {
+        NORMAL = 0;
+        SAFEMODE = 1;   // In safemode, all operations are maintained, but additional checks are done which could potentially be felt as performance degrations. Safemode should still lead to a warning to the users that their product is in a compromising environment.
+        BLOCKED = 2;    // 
+    }
 }
 
 message RunTimeStats {
