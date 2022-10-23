@@ -20,6 +20,7 @@ message InboundMessage {
     Command Command = 2;
 
     repeated HWCState States = 8;
+    repeated Register Registers = 9;    // Setting registers (like States, but not for any physical components, internal memory locations rather. Use SendStates to see which registers exists)
 }
 
 // All the bools in the Command section is like a trigger when true
@@ -27,6 +28,7 @@ message Command {
     bool ActivatePanel = 1; // "ActivePanel=1",
     bool SendPanelInfo = 2; // "list",
     bool SendPanelTopology = 3; // "PanelTopology?",
+    bool SendRegisters = 50;    // Sends register values
     bool ReportHWCavailability = 4; // "map" -> "avail"
     bool SendBurninProfile = 6; // Return the burnin json profiles of a controller (Only for ibeam panels)
     bool SendCalibrationProfile = 34; // Return the calibration json profiles of a controller
@@ -62,6 +64,16 @@ message Command {
 message JSONconfig {
     bool Outbound = 1;  // All Command messages
 }
+message Register {
+    enum RegisterE {
+        MEM = 0;
+        FLAG = 1;
+        SHIFT = 2;
+        STATE = 3;
+    }
+    RegisterE Reg = 1;
+    string Id = 2;
+    uint32 Value = 3;
 }
 message SleepTimeout {
     uint32 Value = 1;
@@ -391,6 +403,9 @@ message OutboundMessage {
     Message ErrorMessage = 31;
 
     Environment EnvironmentalHealth = 32;
+
+    repeated Register Registers = 33;
+
     CalibrationProfile CalibrationProfile = 34;
     CalibrationProfile DefaultCalibrationProfile = 35;
 }
