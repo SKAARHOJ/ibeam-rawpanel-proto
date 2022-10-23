@@ -29,6 +29,7 @@ message Command {
     bool SendPanelTopology = 3; // "PanelTopology?",
     bool ReportHWCavailability = 4; // "map" -> "avail"
     bool SendBurninProfile = 6; // Return the burnin json profiles of a controller (Only for ibeam panels)
+    bool SendCalibrationProfile = 34; // Return the calibration json profiles of a controller
 
     bool ClearAll = 10; // "Clear",
     bool ClearLEDs = 11; // "ClearLEDs",
@@ -53,6 +54,7 @@ message Command {
     PublishSystemStat PublishSystemStat = 30;
     LoadCPU LoadCPU = 31;
     bool Reboot = 32;   // "Reboot",
+    CalibrationProfile SetCalibrationProfile = 35;
 }
 message SleepTimeout {
     uint32 Value = 1;
@@ -380,6 +382,9 @@ message OutboundMessage {
 
     Message Message = 30;
     Message ErrorMessage = 31;
+
+    CalibrationProfile CalibrationProfile = 34;
+    CalibrationProfile DefaultCalibrationProfile = 35;
 }
 
 message SleepState {
@@ -517,6 +522,10 @@ message PanelTopology { //  Values only used if not empty
     string Json = 2;
 }
 
-message BurninProfile { //  Values only used if not empty
+message BurninProfile {
+    string Json = 1;
+}
+
+message CalibrationProfile {
     string Json = 1;
 }
