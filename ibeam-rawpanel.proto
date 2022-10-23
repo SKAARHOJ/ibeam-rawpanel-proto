@@ -514,7 +514,7 @@ message RawPanelSupport {
     bool BurninProfile = 18; // Whether a burn-in profile is supported (limited to physical Blue Pill panels + emulator)
     bool EnvHealth = 19; // Whether environmental health is reported (physical Blue Pill panels + emulator)
     bool Registers = 20; // Whether registers are supported
-    bool Calibration = 21; // Whether calibration is available
+    bool Calibration = 21; // Whether calibration is available. Shall only be reported if calibration is unlocked!
 }
 
 message PanelTopology { //  Values only used if not empty
