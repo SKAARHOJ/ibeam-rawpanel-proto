@@ -166,6 +166,7 @@ message HWCExtended {
         VU = 4;
         FADER = 5;
         BUZZER = 6;
+        JOG = 7;
       }
     InterpretationE Interpretation = 2;      // Value type
     uint32 Value = 3;    // Value, 10 bits
