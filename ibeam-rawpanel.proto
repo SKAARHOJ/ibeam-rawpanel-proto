@@ -133,7 +133,18 @@ message HWCState {
     HWCGfx HWCGfx = 6;                  // HWCg#xx=yy   + HWCgRGB#xx=yy+ HWCgGray#xx=yy
 
     PublishRawADCValues PublishRawADCValues = 7;
-    HWCGfxConverter HWCGfxConverter = 8; 
+    // 8 was temporarily used for HWCGfxConverter which has never been used by anyone, but we avoid it...
+    Processors Processors = 9;   
+}
+
+message Processors {
+    // These may be mutually exclusive:
+    ProcGfxConverter GfxConv = 1;    // Convert and scale PNC/JPEG/GIF image input for display. Will generate and override the HWCGfx object and clear itself and HWCText afterwards
+    ProcAudioMeter AudioMeter = 2;    // Create audio meter from integer data. Will generate and override the HWCGfx object and clear itself and HWCText afterwards
+    ProcTextToGraphics TextToGraphics = 3;    // Converts the HWCText object to HWCGfx. Will generate and override the HWCGfx object and clear itself and HWCText afterwards
+    ProcStrength StrengthMeter = 4; // Create strength meter (for T-bar for example). Will generate and override the HWCGfx object and clear itself and HWCText afterwards
+    ProcTest Test = 5; // Test: Creates a bounding box with the given dimensions and writes them inside. Will generate and override the HWCGfx object and clear itself and HWCText afterwards
+    ProcUniText UniText = 6; // Alternative Text object that renders UTF8 text by default using the Unifont.ttf
 }
 
 message PublishRawADCValues {
@@ -316,8 +327,6 @@ message HWCText {
     bool Inverted = 15;             // Index 18
     Color PixelColor = 16;          // Index 19
     Color BackgroundColor = 17;     // Index 20
-
-    //bool Convert = 18;  // If set, rawpanelhelpers will try to convert to image and in the process check if the title and textline 1 + 2 contains UTF8 in which case 
 }
 
 // Graphics
@@ -339,8 +348,8 @@ message HWCGfx {
     bytes ImageData = 16;
 }
 
-// 
-message HWCGfxConverter {
+// Image conversion and scaling processor
+message ProcGfxConverter {
     enum ImageTypeE {
         MONO = 0;
         RGB16bit = 1;
@@ -359,11 +368,65 @@ message HWCGfxConverter {
         STRETCH = 3;   // 
     }
     ScalingE Scaling = 18;
+    string Filters = 19;
 }
 
+message ProcAudioMeter {
+    enum MeterTypeE {
+        Free = 0;
+        Fixed176x32 = 1;
+        Fixed176x32w = 2;
+    }
+    MeterTypeE MeterType = 1;    
 
+    uint32 W = 2;       
+    uint32 H = 3;       
 
+    string Title = 4;
+    bool Mono = 5;
+    string RangeMapping = 6;
+    bool RMYAxis = 7;
 
+	uint32 Data1 =10;
+	uint32 Data2 =11;
+	uint32 Peak1 =12;
+	uint32 Peak2 =13;
+}
+
+message ProcStrength {
+    //    MeterTypeE MeterType = 1;    
+
+    uint32 W = 2;       
+    uint32 H = 3;       
+
+    string Title = 4;
+    string ValueString = 5;
+    string RangeMapping = 6;
+    bool RMYAxis = 7;
+	uint32 Data1 =10;
+}
+
+message ProcTextToGraphics {
+    uint32 W = 2;       
+    uint32 H = 3;       
+    uint32 Border = 4;       
+    uint32 Shrink = 5;       
+}
+
+message ProcTest {
+    uint32 W = 2;       
+    uint32 H = 3;       
+}
+
+message ProcUniText {
+    uint32 W = 2;       
+    uint32 H = 3;       
+
+    string Title = 7;                   
+    bool SolidHeaderBar = 8;            
+    string Textline1 = 9;               
+    string Textline2 = 10;              
+}
 
 
 
@@ -540,8 +603,7 @@ message RawPanelSupport {
     bool ASCII_Inbound = 13; // Whether ASCII mode exclusively JSON decodes all feedback messages (has to be enabled by JSONconfig)
     bool ASCII_Outbound = 14; // Whether ASCII mode exclusively JSON encodes all command messages (has to be enabled by JSONconfig)
 
-    //bool ImageConversion = 14; // Whether Image Conversion for file formats such as PNG and JPG into Raw Panel encoded images is available
-    //bool UTF8 = 15; // Whether UTF8 strings in text can ...
+    bool Processors = 15; // Whether Processors for Image Conversion, meter widgets, text with UTF-8 is available on the panel
     bool System = 16; // Whether system features like SystemStat and CPU is available (limited to physical Blue Pill panels)
     bool RawADCValues = 17; // Whether raw ADC values are available (limited to physical Blue Pill panels)
     bool BurninProfile = 18; // Whether a burn-in profile is supported (limited to physical Blue Pill panels + emulator)
