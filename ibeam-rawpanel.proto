@@ -19,8 +19,8 @@ message InboundMessage {
 
     Command Command = 2;
 
-    repeated HWCState States = 8;
-    repeated Register Registers = 9;    // Setting registers (like States, but not for any physical components, internal memory locations rather. Use SendStates to see which registers exists)
+    repeated HWCState States = 8;   // These "States" is feedback to components such as color, display content etc.
+    repeated Register Registers = 9;    // Setting registers (works like feedback States, but not for any physical components, internal memory locations rather. Use SendRegisters to see which registers exists)
 }
 
 // All the bools in the Command section is like a trigger when true
@@ -29,6 +29,7 @@ message Command {
     bool SendPanelInfo = 2; // "list",
     bool SendPanelTopology = 3; // "PanelTopology?",
     bool SendRegisters = 50;    // Sends register values
+    // bool SendHWCStates = 51;    // Sends activation states of HWC components in return (current value of fader, joystick, button)
     bool ReportHWCavailability = 4; // "map" -> "avail"
     bool SendBurninProfile = 6; // Return the burnin json profiles of a controller (Only for ibeam panels)
     bool SendCalibrationProfile = 34; // Return the calibration json profiles of a controller
@@ -456,6 +457,7 @@ message OutboundMessage {
     BusStatus BusStatus = 10;
 
     repeated HWCEvent Events = 8;
+    // repeated HWCEvent HWCStates = 36;  // States of components (current value of a joystick, fader or button/gpi. Encoders obviously cannot report state of pulses...). Sent in response to SendHWCStates
 
     Connections Connections = 20;
     HeartBeatTimer HeartBeatTimer = 21;
@@ -515,12 +517,20 @@ message HWCEvent {
     PulsedEvent Pulsed = 3;
     AbsoluteEvent Absolute = 4;
     SpeedEvent Speed = 5;
+
+    // Vector events carries multiple values, for example a X/Y of a joystick that goes together or X/Y movement on a track pad or track ball.
+    // A vector event may be sent along with a normal one-dimensional event - typically the first axis of something like a joystick.
+    // BinaryVectorEvent BinaryVector = 8;
+    // PulsedVectorEvent PulsedVector = 9;
+    // AbsoluteVectorEvent AbsoluteVector = 10;
+    // SpeedVectorEvent SpeedVector = 11;
+
     RawAnalogEvent RawAnalog = 7;
 }
 
 message BinaryEvent {
     enum EdgeID {
-        UNKNOWN = 0;
+        UNKNOWN = 0;    // No edge = 1-way button
         TOP = 1;
         LEFT = 2;
         BOTTOM = 4;
@@ -539,12 +549,48 @@ message PulsedEvent {
 message AbsoluteEvent {
     uint32 Value = 1;
     uint32 PrevValue = 2;   // Can hold previously sent value
+    // float ValueNorm = 3; // Normalized value 0.0:1.0. Not supported in basic ASCII mode
+    // float PrevValueNorm = 4; // Normalized previous value 0.0:1.0. Not supported in basic ASCII mode
 }
 
 message SpeedEvent {
     sint32 Value = 1;
     sint32 PrevValue = 2;   // Can hold previously sent value
+    // float ValueNorm = 3; // Normalized value -1.0:1.0. Not supported in basic ASCII mode
+    // float PrevValueNorm = 4; // Normalized previous value -1.0:1.0. Not supported in basic ASCII mode
 }
+
+// message BinaryVectorEvent {
+//     enum EdgeID {
+//         UNKNOWN = 0;    // No edge = 1-way button
+//         TOP = 1;
+//         LEFT = 2;
+//         BOTTOM = 4;
+//         RIGHT = 8;
+//         ENCODER = 16;
+//     }
+
+//     repeated bool Pressed = 1;
+//     EdgeID Edge = 2;
+// }
+
+// message PulsedVectorEvent {
+//     repeated sint32 Value = 1;
+// }
+
+// message AbsoluteVectorEvent {
+//     repeated uint32 Value = 1;
+//     repeated uint32 PrevValue = 2;   // Can hold previously sent value
+//     repeated float ValueNorm = 3; // Normalized value 0.0:1.0. Not supported in basic ASCII mode
+//     repeated float PrevValueNorm = 4; // Normalized previous value 0.0:1.0. Not supported in basic ASCII mode
+// }
+
+// message SpeedVectorEvent {
+//     repeated sint32 Value = 1;
+//     repeated sint32 PrevValue = 2;   // Can hold previously sent value
+//     repeated float ValueNorm = 3; // Normalized value -1.0:1.0. Not supported in basic ASCII mode
+//     repeated float PrevValueNorm = 4; // Normalized previous value -1.0:1.0. Not supported in basic ASCII mode
+// }
 
 message RawAnalogEvent {
     uint32 Value = 1;
@@ -610,6 +656,8 @@ message RawPanelSupport {
     bool EnvHealth = 19; // Whether environmental health is reported (physical Blue Pill panels + emulator)
     bool Registers = 20; // Whether registers are supported
     bool Calibration = 21; // Whether calibration is available. Shall only be reported if calibration is unlocked!
+    // bool HWCStates = 22; // Whether HWC states can be quiryed using SendHWCStates
+    // bool NormalizedValues = 23;  // Whether Normalized Values are supported for absolute and intensity HWCs.
 }
 
 message PanelTopology { //  Values only used if not empty
