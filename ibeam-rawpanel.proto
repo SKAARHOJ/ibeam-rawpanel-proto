@@ -33,6 +33,8 @@ message Command {
     bool ReportHWCavailability = 4; // "map" -> "avail"
     bool SendBurninProfile = 6; // Return the burnin json profiles of a controller (Only for ibeam panels)
     bool SendCalibrationProfile = 34; // Return the calibration json profiles of a controller
+    bool SendNetworkConfig = 36; // Ask panel to return the network configuration of a panel (if applicable)
+    NetworkConfig SetNetworkConfig = 37; // Set and activate network configuration (if applicable)
 
     bool ClearAll = 10; // "Clear",
     bool ClearLEDs = 11; // "ClearLEDs",
@@ -474,6 +476,8 @@ message OutboundMessage {
 
     CalibrationProfile CalibrationProfile = 34;
     CalibrationProfile DefaultCalibrationProfile = 35;
+
+    NetworkConfig NetworkConfig = 37; // Get network configuration (if applicable)
 }
 
 message SleepState {
@@ -658,6 +662,7 @@ message RawPanelSupport {
     bool Calibration = 21; // Whether calibration is available. Shall only be reported if calibration is unlocked!
     // bool HWCStates = 22; // Whether HWC states can be quiryed using SendHWCStates
     // bool NormalizedValues = 23;  // Whether Normalized Values are supported for absolute and intensity HWCs.
+    bool NetworkSettings = 24; // Whether network settings can be controlled over Raw Panel protocol
 }
 
 message PanelTopology { //  Values only used if not empty
@@ -672,3 +677,13 @@ message BurninProfile {
 message CalibrationProfile {
     string Json = 1;
 }
+
+message NetworkConfig {
+    bool dhcp = 1;
+    string address = 2;
+    string netmask = 3;
+    string gateway = 4;
+    string first_dns = 5;
+    string second_dns = 6;
+    bool no_default_route = 7;
+  }
