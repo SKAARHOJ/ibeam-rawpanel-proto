@@ -148,6 +148,7 @@ message Processors {
     ProcStrength StrengthMeter = 4; // Create strength meter (for T-bar for example). Will generate and override the HWCGfx object and clear itself and HWCText afterwards
     ProcTest Test = 5; // Test: Creates a bounding box with the given dimensions and writes them inside. Will generate and override the HWCGfx object and clear itself and HWCText afterwards
     ProcUniText UniText = 6; // Alternative Text object that renders UTF8 text by default using the Unifont.ttf
+    ProcIcon Icon = 7; // Create an icon based on a glyph from Googles Material Icons font. Will generate and override the HWCGfx object and clear itself and HWCText afterwards
 }
 
 message PublishRawADCValues {
@@ -429,9 +430,35 @@ message ProcUniText {
     bool SolidHeaderBar = 8;            
     string Textline1 = 9;               
     string Textline2 = 10;              
+    string Textline3 = 11;              
+    string Textline4 = 12;    
+    
+    enum AlignTypeE {
+        CENTER = 0;
+        LEFT = 1;
+        RIGHT = 2;
+    }
+    AlignTypeE Align = 1;  
 }
 
+message ProcIcon {
+    uint32 W = 2;       
+    uint32 H = 3;       
 
+    enum ImageTypeE {
+        MONO = 0;
+        RGB16bit = 1;
+        Gray4bit = 2;
+    }
+    ImageTypeE IconType = 1;    
+
+    string GlyphCode = 10;    
+    uint32 GlyphSize = 9;           
+    bool Background = 7;  
+    uint32 BackgroundRadius = 8;           
+}
+
+  
 
 // Wrapper for all outgoing messages (Outgoing = from Panel to System)
 message OutboundMessage {
