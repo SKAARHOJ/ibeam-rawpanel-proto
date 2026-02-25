@@ -306,7 +306,23 @@ message HWCText {
         sint32 LimitHigh = 5;
     }
     ScaleM Scale = 13;         // Index 9-13
-        // 14 is ignored
+
+    // Text scrolling configuration (ASCII Index 14)
+    message TextScrollM {
+        enum ScrollModeE {
+            SCROLL_OFF = 0;       // No scrolling (default)
+            SCROLL_LOOP = 1;      // Scroll to end, jump back, repeat
+            SCROLL_BOUNCE = 2;    // Scroll back and forth (ping-pong)
+        }
+        ScrollModeE ScrollMode = 1;
+        bool ScrollTitle = 2;
+        bool ScrollTextline1 = 3;
+        bool ScrollTextline2 = 4;
+        uint32 ScrollSpeed = 5;   // 0=default, 1=slow, 2=normal, 3=fast
+        uint32 PauseDwell = 6;    // 0=default, 1=short, 2=medium, 3=long
+        bool AdaptiveSpeed = 7;   // If true, per-field scroll speed adapts so all fields start and finish together
+    }
+    TextScrollM TextScroll = 18;  // Protobuf field 18 (next available)
 
     message TextStyle {
         message Font {
@@ -690,6 +706,7 @@ message RawPanelSupport {
     // bool HWCStates = 22; // Whether HWC states can be quiryed using SendHWCStates
     // bool NormalizedValues = 23;  // Whether Normalized Values are supported for absolute and intensity HWCs.
     bool NetworkSettings = 24; // Whether network settings can be controlled over Raw Panel protocol
+    bool TextScroll = 25; // Whether text scrolling on displays is supported
 }
 
 message PanelTopology { //  Values only used if not empty
