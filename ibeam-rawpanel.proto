@@ -812,6 +812,27 @@ message TouchUIConfig {
     string Title = 1;                   // Optional overall title
     repeated TouchUIPage Pages = 2;     // Tabs/pages. A single page = no tab bar.
     uint32 ActivePage = 3;              // 1-based id of page to show initially. 0 = panel default (first page).
+    TouchUIGlobalOptions Options = 4;   // Optional panel-wide render/diagnostic overlays. Absent = all off (clean screen).
+}
+
+// TouchUIGlobalOptions are panel-wide render options that travel with a config: the panel applies
+// them the moment it accepts the SetTouchUI, and they persist for the life of that config. They
+// control only diagnostic/feedback overlays the renderer draws on top of the widgets, never widget
+// behavior. An absent message (or an all-zero one) means every overlay is off - a clean screen.
+message TouchUIGlobalOptions {
+    // Center touch readout ("touches: N", last pixel + normalized coordinates). Off = hidden.
+    bool ShowDebugInfo = 1;
+
+    // On-touch tap indicator (the live crosshair that follows a finger, plus optional pinned dots).
+    enum ShowTapsE {
+        NO    = 0;      // no tap indicator at all
+        YES   = 1;      // live crosshair only, follows the finger, gone on release
+        KEEP3 = 2;      // live crosshair plus the last 3 tap points left pinned on screen
+    }
+    ShowTapsE ShowTaps = 2;
+
+    // Video FPS / per-camera arrival-rate stats line (bottom-left). Off = hidden.
+    bool ShowVideoFPS = 3;
 }
 
 // Command.SetTouchUIActivePage switches the currently displayed page/tab at runtime, without
