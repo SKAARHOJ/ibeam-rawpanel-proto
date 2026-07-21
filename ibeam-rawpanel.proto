@@ -629,8 +629,8 @@ message HWCEvent {
     // A vector event may be sent along with a normal one-dimensional event - typically the first axis of something like a joystick.
     // BinaryVectorEvent BinaryVector = 8;
     // PulsedVectorEvent PulsedVector = 9;
-    // AbsoluteVectorEvent AbsoluteVector = 10;
-    // SpeedVectorEvent SpeedVector = 11;
+    AbsoluteVectorEvent AbsoluteVector = 10;    // e.g. a TouchUI XYPAD position [x, y]
+    SpeedVectorEvent SpeedVector = 11;          // e.g. a TouchUI XYPAD relative movement [dx, dy]
 
     // A future multi-touch/XY TouchEvent should use field 12+ (fields 8-11 stay reserved for the Vector events above)
 
@@ -687,19 +687,23 @@ message SpeedEvent {
 //     repeated sint32 Value = 1;
 // }
 
-// message AbsoluteVectorEvent {
-//     repeated uint32 Value = 1;
-//     repeated uint32 PrevValue = 2;   // Can hold previously sent value
-//     repeated float ValueNorm = 3; // Normalized value 0.0:1.0. Not supported in basic ASCII mode
-//     repeated float PrevValueNorm = 4; // Normalized previous value 0.0:1.0. Not supported in basic ASCII mode
-// }
+// AbsoluteVectorEvent carries several absolute axes that belong together (e.g. an XYPAD [x, y]).
+// ASCII form is the multi-value variant of a scalar Abs event: "HWC#id=Abs:x,y" (single-value "Abs:v" still parses).
+message AbsoluteVectorEvent {
+    repeated uint32 Value = 1;        // e.g. [x, y], each 0..1000
+    repeated uint32 PrevValue = 2;    // Can hold previously sent values
+    // repeated float ValueNorm = 3; // Normalized values 0.0:1.0. Not supported in basic ASCII mode
+    // repeated float PrevValueNorm = 4; // Normalized previous values 0.0:1.0. Not supported in basic ASCII mode
+}
 
-// message SpeedVectorEvent {
-//     repeated sint32 Value = 1;
-//     repeated sint32 PrevValue = 2;   // Can hold previously sent value
-//     repeated float ValueNorm = 3; // Normalized value -1.0:1.0. Not supported in basic ASCII mode
-//     repeated float PrevValueNorm = 4; // Normalized previous value -1.0:1.0. Not supported in basic ASCII mode
-// }
+// SpeedVectorEvent carries several relative axes that belong together (e.g. an XYPAD in relative mode [dx, dy]).
+// ASCII form: "HWC#id=Speed:dx,dy" (single-value "Speed:v" still parses).
+message SpeedVectorEvent {
+    repeated sint32 Value = 1;        // e.g. [dx, dy]
+    repeated sint32 PrevValue = 2;    // Can hold previously sent values
+    // repeated float ValueNorm = 3; // Normalized values -1.0:1.0. Not supported in basic ASCII mode
+    // repeated float PrevValueNorm = 4; // Normalized previous values -1.0:1.0. Not supported in basic ASCII mode
+}
 
 message RawAnalogEvent {
     uint32 Value = 1;
@@ -852,21 +856,33 @@ message TouchUIPage {
 }
 
 // Widget ability masks (shared between TouchUIWidget.EventMask and TouchUIWidgetTypeCap):
-// EventMask: bit0 = Binary, bit1 = Pulsed, bit2 = Absolute, bit3 = Speed
+// EventMask: bit0 = Binary, bit1 = Pulsed, bit2 = Absolute, bit3 = Speed, bit4 = Vector (Absolute/Speed carried as a *Vector event, e.g. XYPAD)
 // StateMask: bit0 = HWCMode, bit1 = HWCColor, bit2 = HWCText, bit3 = HWCExtended, bit4 = HWCGfx, bit5 = HWCOverlay
 message TouchUIWidget {
     uint32 HWCID = 1;   // Client-assigned HWC id. MUST NOT collide with the panel's native HWC ids.
     enum WidgetTypeE {
         BUTTON = 0;     // momentary push button    -> emits Binary;   honors HWCMode/HWCColor/HWCText/HWCGfx
+                        //   With Options.FourWay it is a 4-way pad: taps on the top/left/bottom/right edges emit
+                        //   Binary with the matching Edge (TOP/LEFT/BOTTOM/RIGHT); a plain button emits Edge=NONE.
         TOGGLE = 1;     // latching on/off          -> emits Binary;   honors HWCMode/HWCColor/HWCText
-        SLIDER = 2;     // fader, 0..1000           -> emits Absolute; honors HWCExtended(FADER)/HWCText
-        KNOB   = 3;     // endless encoder ring     -> emits Pulsed (+Binary on press); honors HWCText/HWCExtended
+        SLIDER = 2;     // linear fader, 0..1000    -> emits Absolute; honors HWCExtended(FADER)/HWCText
+        KNOB   = 3;     // rotary fader (analog dial, absolute 0..1000) -> emits Absolute; honors HWCExtended(FADER)/HWCText
         METER  = 4;     // passive meter            -> emits nothing;  honors HWCExtended(VU/STRENGTH)/HWCGfx
         LABEL  = 5;     // passive text tile        -> emits nothing;  honors HWCText
         IMAGE  = 6;     // image tile               -> emits Binary on tap (unless Options.NoTapEvents); honors HWCGfx
         VIDEO  = 7;     // live video region        -> emits Binary on tap (unless Options.NoTapEvents); honors HWCText/HWCOverlay.
                         //   The source is panel-local (Options.Source spec or the panel's default feeds); the client
                         //   only places the region and optionally decorates it (corner label, overlay/tracking boxes).
+        ENCODER = 8;    // encoder pad (- / press / +) -> emits Pulsed on the -/+ taps and Binary (Edge=ENCODER) on the
+                        //   center press; honors HWCText/HWCExtended. The touch-friendly counterpart of a physical
+                        //   encoder: left/right taps pulse -1/+1, the center is the push. (KNOB is the analog dial.)
+        ROLLER = 9;     // discrete 1-of-N selector -> emits Absolute(selected index, 0..N-1); honors
+                        //   HWCExtended(STEPS)=selected index / HWCText (runtime relabel). Options.Choices holds the ordered labels.
+        XYPAD  = 10;    // 2D touch surface         -> emits AbsoluteVector[x,y] (position, each 0..1000) or, with Options.Relative,
+                        //   SpeedVector[dx,dy]; plus Binary on touch/release. Honors HWCOverlay (cursor/target markers) / HWCGfx (background).
+        COMPRESSOR = 11;// dynamics transfer-curve  -> emits nothing itself; drawn from the member fader parameters in Options.Params.
+                        //   Each parameter is a standard fader HWC (Absolute out / HWCExtended(FADER) in), individually automatable.
+                        //   The COMPRESSOR is a single topology component; its member HWCIDs are known only to compressor-aware clients.
     }
     WidgetTypeE Type = 2;
     string Label = 3;                   // Static label; runtime content comes via HWCText/HWCGfx states
@@ -894,6 +910,17 @@ message TouchUIWidgetOptions {
     Color Color = 5;                    // Accent color; runtime override via HWCColor
     bool NoTapEvents = 6;               // IMAGE/LABEL/VIDEO: suppress Binary tap events
     bool Momentary = 7;                 // TOGGLE rendered but behaving momentary
+    bool FourWay = 12;                  // BUTTON: render a 4-way pad; edge taps emit Binary with Edge=TOP/LEFT/BOTTOM/RIGHT
+
+    // ROLLER options:
+    repeated string Choices = 13;       // ROLLER: ordered option labels; selected index is emitted as AbsoluteEvent.Value (0-based)
+
+    // XYPAD options:
+    bool Relative = 14;                 // XYPAD: emit SpeedVector[dx,dy] deltas instead of AbsoluteVector[x,y] position
+    bool CenterReturn = 15;             // XYPAD: joystick behavior - snap back to center (500,500) on release
+
+    // COMPRESSOR options:
+    repeated TouchUICompressorParam Params = 16;   // COMPRESSOR: member fader parameters that define the transfer curve
 
     // VIDEO options:
     string Source = 8;                  // Source spec, interpreted by the panel (e.g. "/dev/video0", "yuyv:<dev>",
@@ -908,6 +935,27 @@ message TouchUIWidgetOptions {
     HiddenPolicyE HiddenPolicy = 9;
     uint32 SourceWidth = 10;            // Capture hints (0 = source default)
     uint32 SourceHeight = 11;
+}
+
+// TouchUICompressorParam is one member parameter of a COMPRESSOR widget (see TouchUIWidget.WidgetTypeE.COMPRESSOR).
+// Each parameter is a standard fader HWC in its own right: it emits Absolute under its HWCID and is set from the
+// system via HWCExtended(FADER) under the same id, so it stays individually addressable and automatable. Role tells
+// the panel how to place/draw the corresponding handle on the transfer curve; Min/Max give the parameter's natural
+// range (in its unit), linearly mapped onto the Absolute 0..1000 domain.
+message TouchUICompressorParam {
+    uint32 HWCID = 1;                   // Addressable fader HWC for this parameter (own events/states). MUST NOT collide with other HWC ids.
+    enum RoleE {
+        THRESHOLD = 0;                  // dB
+        RATIO     = 1;                  // n:1
+        KNEE      = 2;                  // dB (knee width)
+        MAKEUP    = 3;                  // dB
+        ATTACK    = 4;                  // ms
+        RELEASE   = 5;                  // ms
+    }
+    RoleE  Role  = 2;
+    sint32 Min   = 3;                   // Natural-unit range mapped to Absolute 0..1000 (0/0 = panel default for the role)
+    sint32 Max   = 4;
+    string Label = 5;                   // Optional parameter caption (else the panel uses a role default)
 }
 
 message TouchUICapabilities {
