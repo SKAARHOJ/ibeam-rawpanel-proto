@@ -68,6 +68,7 @@ message Command {
     bool ClearTouchUI = 42;             // "ClearTouchUI" - remove all TouchUI widgets, revert to native topology
     bool SendTouchUICapabilities = 43;  // "TouchUICapabilities?" - ask panel for screen + widget-type capabilities
     bool SendTouchUIConfig = 44;        // "TouchUIConfig?" - ask panel to (re)send the currently active TouchUI config (multi-client sync)
+    TouchUISetActivePage SetTouchUIActivePage = 45; // "SetTouchUIActivePage=N" - switch the currently displayed page/tab at runtime
 }
 message JSONconfig {
     bool Outbound = 1;  // All Command messages
@@ -143,7 +144,7 @@ message HWCState {
     PublishRawADCValues PublishRawADCValues = 7;
     // 8 was temporarily used for HWCGfxConverter which has never been used by anyone, but we avoid it...
     Processors Processors = 9;
-    // 10 is reserved for HWCOverlay (TouchUI)
+    HWCOverlay HWCOverlay = 10;         // "HWCo#xx={json}" - dynamic overlay boxes (e.g. tracking rectangles on a TouchUI VIDEO widget)
     HWCJog HWCJog = 11;                 // HWCj#xx=yy - complete configuration of a haptic jog wheel
 }
 
@@ -401,6 +402,23 @@ message HWCGfx {
     uint32 Y = 6;
 
     bytes ImageData = 16;
+}
+
+// Dynamic overlay rectangles drawn on top of a widget's content - primarily tracking boxes on a
+// TouchUI VIDEO widget (see TouchUIWidget). Semantics: each HWCOverlay message is a FULL REPLACEMENT
+// of the addressed HWC's overlay set; send an empty Boxes list to clear. Panels shall support at
+// least 16 boxes per HWC. ASCII form: "HWCo#xx={json}" (JSON encoding of this message).
+message HWCOverlay {
+    message Box {
+        uint32 Id = 1;      // Client-assigned box id (stable across updates for the same tracked object)
+        uint32 X = 2;       // 0..1000, normalized within the widget's content rect
+        uint32 Y = 3;       // 0..1000
+        uint32 W = 4;       // 0..1000
+        uint32 H = 5;       // 0..1000
+        Color Color = 6;    // Border/label color. Unset = panel default
+        string Label = 7;   // Optional short caption rendered at the box
+    }
+    repeated Box Boxes = 1;
 }
 
 // Image conversion and scaling processor
@@ -783,8 +801,9 @@ message NetworkConfig {
 //
 // Behavioral contract: After accepting SetTouchUI, the panel regenerates its PanelTopology.Json to include one
 // TopologyHWcomponent per widget (Id = widget HWCID, Txt = Label, TypeIndex entry with In/Out/Disp matching the
-// widget type, e.g. BUTTON -> In:"b", SLIDER -> In:"av") and one Topology Grid per page, then spontaneously
-// re-sends PanelTopology and the full HWCavailability map. This makes widgets fully visible to generic clients.
+// widget type, e.g. BUTTON -> In:"b", SLIDER -> In:"av", VIDEO -> In:"b" plus a Disp entry sized to the region)
+// and one Topology Grid per page, then spontaneously re-sends PanelTopology and the full HWCavailability map.
+// This makes widgets fully visible to generic clients.
 // ClearTouchUI reverts topology and marks widget HWCs absent (availability value 0).
 //
 // Visibility: widgets on a non-visible tab/page are reported via HWCavailability with bit 31 set
@@ -793,6 +812,14 @@ message TouchUIConfig {
     string Title = 1;                   // Optional overall title
     repeated TouchUIPage Pages = 2;     // Tabs/pages. A single page = no tab bar.
     uint32 ActivePage = 3;              // 1-based id of page to show initially. 0 = panel default (first page).
+}
+
+// Command.SetTouchUIActivePage switches the currently displayed page/tab at runtime, without
+// re-sending the whole config. The panel updates HWCavailability accordingly (widgets on the
+// newly hidden page get bit 31 set, those on the shown page cleared), so all clients observe
+// the switch. PageId must be a 1-based id present in the active config; an unknown id is ignored.
+message TouchUISetActivePage {
+    uint32 PageId = 1;                  // 1-based page id to display
 }
 
 message TouchUIPage {
@@ -805,7 +832,7 @@ message TouchUIPage {
 
 // Widget ability masks (shared between TouchUIWidget.EventMask and TouchUIWidgetTypeCap):
 // EventMask: bit0 = Binary, bit1 = Pulsed, bit2 = Absolute, bit3 = Speed
-// StateMask: bit0 = HWCMode, bit1 = HWCColor, bit2 = HWCText, bit3 = HWCExtended, bit4 = HWCGfx
+// StateMask: bit0 = HWCMode, bit1 = HWCColor, bit2 = HWCText, bit3 = HWCExtended, bit4 = HWCGfx, bit5 = HWCOverlay
 message TouchUIWidget {
     uint32 HWCID = 1;   // Client-assigned HWC id. MUST NOT collide with the panel's native HWC ids.
     enum WidgetTypeE {
@@ -816,6 +843,9 @@ message TouchUIWidget {
         METER  = 4;     // passive meter            -> emits nothing;  honors HWCExtended(VU/STRENGTH)/HWCGfx
         LABEL  = 5;     // passive text tile        -> emits nothing;  honors HWCText
         IMAGE  = 6;     // image tile               -> emits Binary on tap (unless Options.NoTapEvents); honors HWCGfx
+        VIDEO  = 7;     // live video region        -> emits Binary on tap (unless Options.NoTapEvents); honors HWCText/HWCOverlay.
+                        //   The source is panel-local (Options.Source spec or the panel's default feeds); the client
+                        //   only places the region and optionally decorates it (corner label, overlay/tracking boxes).
     }
     WidgetTypeE Type = 2;
     string Label = 3;                   // Static label; runtime content comes via HWCText/HWCGfx states
@@ -841,8 +871,22 @@ message TouchUIWidgetOptions {
     uint32 Step = 3;                    // SLIDER detents / KNOB pulses per revolution hint
     bool Vertical = 4;                  // SLIDER/METER orientation
     Color Color = 5;                    // Accent color; runtime override via HWCColor
-    bool NoTapEvents = 6;               // IMAGE/LABEL: suppress Binary tap events
+    bool NoTapEvents = 6;               // IMAGE/LABEL/VIDEO: suppress Binary tap events
     bool Momentary = 7;                 // TOGGLE rendered but behaving momentary
+
+    // VIDEO options:
+    string Source = 8;                  // Source spec, interpreted by the panel (e.g. "/dev/video0", "yuyv:<dev>",
+                                        // "mjpg:<dev>", "http://host/stream" MJPEG). EMPTY = the panel's local
+                                        // default feed N, where N is this widget's 1-based ordinal among VIDEO
+                                        // widgets in config order - so remote clients need no device knowledge.
+    enum HiddenPolicyE {                // What the panel does with the source while the widget is offscreen
+        KEEP_DECODING = 0;              //   keep streaming + decoding (instant switch)
+        PAUSE_DECODE = 1;               //   stay connected, skip decode (cheap, near-instant)
+        DISCONNECT = 2;                 //   close the source; reopen when shown again
+    }
+    HiddenPolicyE HiddenPolicy = 9;
+    uint32 SourceWidth = 10;            // Capture hints (0 = source default)
+    uint32 SourceHeight = 11;
 }
 
 message TouchUICapabilities {
