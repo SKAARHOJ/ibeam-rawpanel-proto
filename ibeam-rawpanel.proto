@@ -138,7 +138,7 @@ message HWCState {
     PublishRawADCValues PublishRawADCValues = 7;
     // 8 was temporarily used for HWCGfxConverter which has never been used by anyone, but we avoid it...
     Processors Processors = 9;
-    HWCOverlay HWCOverlay = 10;         // "HWCo#xx={json}" - dynamic overlay boxes (e.g. tracking rectangles on a TouchUI VIDEO widget)
+    // 10 is reserved for HWCOverlay (TouchUI)
     HWCJog HWCJog = 11;                 // HWCj#xx=yy - complete configuration of a haptic jog wheel
 }
 
@@ -736,7 +736,7 @@ message RawPanelSupport {
     // bool HWCStates = 22; // Whether HWC states can be quiryed using SendHWCStates
     // bool NormalizedValues = 23;  // Whether Normalized Values are supported for absolute and intensity HWCs.
     bool NetworkSettings = 24; // Whether network settings can be controlled over Raw Panel protocol
-    bool TouchUI = 25; // Whether TouchUI widget configuration (SetTouchUI et al.) is supported
+    // 25 is reserved for TouchUI
     bool JogConfig = 26; // Whether the HWCJog message is supported (otherwise only the legacy bit-packed HWCExtended(JOG) encoding)
 }
 
