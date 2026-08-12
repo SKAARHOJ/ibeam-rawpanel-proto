@@ -137,7 +137,9 @@ message HWCState {
 
     PublishRawADCValues PublishRawADCValues = 7;
     // 8 was temporarily used for HWCGfxConverter which has never been used by anyone, but we avoid it...
-    Processors Processors = 9;   
+    Processors Processors = 9;
+    HWCOverlay HWCOverlay = 10;         // "HWCo#xx={json}" - dynamic overlay boxes (e.g. tracking rectangles on a TouchUI VIDEO widget)
+    HWCJog HWCJog = 11;                 // HWCj#xx=yy - complete configuration of a haptic jog wheel
 }
 
 message Processors {
@@ -187,7 +189,51 @@ message HWCExtended {
     uint32 Value = 3;    // Value, 10 bits
 }
 
-// Color. 
+// HWCj#xx=yy
+// Complete configuration of a haptic jog wheel. Sending it replaces the wheel's entire
+// configuration - there are no sub-commands and no ordering requirements, so mode, detents
+// and target position can always travel together in a single message.
+//
+// Supersedes the bit-packed HWCExtended(JOG) sub-command encoding, which remains supported
+// for older controllers but must not be extended further.
+//
+// Panel obligations:
+//   - Apply Mode/AutoStopShuttle/StopShuttle/DetentsPerRev FIRST, then seek TargetPosition.
+//     Because the mode is applied earlier in the same message, a position write can never be
+//     rejected for "wheel not in a motorized mode".
+//   - Treat re-sends idempotently: fields that did not change since the last applied
+//     configuration must NOT re-trigger reconfiguration of the wheel. Clients are expected to
+//     stream position updates with the configuration attached to every message.
+message HWCJog {
+    enum ModeE {
+        DETENTS_LIGHT = 0;
+        DETENTS_W_ASSIST = 1;
+        DETENTS = 2;
+        DETENTS_MIX1 = 3;
+        DETENTS_MIX2 = 4;
+        FREE = 5;
+        FREE_W_ASSIST = 6;
+        STOP = 7;
+        STOP_FULL = 8;
+        SHUTTLE = 9;
+        VOLUME_KNOB = 10;       // Motor controlled, seekable via TargetPosition
+        VOLUME_KNOB_BUMP = 11;  // ...with simulated end-bumps
+      }
+
+    // Absolute target for the motor. A submessage rather than a bare scalar so that
+    // "do not drive the motor" stays distinguishable from "seek to 0".
+    message TargetPositionM {
+        uint32 Value = 1;       // 0-1000
+    }
+
+    ModeE Mode = 1;                 // Haptic operating mode
+    bool AutoStopShuttle = 2;       // SHUTTLE only: automatically stop the shuttle
+    bool StopShuttle = 3;           // SHUTTLE only: allow stopping/holding the shuttle
+    uint32 DetentsPerRev = 4;       // Modes 0-6 only, 2-255. 0 = keep the panel default (about 25)
+    TargetPositionM TargetPosition = 5;  // VOLUME_KNOB / VOLUME_KNOB_BUMP only. Absent = do not drive the motor
+}
+
+// Color.
 // Could have used "oneof" but disliked because of the extra convolution
 // colorRGB takes precedence over colorIndex
 message HWCColor {
@@ -690,6 +736,8 @@ message RawPanelSupport {
     // bool HWCStates = 22; // Whether HWC states can be quiryed using SendHWCStates
     // bool NormalizedValues = 23;  // Whether Normalized Values are supported for absolute and intensity HWCs.
     bool NetworkSettings = 24; // Whether network settings can be controlled over Raw Panel protocol
+    bool TouchUI = 25; // Whether TouchUI widget configuration (SetTouchUI et al.) is supported
+    bool JogConfig = 26; // Whether the HWCJog message is supported (otherwise only the legacy bit-packed HWCExtended(JOG) encoding)
 }
 
 message PanelTopology { //  Values only used if not empty
