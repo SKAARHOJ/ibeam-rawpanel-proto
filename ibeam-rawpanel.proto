@@ -819,10 +819,12 @@ message TouchUIConfig {
     TouchUIGlobalOptions Options = 4;   // Optional panel-wide render/diagnostic overlays. Absent = all off (clean screen).
 }
 
-// TouchUIGlobalOptions are panel-wide render options that travel with a config: the panel applies
-// them the moment it accepts the SetTouchUI, and they persist for the life of that config. They
+// TouchUIGlobalOptions are panel-wide options that travel with a config: the panel applies them
+// the moment it accepts the SetTouchUI, and they persist for the life of that config. Most of them
 // control only diagnostic/feedback overlays the renderer draws on top of the widgets, never widget
-// behavior. An absent message (or an all-zero one) means every overlay is off - a clean screen.
+// behavior; the exceptions are DisableConfigMenu (panel chrome) and DisplayOrientation (which way
+// up the whole UI is rendered). An absent message (or an all-zero one) means every overlay is off
+// - a clean screen - with the config menu available and the orientation left to the panel.
 message TouchUIGlobalOptions {
     // Center touch readout ("touches: N", last pixel + normalized coordinates). Off = hidden.
     bool ShowDebugInfo = 1;
@@ -837,6 +839,34 @@ message TouchUIGlobalOptions {
 
     // Video FPS / per-camera arrival-rate stats line (bottom-left). Off = hidden.
     bool ShowVideoFPS = 3;
+
+    // Hide the panel's built-in configuration menu (the top-right cogwheel giving access to
+    // system settings like network, wifi, support mode and reboot). Note the inverted polarity
+    // relative to the other options here: absent/false = menu available (the default), true =
+    // cogwheel hidden and menu inaccessible for the life of this config.
+    bool DisableConfigMenu = 4;
+
+    // Keep the config menu but hide its Reactor section (project switching, device management,
+    // warnings) and stop the panel's Reactor monitoring. Implied by DisableConfigMenu.
+    bool DisableReactorConfigMenu = 5;
+
+    // Which way up the UI is rendered, as a clockwise rotation relative to the panel's normal
+    // (as-mounted) orientation - NOT relative to the display's scanout, which the panel owns.
+    // ROT0 is therefore "however this panel normally sits", whatever its build does internally.
+    enum DisplayOrientationE {
+        AUTO   = 0;     // the panel decides: it tracks its accelerometer if it has one, else ROT0
+        ROT0   = 1;     // normal orientation
+        ROT90  = 2;     // a quarter turn clockwise
+        ROT180 = 3;     // upside down
+        ROT270 = 4;     // a quarter turn counter-clockwise
+    }
+    // Absent/AUTO is the default and the only self-adjusting value; any other value pins the
+    // orientation for the life of this config and suspends accelerometer tracking. On a ROT90/
+    // ROT270 the screen's width and height swap, so the panel spontaneously re-sends its
+    // TouchUICapabilities (as it does after a SetTouchUI) and a client using pixel layout should
+    // re-send a config that fits. Grid layouts reflow by themselves. Panels that cannot rotate
+    // ignore this entirely and report TouchUICapabilities.OrientationSupported = false.
+    DisplayOrientationE DisplayOrientation = 6;
 }
 
 // Command.SetTouchUIActivePage switches the currently displayed page/tab at runtime, without
@@ -958,14 +988,21 @@ message TouchUICompressorParam {
     string Label = 5;                   // Optional parameter caption (else the panel uses a role default)
 }
 
+// TouchUICapabilities is normally the answer to Command.SendTouchUICapabilities, but a panel that
+// can rotate also sends it spontaneously whenever its orientation changes - ScreenWidth/ScreenHeight
+// and the grid recommendation swap with it, so this is how a client learns it must re-lay-out.
 message TouchUICapabilities {
-    uint32 ScreenWidth = 1;             // pixels
+    uint32 ScreenWidth = 1;             // pixels, in the orientation currently rendered
     uint32 ScreenHeight = 2;
     uint32 MaxPages = 3;                // 0 = unlimited/unknown
     uint32 MaxWidgets = 4;              // total, 0 = unlimited/unknown
     uint32 GridRows = 5;                // native/preferred grid geometry (0 = free-layout only)
     uint32 GridCols = 6;
     repeated TouchUIWidgetTypeCap WidgetTypes = 7;  // supported widget types + their abilities
+    bool OrientationSupported = 8;      // the panel can render in more than one orientation
+                                        // (TouchUIGlobalOptions.DisplayOrientation is honored)
+    TouchUIGlobalOptions.DisplayOrientationE CurrentOrientation = 9;  // the orientation in effect
+                                        // right now; a resolved value, never AUTO
 }
 
 message TouchUIWidgetTypeCap {
