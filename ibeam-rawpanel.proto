@@ -49,7 +49,7 @@ message Command {
 
     WebserverState SetWebserverEnabled = 22;    // Webserver=x
 
-    Brightness PanelBrightness = 23;        // PanelBrightness=x,y
+    Brightness PanelBrightness = 23;        // PanelBrightness=x,y  (or x,y,z incl. the screen backlight)
 
     HeartBeatTimer SetHeartBeatTimer = 24;  // HeartBeatTimer=
     bool GetConnections = 25;  // "Connections?",
@@ -115,6 +115,11 @@ message DimmedGain {
 message Brightness {
     uint32 OLEDs = 1;
     uint32 LEDs = 2;
+    // Screen backlight of a panel that has an LCD (touch panels), on the same 0-8
+    // scale as LEDs/OLEDs. 0 turns the backlight fully off. `optional` because
+    // absence ("a client older than this field: leave the screen alone") must stay
+    // distinguishable from 0 ("turn it off"). Panels without a screen ignore it.
+    optional uint32 Screen = 3;
 }
 
 message PublishSystemStat {
