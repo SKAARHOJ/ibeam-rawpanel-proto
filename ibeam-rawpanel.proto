@@ -637,7 +637,9 @@ message HWCEvent {
     AbsoluteVectorEvent AbsoluteVector = 10;    // e.g. a TouchUI XYPAD position [x, y]
     SpeedVectorEvent SpeedVector = 11;          // e.g. a TouchUI XYPAD relative movement [dx, dy]
 
-    // A future multi-touch/XY TouchEvent should use field 12+ (fields 8-11 stay reserved for the Vector events above)
+    // A future multi-touch/XY TouchEvent should use field 12 (fields 8-11 stay reserved for the Vector events above)
+
+    TextEvent Text = 13;    // a string the user entered on the panel, e.g. an editable TouchUI LABEL commit
 
     RawAnalogEvent RawAnalog = 7;
 }
@@ -708,6 +710,18 @@ message SpeedVectorEvent {
     repeated sint32 PrevValue = 2;    // Can hold previously sent values
     // repeated float ValueNorm = 3; // Normalized values -1.0:1.0. Not supported in basic ASCII mode
     // repeated float PrevValueNorm = 4; // Normalized previous values -1.0:1.0. Not supported in basic ASCII mode
+}
+
+// TextEvent carries a string the user entered on the panel - today, an editable TouchUI LABEL
+// (TouchUIWidgetOptions.EditKind) committing what was typed on the panel's on-screen keyboard.
+// It has no numeric arm on purpose: a NUMBER-kind field sends its digits verbatim, so a client
+// parses exactly the kind it asked for and never has to guess whether it was handed a number.
+// ASCII form: "HWC#id=Text:<value>". The value is the entire rest of the line, so it needs no
+// escaping at all - commas, colons and '=' survive verbatim. An empty value is legal and means
+// the user cleared the field. The panel MUST NOT emit CR or LF inside the value, since the
+// ASCII transport is line-oriented; encoders replace them defensively.
+message TextEvent {
+    string Value = 1;
 }
 
 message RawAnalogEvent {
@@ -891,7 +905,8 @@ message TouchUIPage {
 }
 
 // Widget ability masks (shared between TouchUIWidget.EventMask and TouchUIWidgetTypeCap):
-// EventMask: bit0 = Binary, bit1 = Pulsed, bit2 = Absolute, bit3 = Speed, bit4 = Vector (Absolute/Speed carried as a *Vector event, e.g. XYPAD)
+// EventMask: bit0 = Binary, bit1 = Pulsed, bit2 = Absolute, bit3 = Speed, bit4 = Vector (Absolute/Speed carried as a *Vector event, e.g. XYPAD),
+//            bit5 = Text (a string value, e.g. an editable LABEL commit)
 // StateMask: bit0 = HWCMode, bit1 = HWCColor, bit2 = HWCText, bit3 = HWCExtended, bit4 = HWCGfx, bit5 = HWCOverlay
 message TouchUIWidget {
     uint32 HWCID = 1;   // Client-assigned HWC id. MUST NOT collide with the panel's native HWC ids.
@@ -903,7 +918,10 @@ message TouchUIWidget {
         SLIDER = 2;     // linear fader, 0..1000    -> emits Absolute; honors HWCExtended(FADER)/HWCText
         KNOB   = 3;     // rotary fader (analog dial, absolute 0..1000) -> emits Absolute; honors HWCExtended(FADER)/HWCText
         METER  = 4;     // passive meter            -> emits nothing;  honors HWCExtended(VU/STRENGTH)/HWCGfx
-        LABEL  = 5;     // passive text tile        -> emits nothing;  honors HWCText
+        LABEL  = 5;     // text tile                -> emits Binary on tap (unless Options.NoTapEvents); honors HWCText/HWCColor.
+                        //   With Options.EditKind != NONE it is instead an EDITABLE FIELD: a tap opens the panel's
+                        //   on-screen keyboard seeded with the text the label is currently displaying, and committing
+                        //   emits TextEvent. See TouchUIWidgetOptions.EditKind.
         IMAGE  = 6;     // image tile               -> emits Binary on tap (unless Options.NoTapEvents); honors HWCGfx
         VIDEO  = 7;     // live video region        -> emits Binary on tap (unless Options.NoTapEvents); honors HWCText/HWCOverlay.
                         //   The source is panel-local (Options.Source spec or the panel's default feeds); the client
@@ -912,9 +930,16 @@ message TouchUIWidget {
                         //   center press; honors HWCText/HWCExtended. The touch-friendly counterpart of a physical
                         //   encoder: left/right taps pulse -1/+1, the center is the push. (KNOB is the analog dial.)
         ROLLER = 9;     // discrete 1-of-N selector -> emits Absolute(selected index, 0..N-1); honors
-                        //   HWCExtended(STEPS)=selected index / HWCText (runtime relabel). Options.Choices holds the ordered labels.
+                        //   HWCExtended(STEPS)=selected index / HWCText. Options.Choices holds the ordered labels.
+                        //   HWCText updates the widget's CAPTION only - the choice list is fixed for the life of the
+                        //   config (changing it means a new SetTouchUI), so the index domain a client emits against
+                        //   can never shift underneath it.
         XYPAD  = 10;    // 2D touch surface         -> emits AbsoluteVector[x,y] (position, each 0..1000) or, with Options.Relative,
                         //   SpeedVector[dx,dy]; plus Binary on touch/release. Honors HWCOverlay (cursor/target markers) / HWCGfx (background).
+                        //   Axes: X is 0 at the LEFT edge, Y is 0 at the BOTTOM edge - Y is inverted relative to screen
+                        //   scanout, matching a vertical SLIDER and a joystick, so the geometric centre is exactly
+                        //   (500,500). Relative mode uses the same signs (+dy is upward) and the same 0..1000-per-edge
+                        //   domain as the absolute mode, i.e. deltas are NOT in pixels.
         COMPRESSOR = 11;// dynamics transfer-curve  -> emits nothing itself; drawn from the member fader parameters in Options.Params.
                         //   Each parameter is a standard fader HWC (Absolute out / HWCExtended(FADER) in), individually automatable.
                         //   The COMPRESSOR is a single topology component; its member HWCIDs are known only to compressor-aware clients.
@@ -934,7 +959,13 @@ message TouchUIWidget {
     uint32 H = 11;
 
     TouchUIWidgetOptions Options = 12;
-    uint32 EventMask = 13;              // Optional override of emitted events (EventMask bits above). 0 = type default.
+    uint32 EventMask = 13;              // Optional override of the events this widget emits (EventMask bits above).
+                                        // 0 = the type's default set for the given Options - which is what almost every
+                                        // client wants, since the relevant Option already enables the behavior (e.g.
+                                        // Options.EditKind turns Text on). A non-zero mask NARROWS: it MUST be a subset
+                                        // of TouchUIWidgetTypeCap.EventMask for the type, bits outside it are ignored,
+                                        // and it is how a widget suppresses part of its default set (e.g. an editable
+                                        // LABEL that should emit its commit but NOT also tap events sets bit5 alone).
 }
 
 message TouchUIWidgetOptions {
@@ -948,14 +979,34 @@ message TouchUIWidgetOptions {
     bool FourWay = 12;                  // BUTTON: render a 4-way pad; edge taps emit Binary with Edge=TOP/LEFT/BOTTOM/RIGHT
 
     // ROLLER options:
-    repeated string Choices = 13;       // ROLLER: ordered option labels; selected index is emitted as AbsoluteEvent.Value (0-based)
+    repeated string Choices = 13;       // ROLLER: ordered option labels; selected index is emitted as AbsoluteEvent.Value (0-based).
+                                        // At most 32 entries of at most 23 bytes each; a label MUST NOT contain a newline.
+                                        // Over-long lists/labels are truncated by the panel rather than rejected.
 
     // XYPAD options:
     bool Relative = 14;                 // XYPAD: emit SpeedVector[dx,dy] deltas instead of AbsoluteVector[x,y] position
-    bool CenterReturn = 15;             // XYPAD: joystick behavior - snap back to center (500,500) on release
+    bool CenterReturn = 15;             // XYPAD: joystick behavior - snap back to center (500,500) on release.
+                                        // Meaningless (and rejected) together with Relative: a delta pad has no position to return to.
 
     // COMPRESSOR options:
-    repeated TouchUICompressorParam Params = 16;   // COMPRESSOR: member fader parameters that define the transfer curve
+    repeated TouchUICompressorParam Params = 16;   // COMPRESSOR: member fader parameters that define the transfer curve.
+                                        // At most 6 entries, each with a distinct Role.
+
+    // LABEL options - turn a passive text tile into a tap-to-edit field:
+    enum EditKindE {
+        NONE     = 0;                   // passive label (the default)
+        TEXT     = 1;                   // full alphanumeric keyboard
+        NUMBER   = 2;                   // numeric keyboard
+        IP       = 3;                   // digits and dots only
+        PASSWORD = 4;                   // masked entry; never seeded with the displayed value
+    }
+    EditKindE EditKind = 17;            // LABEL only. Non-NONE makes the tile tappable: the panel opens its on-screen
+                                        // keyboard seeded with the text the label is CURRENTLY DISPLAYING (whatever the
+                                        // last HWCText put there; PASSWORD seeds empty) and, on commit, emits TextEvent
+                                        // under this widget's HWCID. Cancelling emits nothing. The panel does NOT update
+                                        // the label itself on commit - the client remains the source of truth and echoes
+                                        // the value it accepted back via HWCText. Implies the Text bit in EventMask.
+    uint32 EditMaxLen = 18;             // LABEL: max input length in bytes. 0 = panel default (47); capped at 63.
 
     // VIDEO options:
     string Source = 8;                  // Source spec, interpreted by the panel (e.g. "/dev/video0", "yuyv:<dev>",
@@ -990,7 +1041,7 @@ message TouchUICompressorParam {
     RoleE  Role  = 2;
     sint32 Min   = 3;                   // Natural-unit range mapped to Absolute 0..1000 (0/0 = panel default for the role)
     sint32 Max   = 4;
-    string Label = 5;                   // Optional parameter caption (else the panel uses a role default)
+    string Label = 5;                   // Optional parameter caption, at most 15 bytes (else the panel uses a role default)
 }
 
 // TouchUICapabilities is normally the answer to Command.SendTouchUICapabilities, but a panel that
@@ -1012,6 +1063,9 @@ message TouchUICapabilities {
 
 message TouchUIWidgetTypeCap {
     TouchUIWidget.WidgetTypeE Type = 1;
-    uint32 EventMask = 2;               // EventMask bits this type can emit (see TouchUIWidget)
+    uint32 EventMask = 2;               // The UNION of everything this type can emit across all Options combinations -
+                                        // NOT what a default widget of the type emits. Per-widget enablement is the
+                                        // relevant Option (e.g. LABEL advertises Text here, but a widget only emits it
+                                        // when Options.EditKind != NONE); per-widget narrowing is TouchUIWidget.EventMask.
     uint32 StateMask = 3;               // StateMask bits this type honors (see TouchUIWidget)
 }
