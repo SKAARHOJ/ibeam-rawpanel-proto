@@ -996,6 +996,13 @@ message TouchUIWidgetOptions {
     bool Momentary = 7;                 // TOGGLE rendered but behaving momentary
     bool FourWay = 12;                  // BUTTON: render a 4-way pad; edge taps emit Binary with Edge=TOP/LEFT/BOTTOM/RIGHT
 
+    // SLIDER options:
+    enum SliderVariantE {               // SLIDER visual style; interaction (drag = absolute value) is identical across all.
+        BAR  = 0;                       //   default: the track fills the widget, with the value centered on the bar
+        LINE = 1;                       //   thin track with a tall handle, value beside it
+    }
+    SliderVariantE SliderVariant = 22;  // SLIDER only; 0 = BAR (default)
+
     // KNOB options:
     enum KnobVariantE {                 // KNOB visual style; interaction (drag = absolute value) is identical across all.
         ARC   = 0;                      //   default: 270 deg arc with a thumb + centered value
