@@ -413,6 +413,9 @@ message HWCGfx {
 // TouchUI VIDEO widget (see TouchUIWidget). Semantics: each HWCOverlay message is a FULL REPLACEMENT
 // of the addressed HWC's overlay set; send an empty Boxes list to clear. Panels shall support at
 // least 16 boxes per HWC. ASCII form: "HWCo#xx={json}" (JSON encoding of this message).
+// Boxes contributed by TouchUIMarker HWCs are drawn IN ADDITION to this set and are not affected by
+// it: the two are separate mechanisms for the same picture, one whole-set and one box-at-a-time, so
+// a client using either cannot clear the other's boxes out from under it.
 message HWCOverlay {
     message Box {
         uint32 Id = 1;      // Client-assigned box id (stable across updates for the same tracked object)
@@ -923,9 +926,24 @@ message TouchUIWidget {
                         //   on-screen keyboard seeded with the text the label is currently displaying, and committing
                         //   emits TextEvent. See TouchUIWidgetOptions.EditKind.
         IMAGE  = 6;     // image tile               -> emits Binary on tap (unless Options.NoTapEvents); honors HWCGfx
-        VIDEO  = 7;     // live video region        -> emits Binary on tap (unless Options.NoTapEvents); honors HWCText/HWCOverlay.
+        VIDEO  = 7;     // live video region        -> emits AbsoluteVector[x,y] (position) or, with Options.Relative,
+                        //   SpeedVector[dx,dy]; plus Binary on touch/release (unless Options.NoTapEvents). Honors
+                        //   HWCText/HWCColor/HWCOverlay.
+                        //   Axes: a video region reports IMAGE coordinates - X is 0 at the LEFT edge and Y is 0 at the
+                        //   TOP edge, each 0..1000 within the region. This is deliberately NOT the XYPAD convention
+                        //   (Y=0 at the bottom, joystick-style): a tap on a picture and an HWCOverlay box drawn in
+                        //   response to it must share one frame of reference, so following a tapped point with a
+                        //   tracking box needs no axis flip anywhere. Relative mode uses the same signs (+dy is
+                        //   downward) and the same 0..1000-per-edge domain, i.e. deltas are NOT in pixels.
                         //   The source is panel-local (Options.Source spec or the panel's default feeds); the client
                         //   only places the region and optionally decorates it (corner label, overlay/tracking boxes).
+                        //   The source can also be retargeted at RUNTIME, without a new SetTouchUI: a non-empty
+                        //   HWCText.Textline2 addressed to this widget REPLACES Options.Source for as long as it is
+                        //   set (clearing it falls back to the configured source). That makes switching which camera a
+                        //   tile shows a matter of ordinary per-HWC feedback rather than a config rebuild, which would
+                        //   otherwise restart every widget on the panel.
+                        //   Options.Markers declares overlay boxes that are addressable HWCs in their own right (see
+                        //   TouchUIMarker). Marker boxes are drawn IN ADDITION to any HWCOverlay set on this widget.
         ENCODER = 8;    // encoder pad (- / press / +) -> emits Pulsed on the -/+ taps and Binary (Edge=ENCODER) on the
                         //   center press; honors HWCText/HWCExtended. The touch-friendly counterpart of a physical
                         //   encoder: left/right taps pulse -1/+1, the center is the push. (KNOB is the analog dial.)
@@ -1021,6 +1039,32 @@ message TouchUIWidgetOptions {
     HiddenPolicyE HiddenPolicy = 9;
     uint32 SourceWidth = 10;            // Capture hints (0 = source default)
     uint32 SourceHeight = 11;
+    repeated TouchUIMarker Markers = 19;// VIDEO: overlay boxes that are addressable HWCs of their own. At most 8 per
+                                        // widget and 16 per config (the per-HWC overlay box floor).
+}
+
+// TouchUIMarker is one overlay box on a VIDEO widget that is addressable as an HWC in its own right, so an ordinary
+// per-HWC feedback can position it. It exists because HWCOverlay is a whole-set message: a client that can only emit
+// standard per-HWC state (text/color/mode) has no way to contribute ONE box to a widget it shares with others. A
+// marker turns each box into its own HWC, which such a client can drive with nothing but a text feedback.
+//
+// A marker emits no events. It consumes, under its own HWCID:
+//   HWCText.Textline1  the box geometry, as "x,y" or "x,y,w,h" - decimal integers, comma separated, each 0..1000
+//                      normalized within the VIDEO widget's content rect (the same domain and, per WidgetTypeE.VIDEO,
+//                      the same axes as a touch on that widget). The "x,y" form takes W/H below. Anything that does
+//                      not parse - including the empty string - HIDES the box rather than drawing it somewhere
+//                      arbitrary, which is what makes it safe to point a general-purpose text feedback at a marker.
+//   HWCText.Title      box caption. Empty leaves the box unlabelled.
+//   HWCColor           box color, overriding Color below.
+//   HWCMode.State=OFF  hides the box, so visibility is a condition like any other feedback.
+message TouchUIMarker {
+    uint32 HWCID = 1;                   // Addressable HWC for this box. MUST NOT collide with any widget, compressor
+                                        // member or other marker id.
+    uint32 W = 2;                       // Box size 0..1000, used when Textline1 gives only "x,y" (0 = panel default)
+    uint32 H = 3;
+    Color Color = 4;                    // Default border/label color. Unset = panel default; HWCColor overrides.
+    bool Centered = 5;                  // Interpret x,y as the box CENTRE rather than its top-left corner. The natural
+                                        // form for a reticle following a tracked point or a tap.
 }
 
 // TouchUICompressorParam is one member parameter of a COMPRESSOR widget (see TouchUIWidget.WidgetTypeE.COMPRESSOR).
