@@ -996,6 +996,17 @@ message TouchUIWidgetOptions {
     bool Momentary = 7;                 // TOGGLE rendered but behaving momentary
     bool FourWay = 12;                  // BUTTON: render a 4-way pad; edge taps emit Binary with Edge=TOP/LEFT/BOTTOM/RIGHT
 
+    // KNOB options:
+    enum KnobVariantE {                 // KNOB visual style; interaction (drag = absolute value) is identical across all.
+        ARC   = 0;                      //   default: 270 deg arc with a thumb + centered value
+        TICKS = 1;                      //   270 deg arc framed by a tick ring (stepped/detented feel)
+        GAUGE = 2;                      //   180 deg half-dial with a needle (speedometer style)
+    }
+    KnobVariantE KnobVariant = 20;      // KNOB only; 0 = ARC (default)
+    uint32 KnobTicks = 21;              // KNOB TICKS/GAUGE: number of tick marks on the ring, 2..61.
+                                        // 0 = derive one tick per selectable value from Min/Max/Step,
+                                        // falling back to a variant default when Step is 0.
+
     // ROLLER options:
     repeated string Choices = 13;       // ROLLER: ordered option labels; selected index is emitted as AbsoluteEvent.Value (0-based).
                                         // At most 32 entries of at most 23 bytes each; a label MUST NOT contain a newline.
