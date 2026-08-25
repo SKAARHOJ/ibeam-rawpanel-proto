@@ -1063,6 +1063,12 @@ message TouchUIWidgetOptions {
                                         // the label itself on commit - the client remains the source of truth and echoes
                                         // the value it accepted back via HWCText. Implies the Text bit in EventMask.
     uint32 EditMaxLen = 18;             // LABEL: max input length in bytes. 0 = panel default (47); capped at 63.
+    enum LabelAlignE {                  // LABEL: where the caption + value stack sits in the tile
+        TOP    = 0;                     //   default: stacked against the top edge
+        CENTER = 1;
+        BOTTOM = 2;
+    }
+    LabelAlignE LabelAlign = 23;        // LABEL only; 0 = TOP (default)
 
     // VIDEO options:
     string Source = 8;                  // Source spec, interpreted by the panel (e.g. "/dev/video0", "yuyv:<dev>",
