@@ -967,11 +967,15 @@ message TouchUIWidget {
         ENCODER = 8;    // encoder pad (- / press / +) -> emits Pulsed on the -/+ taps and Binary (Edge=ENCODER) on the
                         //   center press; honors HWCText/HWCExtended. The touch-friendly counterpart of a physical
                         //   encoder: left/right taps pulse -1/+1, the center is the push. (KNOB is the analog dial.)
-        ROLLER = 9;     // discrete 1-of-N selector -> emits Absolute(selected index, 0..N-1); honors
-                        //   HWCExtended(STEPS)=selected index / HWCText. Options.Choices holds the ordered labels.
+        DROPDOWN = 9;   // discrete 1-of-N picker   -> emits Absolute(selected index, 0..N-1); honors
+                        //   HWCExtended(STEPS)=selected index / HWCText / HWCColor. Options.Choices holds the ordered
+                        //   labels. The option list is drawn OVER the neighbouring widgets while open, so the closed
+                        //   control occupies a single grid cell.
                         //   HWCText updates the widget's CAPTION only - the choice list is fixed for the life of the
                         //   config (changing it means a new SetTouchUI), so the index domain a client emits against
                         //   can never shift underneath it.
+                        //   Re-picking the option already selected DOES emit: on a control surface that is a
+                        //   deliberate "fire this again" gesture, not a no-op.
         XYPAD  = 10;    // 2D touch surface         -> emits AbsoluteVector[x,y] (position, each 0..1000) or, with Options.Relative,
                         //   SpeedVector[dx,dy]; plus Binary on touch/release. Honors HWCOverlay (cursor/target markers) / HWCGfx (background).
                         //   Axes: X is 0 at the LEFT edge, Y is 0 at the BOTTOM edge - Y is inverted relative to screen
@@ -1034,10 +1038,12 @@ message TouchUIWidgetOptions {
                                         // 0 = derive one tick per selectable value from Min/Max/Step,
                                         // falling back to a variant default when Step is 0.
 
-    // ROLLER options:
-    repeated string Choices = 13;       // ROLLER: ordered option labels; selected index is emitted as AbsoluteEvent.Value (0-based).
-                                        // At most 32 entries of at most 23 bytes each; a label MUST NOT contain a newline.
-                                        // Over-long lists/labels are truncated by the panel rather than rejected.
+    // DROPDOWN options:
+    repeated string Choices = 13;       // DROPDOWN: ordered option labels; selected index is emitted as AbsoluteEvent.Value (0-based).
+                                        // At most 32 entries of at most 23 bytes each, AND at most 255 bytes once joined with
+                                        // newlines for the panel; a label MUST NOT contain a newline.
+                                        // Over-long lists/labels are truncated by the panel rather than rejected - always by
+                                        // dropping WHOLE trailing options, so the indices that survive keep their meaning.
 
     // XYPAD options:
     bool Relative = 14;                 // XYPAD: emit SpeedVector[dx,dy] deltas instead of AbsoluteVector[x,y] position
