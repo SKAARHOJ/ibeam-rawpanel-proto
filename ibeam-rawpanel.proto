@@ -555,6 +555,9 @@ message OutboundMessage {
     // Non-zero = present; the low 31 bits carry legacy content (1 or the mapped-to HWC id).
     // Bit 31 (0x80000000) = present but OFFSCREEN (e.g. a TouchUI widget on a non-visible tab/page).
     // Panels report visibility changes simply by re-sending map entries for the affected HWCs.
+    // This is a per-HWC visibility hint, not a page identity: a TouchUI page holding no widgets
+    // produces no entries at all. A client that wants to know which page is displayed should read
+    // OutboundMessage.TouchUIActivePage rather than derive it from here.
     map<uint32, uint32> HWCavailability = 2;
 
     PanelInfo PanelInfo = 4;
@@ -589,6 +592,7 @@ message OutboundMessage {
 
     TouchUICapabilities TouchUICapabilities = 38;   // Response to Command.SendTouchUICapabilities
     TouchUIConfig TouchUIConfig = 39;               // Response to Command.SendTouchUIConfig (echo of the currently active config)
+    TouchUIActivePage TouchUIActivePage = 40;       // The TouchUI page/tab the panel is displaying now
 }
 
 message SleepState {
@@ -833,11 +837,13 @@ message NetworkConfig {
 // ClearTouchUI reverts topology and marks widget HWCs absent (availability value 0).
 //
 // Visibility: widgets on a non-visible tab/page are reported via HWCavailability with bit 31 set
-// (see OutboundMessage.HWCavailability).
+// (see OutboundMessage.HWCavailability); which page is displayed is reported in its own right as
+// OutboundMessage.TouchUIActivePage.
 message TouchUIConfig {
     string Title = 1;                   // Optional overall title
     repeated TouchUIPage Pages = 2;     // Tabs/pages. A single page = no tab bar.
     uint32 ActivePage = 3;              // 1-based id of page to show initially. 0 = panel default (first page).
+                                        // The panel reports the page it settled on as TouchUIActivePage.
     TouchUIGlobalOptions Options = 4;   // Optional panel-wide render/diagnostic overlays. Absent = all off (clean screen).
 }
 
@@ -894,9 +900,23 @@ message TouchUIGlobalOptions {
 // Command.SetTouchUIActivePage switches the currently displayed page/tab at runtime, without
 // re-sending the whole config. The panel updates HWCavailability accordingly (widgets on the
 // newly hidden page get bit 31 set, those on the shown page cleared), so all clients observe
-// the switch. PageId must be a 1-based id present in the active config; an unknown id is ignored.
+// the switch, and confirms the resulting page explicitly with OutboundMessage.TouchUIActivePage.
+// PageId must be a 1-based id present in the active config; an unknown id is ignored.
 message TouchUISetActivePage {
     uint32 PageId = 1;                  // 1-based page id to display
+}
+
+// TouchUIActivePage is the panel telling its clients which page/tab it is displaying. The panel
+// sends it spontaneously on every change of the displayed page, whatever caused it: the user
+// tapping the panel's own tab bar, a Command.SetTouchUIActivePage, or a Command.SetTouchUI whose
+// config opens on a different page. It is also sent in response to Command.SendTouchUIConfig, so
+// a (re)connecting client learns the config and the page it is showing in one exchange.
+//
+// This is the authoritative signal. HWCavailability's offscreen bit says which widgets are
+// hidden, which is not the same thing - a page carrying no widgets moves no availability entry
+// at all - so a client tracking the displayed page must use this message.
+message TouchUIActivePage {
+    uint32 PageId = 1;                  // 1-based id of the page being displayed
 }
 
 message TouchUIPage {
