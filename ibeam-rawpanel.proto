@@ -151,6 +151,7 @@ message HWCState {
     Processors Processors = 9;
     HWCOverlay HWCOverlay = 10;         // "HWCo#xx={json}" - dynamic overlay boxes (e.g. tracking rectangles on a TouchUI VIDEO widget)
     HWCJog HWCJog = 11;                 // HWCj#xx=yy - complete configuration of a haptic jog wheel
+    HWCDomain HWCDomain = 12;           // "HWCd#xx={json}" - runtime domain (choice list / value range) of a TouchUI widget
 }
 
 message Processors {
@@ -242,6 +243,58 @@ message HWCJog {
     bool StopShuttle = 3;           // SHUTTLE only: allow stopping/holding the shuttle
     uint32 DetentsPerRev = 4;       // Modes 0-6 only, 2-255. 0 = keep the panel default (about 25)
     TargetPositionM TargetPosition = 5;  // VOLUME_KNOB / VOLUME_KNOB_BUMP only. Absent = do not drive the motor
+}
+
+// HWCd#xx={json}
+// Runtime DOMAIN of a component: the set of values it can take, as opposed to the value it
+// currently holds (HWCExtended) or the caption it shows (HWCText). Aimed at TouchUI widgets,
+// which are the only components that render their own domain - for a physical encoder or
+// fader the client does the mapping and the panel never needs to know.
+//
+// It exists because the domain lives in the TouchUI CONFIG, and replacing a config restarts
+// every widget on the panel: video feeds re-open, an open dropdown closes, the screen blinks.
+// A list that follows a device - an ATEM's inputs, a camera's clip list - would do that on
+// every rename. So the domain gets its own per-HWC channel, the same way a VIDEO widget's
+// source can be retargeted at runtime through HWCText.Textline2.
+//
+// While set, it REPLACES the widget's configured domain; an absent message leaves the
+// configured one in force. Like HWCJog this is a complete description rather than a patch, so
+// re-sends are idempotent and a newest-wins merge loses nothing.
+//
+// Panel obligations:
+//   - Apply the domain BEFORE any HWCExtended in the same message: an index or position is
+//     meaningless against a domain that has not been installed yet.
+//   - Keep the current selection/value if it is still in range, otherwise clamp it. Never
+//     emit an event as a side effect of a domain change - the user did not touch anything.
+//   - Treat re-sends idempotently: an unchanged domain must not rebuild the widget.
+message HWCDomain {
+    // DROPDOWN. Choices are the ordered labels drawn in the list, replacing Options.Choices
+    // while non-empty, and carry the same limits: at most 32 entries of at most 23 bytes,
+    // at most 255 bytes once newline-joined for the panel, no newline inside a label.
+    // Over-long lists are truncated by dropping WHOLE trailing entries.
+    repeated string Choices = 1;
+    // Values are what a pick REPORTS, parallel to Choices and truncated with them so the two
+    // never disagree about an index. When set, choosing entry N emits TextEvent(Values[N])
+    // alongside the usual AbsoluteEvent(N), and a client can act on the value without
+    // knowing what list produced it. That matters because a position is not a value: an
+    // ATEM's video sources are ids 0,1,2,3,4,1000,2001,3010..., so position 5 means 1000.
+    // It also makes a pick self-describing, and so immune to the list having been replaced
+    // between the tap and its arrival - a stale VALUE is detectably absent from the new
+    // domain, where a stale INDEX silently addresses the wrong entry.
+    // Leave empty to keep the historical index-only behavior.
+    repeated string Values = 2;
+    // SLIDER/KNOB value range, replacing Options.Min/Max/Step. Both 0 = leave the configured
+    // range in force (which is itself 0..1000 when unset).
+    //
+    // Only for a client that owns its own scaling. A slider's range is not just what it
+    // draws: it is the domain of the Absolute events it emits AND of the HWCExtended it is
+    // driven by, so moving it moves the meaning of both at once. A client that maps a
+    // per-mille position onto the parameter itself must leave this alone and let the widget
+    // stay 0..1000 - which is why the capability table advertises Domain on the DROPDOWN
+    // only, and why a config declares DynamicDomain there and nowhere else.
+    sint32 Min = 3;
+    sint32 Max = 4;
+    uint32 Step = 5;
 }
 
 // Color.
@@ -968,12 +1021,18 @@ message TouchUIWidget {
                         //   center press; honors HWCText/HWCExtended. The touch-friendly counterpart of a physical
                         //   encoder: left/right taps pulse -1/+1, the center is the push. (KNOB is the analog dial.)
         DROPDOWN = 9;   // discrete 1-of-N picker   -> emits Absolute(selected index, 0..N-1); honors
-                        //   HWCExtended(STEPS)=selected index / HWCText / HWCColor. Options.Choices holds the ordered
-                        //   labels. The option list is drawn OVER the neighbouring widgets while open, so the closed
-                        //   control occupies a single grid cell.
-                        //   HWCText updates the widget's CAPTION only - the choice list is fixed for the life of the
-                        //   config (changing it means a new SetTouchUI), so the index domain a client emits against
-                        //   can never shift underneath it.
+                        //   HWCExtended(STEPS)=selected index / HWCText / HWCColor / HWCDomain. Options.Choices holds
+                        //   the ordered labels. The option list is drawn OVER the neighbouring widgets while open, so
+                        //   the closed control occupies a single grid cell.
+                        //   HWCText updates the widget's CAPTION only. The choice list comes from Options.Choices and
+                        //   can be REPLACED at runtime by HWCDomain, without a new SetTouchUI - which is how a list
+                        //   that follows a device (an ATEM's inputs, a camera's clip list) stays current without
+                        //   restarting every widget on the panel.
+                        //   Because the list can move, a pick reports what was chosen and not just where it sat:
+                        //   when HWCDomain.Values is set, the emitted Absolute(index) is accompanied by
+                        //   Text(Values[index]). A client that reads the Text is immune to the list having changed
+                        //   between the tap and its arrival; one that reads only the index gets exactly the historical
+                        //   behavior, and for a static list nothing about this changes at all.
                         //   Re-picking the option already selected DOES emit: on a control surface that is a
                         //   deliberate "fire this again" gesture, not a no-op.
         XYPAD  = 10;    // 2D touch surface         -> emits AbsoluteVector[x,y] (position, each 0..1000) or, with Options.Relative,
@@ -1044,6 +1103,13 @@ message TouchUIWidgetOptions {
                                         // newlines for the panel; a label MUST NOT contain a newline.
                                         // Over-long lists/labels are truncated by the panel rather than rejected - always by
                                         // dropping WHOLE trailing options, so the indices that survive keep their meaning.
+
+    bool DynamicDomain = 25;            // DROPDOWN: the choice list arrives at runtime via HWCDomain and Choices above is
+                                        // only a fallback for before the first one lands. Declaring it is what lets a
+                                        // DROPDOWN ship with an empty Choices list, which is otherwise a rejected config,
+                                        // and it also makes the widget report the picked entry's value (see WidgetTypeE).
+                                        // Not valid on any other type - see HWCDomain.Min on why a slider's range is a
+                                        // config-time decision.
 
     // XYPAD options:
     bool Relative = 14;                 // XYPAD: emit SpeedVector[dx,dy] deltas instead of AbsoluteVector[x,y] position
