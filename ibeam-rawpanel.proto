@@ -1089,6 +1089,13 @@ message TouchUIWidgetOptions {
     HiddenPolicyE HiddenPolicy = 9;
     uint32 SourceWidth = 10;            // Capture hints (0 = source default)
     uint32 SourceHeight = 11;
+    enum ScalingE {                     // VIDEO: how a source whose aspect differs from the widget is fitted to it
+        STRETCH = 0;                    //   default: fill the widget, ignoring aspect (what panels have always done)
+        FIT     = 1;                    //   preserve aspect, whole picture visible, black bars on the short axis
+        CROP    = 2;                    //   preserve aspect, fill the widget, overflow cropped off centre
+    }
+    ScalingE Scaling = 24;              // VIDEO only; 0 = STRETCH (default). Applied by the panel's decoder, so it
+                                        // costs nothing extra - the source is scaled once, straight to the widget rect.
     repeated TouchUIMarker Markers = 19;// VIDEO: overlay boxes that are addressable HWCs of their own. At most 8 per
                                         // widget and 16 per config (the per-HWC overlay box floor).
 }
