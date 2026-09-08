@@ -1113,6 +1113,16 @@ message TouchUIWidgetOptions {
     bool Momentary = 7;                 // TOGGLE rendered but behaving momentary
     bool FourWay = 12;                  // BUTTON: render a 4-way pad; edge taps emit Binary with Edge=TOP/LEFT/BOTTOM/RIGHT
 
+    // Appearance, any widget:
+    bool NoBorder = 26;                 // Draw the widget WITHOUT its outline. Absent/false is the framed look panels have
+                                        // always drawn, so an existing config is unchanged. It suppresses the widget's
+                                        // INTERNAL borders too - the 4-way and ENCODER keys, the DROPDOWN's closed field and
+                                        // its open list - so a borderless tile is borderless throughout. The fill, the
+                                        // pressed/checked highlight and the DROPDOWN chevron are untouched, and a runtime
+                                        // HWCColor still applies (it just has no outline left to color). A type that draws no
+                                        // border anyway - KNOB, METER, IMAGE, a latching TOGGLE - ignores it rather than
+                                        // rejecting it, which is why this is not restricted to particular widget types.
+
     // SLIDER options:
     enum SliderVariantE {               // SLIDER visual style; interaction (drag = absolute value) is identical across all.
         BAR  = 0;                       //   default: the track fills the widget, with the value centered on the bar
