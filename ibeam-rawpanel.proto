@@ -1185,6 +1185,14 @@ message TouchUIWidgetOptions {
         BOTTOM = 2;
     }
     LabelAlignE LabelAlign = 23;        // LABEL only; 0 = TOP (default)
+    bool NoEditField = 27;              // LABEL with EditKind != NONE: draw the tile as a PLAIN LABEL - caption over value,
+                                        // exactly like a passive one - instead of putting the value in a filled field with a
+                                        // caret. Only the chrome goes: the tile still opens the keyboard when tapped and still
+                                        // emits TextEvent on commit, so this is purely how it looks at rest. For a page where
+                                        // most tiles are captions and one of them happens to be editable, the field is what
+                                        // makes it stand out; this turns that off. Meaningless on a passive LABEL (there is no
+                                        // field to hide) and ignored there. Note it removes the only visible hint that the tile
+                                        // can be typed into - use it where the operator already knows, or where the caption says so.
 
     // VIDEO options:
     string Source = 8;                  // Source spec, interpreted by the panel (e.g. "/dev/video0", "yuyv:<dev>",
