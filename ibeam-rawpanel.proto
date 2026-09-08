@@ -925,6 +925,11 @@ message TouchUIGlobalOptions {
     // system settings like network, wifi, support mode and reboot). Note the inverted polarity
     // relative to the other options here: absent/false = menu available (the default), true =
     // cogwheel hidden and menu inaccessible for the life of this config.
+    //
+    // Superseded by ConfigMenuLocation, which can hide the menu AND place it. Kept because a
+    // stored layout may still carry it: a client that only knows this flag keeps working, and
+    // ConfigMenuLocation wins wherever it says anything but DEFAULT. Prefer the location field
+    // in new clients; setting HIDDEN there is the same instruction as setting this true.
     bool DisableConfigMenu = 4;
 
     // Keep the config menu but hide its Reactor section (project switching, device management,
@@ -948,6 +953,35 @@ message TouchUIGlobalOptions {
     // re-send a config that fits. Grid layouts reflow by themselves. Panels that cannot rotate
     // ignore this entirely and report TouchUICapabilities.OrientationSupported = false.
     DisplayOrientationE DisplayOrientation = 6;
+
+    // Where a piece of panel chrome sits on the screen. Chrome floats above the widget pages
+    // and is not part of the layout, so - unlike widgets - it does NOT turn with a rotated
+    // panel: a corner names the corner the operator is looking at, whichever way the panel is
+    // worn. (RotateTouchUIConfig deliberately leaves these fields alone for that reason.)
+    enum ChromeLocationE {
+        DEFAULT      = 0;   // the panel's built-in placement, which is the top right corner
+        HIDDEN       = 1;   // not drawn at all
+        TOP_LEFT     = 2;
+        TOP_RIGHT    = 3;
+        BOTTOM_LEFT  = 4;
+        BOTTOM_RIGHT = 5;
+    }
+
+    // The page selector (the tab strip that switches pages). A layout with a single page draws
+    // no selector whatever this says, and HIDDEN removes it from a multi-page layout too -
+    // leaving the pages reachable only through SetTouchUIActivePage from a client.
+    ChromeLocationE PageSelectorLocation = 7;
+
+    // The built-in configuration menu's cogwheel. HIDDEN is equivalent to DisableConfigMenu,
+    // and takes precedence over it; on DEFAULT the older flag still decides whether the menu
+    // shows. Placing the two in the same corner is allowed: the page selector shifts inward to
+    // clear the cogwheel, as it always has when both sat top right.
+    ChromeLocationE ConfigMenuLocation = 8;
+
+    // Accent colour for the page selector's active tab. Absent leaves the renderer's built-in
+    // blue. Only the selected tab is tinted; the strip itself stays neutral so a tab reads as
+    // selected rather than merely coloured.
+    Color PageSelectorColor = 9;
 }
 
 // Command.SetTouchUIActivePage switches the currently displayed page/tab at runtime, without
