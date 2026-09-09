@@ -49,7 +49,7 @@ message Command {
 
     WebserverState SetWebserverEnabled = 22;    // Webserver=x
 
-    Brightness PanelBrightness = 23;        // PanelBrightness=x,y
+    Brightness PanelBrightness = 23;        // PanelBrightness=x,y  (or x,y,z incl. the screen backlight)
 
     HeartBeatTimer SetHeartBeatTimer = 24;  // HeartBeatTimer=
     bool GetConnections = 25;  // "Connections?",
@@ -63,6 +63,12 @@ message Command {
 
     CalibrationProfile SetCalibrationProfile = 35;
     Environment SimulateEnvironmentalHealth = 40;
+
+    TouchUIConfig SetTouchUI = 41;      // "SetTouchUI={json}" - set (replace) the TouchUI widget configuration
+    bool ClearTouchUI = 42;             // "ClearTouchUI" - remove all TouchUI widgets, revert to native topology
+    bool SendTouchUICapabilities = 43;  // "TouchUICapabilities?" - ask panel for screen + widget-type capabilities
+    bool SendTouchUIConfig = 44;        // "TouchUIConfig?" - ask panel to (re)send the currently active TouchUI config (multi-client sync)
+    TouchUISetActivePage SetTouchUIActivePage = 45; // "SetTouchUIActivePage=N" - switch the currently displayed page/tab at runtime
 }
 message JSONconfig {
     bool Outbound = 1;  // All Command messages
@@ -109,6 +115,11 @@ message DimmedGain {
 message Brightness {
     uint32 OLEDs = 1;
     uint32 LEDs = 2;
+    // Screen backlight of a panel that has an LCD (touch panels), on the same 0-8
+    // scale as LEDs/OLEDs. 0 turns the backlight fully off. `optional` because
+    // absence ("a client older than this field: leave the screen alone") must stay
+    // distinguishable from 0 ("turn it off"). Panels without a screen ignore it.
+    optional uint32 Screen = 3;
 }
 
 message PublishSystemStat {
@@ -138,8 +149,9 @@ message HWCState {
     PublishRawADCValues PublishRawADCValues = 7;
     // 8 was temporarily used for HWCGfxConverter which has never been used by anyone, but we avoid it...
     Processors Processors = 9;
-    // 10 is reserved for HWCOverlay (TouchUI)
+    HWCOverlay HWCOverlay = 10;         // "HWCo#xx={json}" - dynamic overlay boxes (e.g. tracking rectangles on a TouchUI VIDEO widget)
     HWCJog HWCJog = 11;                 // HWCj#xx=yy - complete configuration of a haptic jog wheel
+    HWCDomain HWCDomain = 12;           // "HWCd#xx={json}" - runtime domain (choice list / value range) of a TouchUI widget
 }
 
 message Processors {
@@ -231,6 +243,58 @@ message HWCJog {
     bool StopShuttle = 3;           // SHUTTLE only: allow stopping/holding the shuttle
     uint32 DetentsPerRev = 4;       // Modes 0-6 only, 2-255. 0 = keep the panel default (about 25)
     TargetPositionM TargetPosition = 5;  // VOLUME_KNOB / VOLUME_KNOB_BUMP only. Absent = do not drive the motor
+}
+
+// HWCd#xx={json}
+// Runtime DOMAIN of a component: the set of values it can take, as opposed to the value it
+// currently holds (HWCExtended) or the caption it shows (HWCText). Aimed at TouchUI widgets,
+// which are the only components that render their own domain - for a physical encoder or
+// fader the client does the mapping and the panel never needs to know.
+//
+// It exists because the domain lives in the TouchUI CONFIG, and replacing a config restarts
+// every widget on the panel: video feeds re-open, an open dropdown closes, the screen blinks.
+// A list that follows a device - an ATEM's inputs, a camera's clip list - would do that on
+// every rename. So the domain gets its own per-HWC channel, the same way a VIDEO widget's
+// source can be retargeted at runtime through HWCText.Textline2.
+//
+// While set, it REPLACES the widget's configured domain; an absent message leaves the
+// configured one in force. Like HWCJog this is a complete description rather than a patch, so
+// re-sends are idempotent and a newest-wins merge loses nothing.
+//
+// Panel obligations:
+//   - Apply the domain BEFORE any HWCExtended in the same message: an index or position is
+//     meaningless against a domain that has not been installed yet.
+//   - Keep the current selection/value if it is still in range, otherwise clamp it. Never
+//     emit an event as a side effect of a domain change - the user did not touch anything.
+//   - Treat re-sends idempotently: an unchanged domain must not rebuild the widget.
+message HWCDomain {
+    // DROPDOWN. Choices are the ordered labels drawn in the list, replacing Options.Choices
+    // while non-empty, and carry the same limits: at most 32 entries of at most 23 bytes,
+    // at most 255 bytes once newline-joined for the panel, no newline inside a label.
+    // Over-long lists are truncated by dropping WHOLE trailing entries.
+    repeated string Choices = 1;
+    // Values are what a pick REPORTS, parallel to Choices and truncated with them so the two
+    // never disagree about an index. When set, choosing entry N emits TextEvent(Values[N])
+    // alongside the usual AbsoluteEvent(N), and a client can act on the value without
+    // knowing what list produced it. That matters because a position is not a value: an
+    // ATEM's video sources are ids 0,1,2,3,4,1000,2001,3010..., so position 5 means 1000.
+    // It also makes a pick self-describing, and so immune to the list having been replaced
+    // between the tap and its arrival - a stale VALUE is detectably absent from the new
+    // domain, where a stale INDEX silently addresses the wrong entry.
+    // Leave empty to keep the historical index-only behavior.
+    repeated string Values = 2;
+    // SLIDER/KNOB value range, replacing Options.Min/Max/Step. Both 0 = leave the configured
+    // range in force (which is itself 0..1000 when unset).
+    //
+    // Only for a client that owns its own scaling. A slider's range is not just what it
+    // draws: it is the domain of the Absolute events it emits AND of the HWCExtended it is
+    // driven by, so moving it moves the meaning of both at once. A client that maps a
+    // per-mille position onto the parameter itself must leave this alone and let the widget
+    // stay 0..1000 - which is why the capability table advertises Domain on the DROPDOWN
+    // only, and why a config declares DynamicDomain there and nowhere else.
+    sint32 Min = 3;
+    sint32 Max = 4;
+    uint32 Step = 5;
 }
 
 // Color.
@@ -398,6 +462,26 @@ message HWCGfx {
     bytes ImageData = 16;
 }
 
+// Dynamic overlay rectangles drawn on top of a widget's content - primarily tracking boxes on a
+// TouchUI VIDEO widget (see TouchUIWidget). Semantics: each HWCOverlay message is a FULL REPLACEMENT
+// of the addressed HWC's overlay set; send an empty Boxes list to clear. Panels shall support at
+// least 16 boxes per HWC. ASCII form: "HWCo#xx={json}" (JSON encoding of this message).
+// Boxes contributed by TouchUIMarker HWCs are drawn IN ADDITION to this set and are not affected by
+// it: the two are separate mechanisms for the same picture, one whole-set and one box-at-a-time, so
+// a client using either cannot clear the other's boxes out from under it.
+message HWCOverlay {
+    message Box {
+        uint32 Id = 1;      // Client-assigned box id (stable across updates for the same tracked object)
+        uint32 X = 2;       // 0..1000, normalized within the widget's content rect
+        uint32 Y = 3;       // 0..1000
+        uint32 W = 4;       // 0..1000
+        uint32 H = 5;       // 0..1000
+        Color Color = 6;    // Border/label color. Unset = panel default
+        string Label = 7;   // Optional short caption rendered at the box
+    }
+    repeated Box Boxes = 1;
+}
+
 // Image conversion and scaling processor
 message ProcGfxConverter {
     enum ImageTypeE {
@@ -520,6 +604,13 @@ message OutboundMessage {
     }
     FlowMsg FlowMessage = 1;
 
+    // Value semantics: 0 = component absent/disabled.
+    // Non-zero = present; the low 31 bits carry legacy content (1 or the mapped-to HWC id).
+    // Bit 31 (0x80000000) = present but OFFSCREEN (e.g. a TouchUI widget on a non-visible tab/page).
+    // Panels report visibility changes simply by re-sending map entries for the affected HWCs.
+    // This is a per-HWC visibility hint, not a page identity: a TouchUI page holding no widgets
+    // produces no entries at all. A client that wants to know which page is displayed should read
+    // OutboundMessage.TouchUIActivePage rather than derive it from here.
     map<uint32, uint32> HWCavailability = 2;
 
     PanelInfo PanelInfo = 4;
@@ -551,6 +642,10 @@ message OutboundMessage {
     CalibrationProfile DefaultCalibrationProfile = 35;
 
     NetworkConfig NetworkConfig = 37; // Get network configuration (if applicable)
+
+    TouchUICapabilities TouchUICapabilities = 38;   // Response to Command.SendTouchUICapabilities
+    TouchUIConfig TouchUIConfig = 39;               // Response to Command.SendTouchUIConfig (echo of the currently active config)
+    TouchUIActivePage TouchUIActivePage = 40;       // The TouchUI page/tab the panel is displaying now
 }
 
 message SleepState {
@@ -599,8 +694,12 @@ message HWCEvent {
     // A vector event may be sent along with a normal one-dimensional event - typically the first axis of something like a joystick.
     // BinaryVectorEvent BinaryVector = 8;
     // PulsedVectorEvent PulsedVector = 9;
-    // AbsoluteVectorEvent AbsoluteVector = 10;
-    // SpeedVectorEvent SpeedVector = 11;
+    AbsoluteVectorEvent AbsoluteVector = 10;    // e.g. a TouchUI XYPAD position [x, y]
+    SpeedVectorEvent SpeedVector = 11;          // e.g. a TouchUI XYPAD relative movement [dx, dy]
+
+    // A future multi-touch/XY TouchEvent should use field 12 (fields 8-11 stay reserved for the Vector events above)
+
+    TextEvent Text = 13;    // a string the user entered on the panel, e.g. an editable TouchUI LABEL commit
 
     RawAnalogEvent RawAnalog = 7;
 }
@@ -655,19 +754,35 @@ message SpeedEvent {
 //     repeated sint32 Value = 1;
 // }
 
-// message AbsoluteVectorEvent {
-//     repeated uint32 Value = 1;
-//     repeated uint32 PrevValue = 2;   // Can hold previously sent value
-//     repeated float ValueNorm = 3; // Normalized value 0.0:1.0. Not supported in basic ASCII mode
-//     repeated float PrevValueNorm = 4; // Normalized previous value 0.0:1.0. Not supported in basic ASCII mode
-// }
+// AbsoluteVectorEvent carries several absolute axes that belong together (e.g. an XYPAD [x, y]).
+// ASCII form is the multi-value variant of a scalar Abs event: "HWC#id=Abs:x,y" (single-value "Abs:v" still parses).
+message AbsoluteVectorEvent {
+    repeated uint32 Value = 1;        // e.g. [x, y], each 0..1000
+    repeated uint32 PrevValue = 2;    // Can hold previously sent values
+    // repeated float ValueNorm = 3; // Normalized values 0.0:1.0. Not supported in basic ASCII mode
+    // repeated float PrevValueNorm = 4; // Normalized previous values 0.0:1.0. Not supported in basic ASCII mode
+}
 
-// message SpeedVectorEvent {
-//     repeated sint32 Value = 1;
-//     repeated sint32 PrevValue = 2;   // Can hold previously sent value
-//     repeated float ValueNorm = 3; // Normalized value -1.0:1.0. Not supported in basic ASCII mode
-//     repeated float PrevValueNorm = 4; // Normalized previous value -1.0:1.0. Not supported in basic ASCII mode
-// }
+// SpeedVectorEvent carries several relative axes that belong together (e.g. an XYPAD in relative mode [dx, dy]).
+// ASCII form: "HWC#id=Speed:dx,dy" (single-value "Speed:v" still parses).
+message SpeedVectorEvent {
+    repeated sint32 Value = 1;        // e.g. [dx, dy]
+    repeated sint32 PrevValue = 2;    // Can hold previously sent values
+    // repeated float ValueNorm = 3; // Normalized values -1.0:1.0. Not supported in basic ASCII mode
+    // repeated float PrevValueNorm = 4; // Normalized previous values -1.0:1.0. Not supported in basic ASCII mode
+}
+
+// TextEvent carries a string the user entered on the panel - today, an editable TouchUI LABEL
+// (TouchUIWidgetOptions.EditKind) committing what was typed on the panel's on-screen keyboard.
+// It has no numeric arm on purpose: a NUMBER-kind field sends its digits verbatim, so a client
+// parses exactly the kind it asked for and never has to guess whether it was handed a number.
+// ASCII form: "HWC#id=Text:<value>". The value is the entire rest of the line, so it needs no
+// escaping at all - commas, colons and '=' survive verbatim. An empty value is legal and means
+// the user cleared the field. The panel MUST NOT emit CR or LF inside the value, since the
+// ASCII transport is line-oriented; encoders replace them defensively.
+message TextEvent {
+    string Value = 1;
+}
 
 message RawAnalogEvent {
     uint32 Value = 1;
@@ -736,7 +851,7 @@ message RawPanelSupport {
     // bool HWCStates = 22; // Whether HWC states can be quiryed using SendHWCStates
     // bool NormalizedValues = 23;  // Whether Normalized Values are supported for absolute and intensity HWCs.
     bool NetworkSettings = 24; // Whether network settings can be controlled over Raw Panel protocol
-    // 25 is reserved for TouchUI
+    bool TouchUI = 25; // Whether TouchUI widget configuration (SetTouchUI et al.) is supported
     bool JogConfig = 26; // Whether the HWCJog message is supported (otherwise only the legacy bit-packed HWCExtended(JOG) encoding)
 }
 
@@ -762,3 +877,423 @@ message NetworkConfig {
     string second_dns = 6;
     bool no_default_route = 7;
   }
+
+// TouchUI: A client can send a TouchUIConfig (Command.SetTouchUI) to a touch-capable panel which will render
+// the declared widgets. Widgets are addressed as regular HWCs with client-assigned HWC ids: they emit standard
+// HWCEvents (Binary/Pulsed/Absolute) and honor standard HWCStates (HWCMode/HWCColor/HWCText/HWCExtended/HWCGfx).
+//
+// Behavioral contract: After accepting SetTouchUI, the panel regenerates its PanelTopology.Json to include one
+// TopologyHWcomponent per widget (Id = widget HWCID, Txt = Label, TypeIndex entry with In/Out/Disp matching the
+// widget type, e.g. BUTTON -> In:"b", SLIDER -> In:"av", VIDEO -> In:"b" plus a Disp entry sized to the region)
+// and one Topology Grid per page, then spontaneously re-sends PanelTopology and the full HWCavailability map.
+// This makes widgets fully visible to generic clients.
+// ClearTouchUI reverts topology and marks widget HWCs absent (availability value 0).
+//
+// Visibility: widgets on a non-visible tab/page are reported via HWCavailability with bit 31 set
+// (see OutboundMessage.HWCavailability); which page is displayed is reported in its own right as
+// OutboundMessage.TouchUIActivePage.
+message TouchUIConfig {
+    string Title = 1;                   // Optional overall title
+    repeated TouchUIPage Pages = 2;     // Tabs/pages. A single page = no tab bar.
+    uint32 ActivePage = 3;              // 1-based id of page to show initially. 0 = panel default (first page).
+                                        // The panel reports the page it settled on as TouchUIActivePage.
+    TouchUIGlobalOptions Options = 4;   // Optional panel-wide render/diagnostic overlays. Absent = all off (clean screen).
+}
+
+// TouchUIGlobalOptions are panel-wide options that travel with a config: the panel applies them
+// the moment it accepts the SetTouchUI, and they persist for the life of that config. Most of them
+// control only diagnostic/feedback overlays the renderer draws on top of the widgets, never widget
+// behavior; the exceptions are DisableConfigMenu (panel chrome) and DisplayOrientation (which way
+// up the whole UI is rendered). An absent message (or an all-zero one) means every overlay is off
+// - a clean screen - with the config menu available and the orientation left to the panel.
+message TouchUIGlobalOptions {
+    // Center touch readout ("touches: N", last pixel + normalized coordinates). Off = hidden.
+    bool ShowDebugInfo = 1;
+
+    // On-touch tap indicator (the live crosshair that follows a finger, plus optional pinned dots).
+    enum ShowTapsE {
+        NO    = 0;      // no tap indicator at all
+        YES   = 1;      // live crosshair only, follows the finger, gone on release
+        KEEP3 = 2;      // live crosshair plus the last 3 tap points left pinned on screen
+    }
+    ShowTapsE ShowTaps = 2;
+
+    // Video FPS / per-camera arrival-rate stats line (bottom-left). Off = hidden.
+    bool ShowVideoFPS = 3;
+
+    // Hide the panel's built-in configuration menu (the top-right cogwheel giving access to
+    // system settings like network, wifi, support mode and reboot). Note the inverted polarity
+    // relative to the other options here: absent/false = menu available (the default), true =
+    // cogwheel hidden and menu inaccessible for the life of this config.
+    //
+    // Superseded by ConfigMenuLocation, which can hide the menu AND place it. Kept because a
+    // stored layout may still carry it: a client that only knows this flag keeps working, and
+    // ConfigMenuLocation wins wherever it says anything but DEFAULT. Prefer the location field
+    // in new clients; setting HIDDEN there is the same instruction as setting this true.
+    bool DisableConfigMenu = 4;
+
+    // Keep the config menu but hide its Reactor section (project switching, device management,
+    // warnings) and stop the panel's Reactor monitoring. Implied by DisableConfigMenu.
+    bool DisableReactorConfigMenu = 5;
+
+    // Which way up the UI is rendered, as a clockwise rotation relative to the panel's normal
+    // (as-mounted) orientation - NOT relative to the display's scanout, which the panel owns.
+    // ROT0 is therefore "however this panel normally sits", whatever its build does internally.
+    enum DisplayOrientationE {
+        AUTO   = 0;     // the panel decides: it tracks its accelerometer if it has one, else ROT0
+        ROT0   = 1;     // normal orientation
+        ROT90  = 2;     // a quarter turn clockwise
+        ROT180 = 3;     // upside down
+        ROT270 = 4;     // a quarter turn counter-clockwise
+    }
+    // Absent/AUTO is the default and the only self-adjusting value; any other value pins the
+    // orientation for the life of this config and suspends accelerometer tracking. On a ROT90/
+    // ROT270 the screen's width and height swap, so the panel spontaneously re-sends its
+    // TouchUICapabilities (as it does after a SetTouchUI) and a client using pixel layout should
+    // re-send a config that fits. Grid layouts reflow by themselves. Panels that cannot rotate
+    // ignore this entirely and report TouchUICapabilities.OrientationSupported = false.
+    DisplayOrientationE DisplayOrientation = 6;
+
+    // Where a piece of panel chrome sits on the screen. Chrome floats above the widget pages
+    // and is not part of the layout, so - unlike widgets - it does NOT turn with a rotated
+    // panel: a corner names the corner the operator is looking at, whichever way the panel is
+    // worn. (RotateTouchUIConfig deliberately leaves these fields alone for that reason.)
+    enum ChromeLocationE {
+        DEFAULT      = 0;   // the panel's built-in placement, which is the top right corner
+        HIDDEN       = 1;   // not drawn at all
+        TOP_LEFT     = 2;
+        TOP_RIGHT    = 3;
+        BOTTOM_LEFT  = 4;
+        BOTTOM_RIGHT = 5;
+    }
+
+    // The page selector (the tab strip that switches pages). A layout with a single page draws
+    // no selector whatever this says, and HIDDEN removes it from a multi-page layout too -
+    // leaving the pages reachable only through SetTouchUIActivePage from a client.
+    ChromeLocationE PageSelectorLocation = 7;
+
+    // The built-in configuration menu's cogwheel. HIDDEN is equivalent to DisableConfigMenu,
+    // and takes precedence over it; on DEFAULT the older flag still decides whether the menu
+    // shows. Placing the two in the same corner is allowed: the page selector shifts inward to
+    // clear the cogwheel, as it always has when both sat top right.
+    ChromeLocationE ConfigMenuLocation = 8;
+
+    // Accent colour for the page selector's active tab. Absent leaves the renderer's built-in
+    // blue. Only the selected tab is tinted; the strip itself stays neutral so a tab reads as
+    // selected rather than merely coloured.
+    Color PageSelectorColor = 9;
+}
+
+// Command.SetTouchUIActivePage switches the currently displayed page/tab at runtime, without
+// re-sending the whole config. The panel updates HWCavailability accordingly (widgets on the
+// newly hidden page get bit 31 set, those on the shown page cleared), so all clients observe
+// the switch, and confirms the resulting page explicitly with OutboundMessage.TouchUIActivePage.
+// PageId must be a 1-based id present in the active config; an unknown id is ignored.
+message TouchUISetActivePage {
+    uint32 PageId = 1;                  // 1-based page id to display
+}
+
+// TouchUIActivePage is the panel telling its clients which page/tab it is displaying. The panel
+// sends it spontaneously on every change of the displayed page, whatever caused it: the user
+// tapping the panel's own tab bar, a Command.SetTouchUIActivePage, or a Command.SetTouchUI whose
+// config opens on a different page. It is also sent in response to Command.SendTouchUIConfig, so
+// a (re)connecting client learns the config and the page it is showing in one exchange.
+//
+// This is the authoritative signal. HWCavailability's offscreen bit says which widgets are
+// hidden, which is not the same thing - a page carrying no widgets moves no availability entry
+// at all - so a client tracking the displayed page must use this message.
+message TouchUIActivePage {
+    uint32 PageId = 1;                  // 1-based id of the page being displayed
+}
+
+message TouchUIPage {
+    uint32 Id = 1;                      // 1-based page id, unique within the config
+    string Title = 2;                   // Tab label
+    uint32 GridRows = 3;                // If >0 (with GridCols) widgets are laid out in a grid (Row/Col/spans used)
+    uint32 GridCols = 4;
+    repeated TouchUIWidget Widgets = 5;
+}
+
+// Widget ability masks (shared between TouchUIWidget.EventMask and TouchUIWidgetTypeCap):
+// EventMask: bit0 = Binary, bit1 = Pulsed, bit2 = Absolute, bit3 = Speed, bit4 = Vector (Absolute/Speed carried as a *Vector event, e.g. XYPAD),
+//            bit5 = Text (a string value, e.g. an editable LABEL commit)
+// StateMask: bit0 = HWCMode, bit1 = HWCColor, bit2 = HWCText, bit3 = HWCExtended, bit4 = HWCGfx, bit5 = HWCOverlay
+message TouchUIWidget {
+    uint32 HWCID = 1;   // Client-assigned HWC id. MUST NOT collide with the panel's native HWC ids.
+    enum WidgetTypeE {
+        BUTTON = 0;     // momentary push button    -> emits Binary;   honors HWCMode/HWCColor/HWCText/HWCGfx
+                        //   With Options.FourWay it is a 4-way pad: taps on the top/left/bottom/right edges emit
+                        //   Binary with the matching Edge (TOP/LEFT/BOTTOM/RIGHT); a plain button emits Edge=NONE.
+        TOGGLE = 1;     // latching on/off          -> emits Binary;   honors HWCMode/HWCColor/HWCText
+        SLIDER = 2;     // linear fader, 0..1000    -> emits Absolute; honors HWCExtended(FADER)/HWCText
+        KNOB   = 3;     // rotary fader (analog dial, absolute 0..1000) -> emits Absolute; honors HWCExtended(FADER)/HWCText
+        METER  = 4;     // passive meter            -> emits nothing;  honors HWCExtended(VU/STRENGTH)/HWCGfx
+        LABEL  = 5;     // text tile                -> emits Binary on tap (unless Options.NoTapEvents); honors HWCText/HWCColor.
+                        //   With Options.EditKind != NONE it is instead an EDITABLE FIELD: a tap opens the panel's
+                        //   on-screen keyboard seeded with the text the label is currently displaying, and committing
+                        //   emits TextEvent. See TouchUIWidgetOptions.EditKind.
+        IMAGE  = 6;     // image tile               -> emits Binary on tap (unless Options.NoTapEvents); honors HWCGfx
+        VIDEO  = 7;     // live video region        -> emits AbsoluteVector[x,y] (position) or, with Options.Relative,
+                        //   SpeedVector[dx,dy]; plus Binary on touch/release (unless Options.NoTapEvents). Honors
+                        //   HWCText/HWCColor/HWCOverlay.
+                        //   Axes: a video region reports IMAGE coordinates - X is 0 at the LEFT edge and Y is 0 at the
+                        //   TOP edge, each 0..1000 within the region. This is deliberately NOT the XYPAD convention
+                        //   (Y=0 at the bottom, joystick-style): a tap on a picture and an HWCOverlay box drawn in
+                        //   response to it must share one frame of reference, so following a tapped point with a
+                        //   tracking box needs no axis flip anywhere. Relative mode uses the same signs (+dy is
+                        //   downward) and the same 0..1000-per-edge domain, i.e. deltas are NOT in pixels.
+                        //   The source is panel-local (Options.Source spec or the panel's default feeds); the client
+                        //   only places the region and optionally decorates it (corner label, overlay/tracking boxes).
+                        //   The source can also be retargeted at RUNTIME, without a new SetTouchUI: a non-empty
+                        //   HWCText.Textline2 addressed to this widget REPLACES Options.Source for as long as it is
+                        //   set (clearing it falls back to the configured source). That makes switching which camera a
+                        //   tile shows a matter of ordinary per-HWC feedback rather than a config rebuild, which would
+                        //   otherwise restart every widget on the panel.
+                        //   Options.Markers declares overlay boxes that are addressable HWCs in their own right (see
+                        //   TouchUIMarker). Marker boxes are drawn IN ADDITION to any HWCOverlay set on this widget.
+        ENCODER = 8;    // encoder pad (- / press / +) -> emits Pulsed on the -/+ taps and Binary (Edge=ENCODER) on the
+                        //   center press; honors HWCText/HWCExtended. The touch-friendly counterpart of a physical
+                        //   encoder: left/right taps pulse -1/+1, the center is the push. (KNOB is the analog dial.)
+        DROPDOWN = 9;   // discrete 1-of-N picker   -> emits Absolute(selected index, 0..N-1); honors
+                        //   HWCExtended(STEPS)=selected index / HWCText / HWCColor / HWCDomain. Options.Choices holds
+                        //   the ordered labels. The option list is drawn OVER the neighbouring widgets while open, so
+                        //   the closed control occupies a single grid cell.
+                        //   HWCText updates the widget's CAPTION only. The choice list comes from Options.Choices and
+                        //   can be REPLACED at runtime by HWCDomain, without a new SetTouchUI - which is how a list
+                        //   that follows a device (an ATEM's inputs, a camera's clip list) stays current without
+                        //   restarting every widget on the panel.
+                        //   Because the list can move, a pick reports what was chosen and not just where it sat:
+                        //   when HWCDomain.Values is set, the emitted Absolute(index) is accompanied by
+                        //   Text(Values[index]). A client that reads the Text is immune to the list having changed
+                        //   between the tap and its arrival; one that reads only the index gets exactly the historical
+                        //   behavior, and for a static list nothing about this changes at all.
+                        //   Re-picking the option already selected DOES emit: on a control surface that is a
+                        //   deliberate "fire this again" gesture, not a no-op.
+        XYPAD  = 10;    // 2D touch surface         -> emits AbsoluteVector[x,y] (position, each 0..1000) or, with Options.Relative,
+                        //   SpeedVector[dx,dy], or, with Options.Joystick, SpeedVector[x-500,y-500] (deflection from the
+                        //   centre); plus Binary on touch/release. Honors HWCOverlay (cursor/target markers) / HWCGfx (background).
+                        //   Axes: X is 0 at the LEFT edge, Y is 0 at the BOTTOM edge - Y is inverted relative to screen
+                        //   scanout, matching a vertical SLIDER and a joystick, so the geometric centre is exactly
+                        //   (500,500). Relative mode uses the same signs (+dy is upward) and the same 0..1000-per-edge
+                        //   domain as the absolute mode, i.e. deltas are NOT in pixels.
+        COMPRESSOR = 11;// dynamics transfer-curve  -> emits nothing itself; drawn from the member fader parameters in Options.Params.
+                        //   Each parameter is a standard fader HWC (Absolute out / HWCExtended(FADER) in), individually automatable.
+                        //   The COMPRESSOR is a single topology component; its member HWCIDs are known only to compressor-aware clients.
+    }
+    WidgetTypeE Type = 2;
+    string Label = 3;                   // Static label; runtime content comes via HWCText/HWCGfx states
+
+    // Layout, grid mode (page GridRows/GridCols > 0). 1-based cells:
+    uint32 Row = 4;
+    uint32 Col = 5;
+    uint32 RowSpan = 6;                 // 0 == 1
+    uint32 ColSpan = 7;                 // 0 == 1
+    // Layout, free mode (page grid == 0). Pixels on the capability-reported screen:
+    uint32 X = 8;
+    uint32 Y = 9;
+    uint32 W = 10;
+    uint32 H = 11;
+
+    TouchUIWidgetOptions Options = 12;
+    uint32 EventMask = 13;              // Optional override of the events this widget emits (EventMask bits above).
+                                        // 0 = the type's default set for the given Options - which is what almost every
+                                        // client wants, since the relevant Option already enables the behavior (e.g.
+                                        // Options.EditKind turns Text on). A non-zero mask NARROWS: it MUST be a subset
+                                        // of TouchUIWidgetTypeCap.EventMask for the type, bits outside it are ignored,
+                                        // and it is how a widget suppresses part of its default set (e.g. an editable
+                                        // LABEL that should emit its commit but NOT also tap events sets bit5 alone).
+}
+
+message TouchUIWidgetOptions {
+    sint32 Min = 1;                     // SLIDER/KNOB/METER value range (default 0..1000, matching Absolute events)
+    sint32 Max = 2;
+    uint32 Step = 3;                    // SLIDER detents / KNOB pulses per revolution hint
+    bool Vertical = 4;                  // SLIDER/METER orientation
+    Color Color = 5;                    // Accent color; runtime override via HWCColor
+    bool NoTapEvents = 6;               // IMAGE/LABEL/VIDEO: suppress Binary tap events
+    bool Momentary = 7;                 // TOGGLE rendered but behaving momentary
+    bool FourWay = 12;                  // BUTTON: render a 4-way pad; edge taps emit Binary with Edge=TOP/LEFT/BOTTOM/RIGHT
+
+    // Appearance, any widget:
+    bool NoBorder = 26;                 // Draw the widget WITHOUT its outline. Absent/false is the framed look panels have
+                                        // always drawn, so an existing config is unchanged. It suppresses the widget's
+                                        // INTERNAL borders too - the 4-way and ENCODER keys, the DROPDOWN's closed field and
+                                        // its open list - so a borderless tile is borderless throughout. The fill, the
+                                        // pressed/checked highlight and the DROPDOWN chevron are untouched, and a runtime
+                                        // HWCColor still applies (it just has no outline left to color). A type that draws no
+                                        // border anyway - KNOB, METER, IMAGE, a latching TOGGLE - ignores it rather than
+                                        // rejecting it, which is why this is not restricted to particular widget types.
+
+    // SLIDER options:
+    enum SliderVariantE {               // SLIDER visual style; interaction (drag = absolute value) is identical across all.
+        BAR  = 0;                       //   default: the track fills the widget, with the value centered on the bar
+        LINE = 1;                       //   thin track with a tall handle, value beside it
+    }
+    SliderVariantE SliderVariant = 22;  // SLIDER only; 0 = BAR (default)
+
+    // KNOB options:
+    enum KnobVariantE {                 // KNOB visual style; interaction (drag = absolute value) is identical across all.
+        ARC   = 0;                      //   default: 270 deg arc with a thumb + centered value
+        TICKS = 1;                      //   270 deg arc framed by a tick ring (stepped/detented feel)
+        GAUGE = 2;                      //   180 deg half-dial with a needle (speedometer style)
+    }
+    KnobVariantE KnobVariant = 20;      // KNOB only; 0 = ARC (default)
+    uint32 KnobTicks = 21;              // KNOB TICKS/GAUGE: number of tick marks on the ring, 2..61.
+                                        // 0 = derive one tick per selectable value from Min/Max/Step,
+                                        // falling back to a variant default when Step is 0.
+
+    // DROPDOWN options:
+    repeated string Choices = 13;       // DROPDOWN: ordered option labels; selected index is emitted as AbsoluteEvent.Value (0-based).
+                                        // At most 32 entries of at most 23 bytes each, AND at most 255 bytes once joined with
+                                        // newlines for the panel; a label MUST NOT contain a newline.
+                                        // Over-long lists/labels are truncated by the panel rather than rejected - always by
+                                        // dropping WHOLE trailing options, so the indices that survive keep their meaning.
+
+    bool DynamicDomain = 25;            // DROPDOWN: the choice list arrives at runtime via HWCDomain and Choices above is
+                                        // only a fallback for before the first one lands. Declaring it is what lets a
+                                        // DROPDOWN ship with an empty Choices list, which is otherwise a rejected config,
+                                        // and it also makes the widget report the picked entry's value (see WidgetTypeE).
+                                        // Not valid on any other type - see HWCDomain.Min on why a slider's range is a
+                                        // config-time decision.
+
+    // XYPAD options:
+    bool Relative = 14;                 // XYPAD: emit SpeedVector[dx,dy] deltas instead of AbsoluteVector[x,y] position
+    bool CenterReturn = 15;             // XYPAD: snap the cursor back to center (500,500) on release. With Joystick the
+                                        // pad also emits SpeedVector[0,0] there, so the movement stops when the finger
+                                        // leaves; without it the last deflection - and therefore the last speed - stands.
+                                        // Meaningless (and rejected) together with Relative: a delta pad has no position to return to.
+    bool Joystick = 28;                 // XYPAD: emit SpeedVector[x-500,y-500], the deflection from the centre, each
+                                        // -500..+500, instead of the AbsoluteVector position. The finger still lands
+                                        // where it is put - this is what the pad REPORTS, not how it is touched - so a
+                                        // touch at an edge is full speed and the centre is standstill, exactly the domain
+                                        // a physical joystick emits. Rejected together with Relative: both claim the
+                                        // SpeedVector, one as deflection and one as movement.
+
+    // COMPRESSOR options:
+    repeated TouchUICompressorParam Params = 16;   // COMPRESSOR: member fader parameters that define the transfer curve.
+                                        // At most 6 entries, each with a distinct Role.
+
+    // LABEL options - turn a passive text tile into a tap-to-edit field:
+    enum EditKindE {
+        NONE     = 0;                   // passive label (the default)
+        TEXT     = 1;                   // full alphanumeric keyboard
+        NUMBER   = 2;                   // numeric keyboard
+        IP       = 3;                   // digits and dots only
+        PASSWORD = 4;                   // masked entry; never seeded with the displayed value
+    }
+    EditKindE EditKind = 17;            // LABEL only. Non-NONE makes the tile tappable: the panel opens its on-screen
+                                        // keyboard seeded with the text the label is CURRENTLY DISPLAYING (whatever the
+                                        // last HWCText put there; PASSWORD seeds empty) and, on commit, emits TextEvent
+                                        // under this widget's HWCID. Cancelling emits nothing. The panel does NOT update
+                                        // the label itself on commit - the client remains the source of truth and echoes
+                                        // the value it accepted back via HWCText. Implies the Text bit in EventMask.
+    uint32 EditMaxLen = 18;             // LABEL: max input length in bytes. 0 = panel default (47); capped at 63.
+    enum LabelAlignE {                  // LABEL: where the caption + value stack sits in the tile
+        TOP    = 0;                     //   default: stacked against the top edge
+        CENTER = 1;
+        BOTTOM = 2;
+    }
+    LabelAlignE LabelAlign = 23;        // LABEL only; 0 = TOP (default)
+    bool NoEditField = 27;              // LABEL with EditKind != NONE: draw the tile as a PLAIN LABEL - caption over value,
+                                        // exactly like a passive one - instead of putting the value in a filled field with a
+                                        // caret. Only the chrome goes: the tile still opens the keyboard when tapped and still
+                                        // emits TextEvent on commit, so this is purely how it looks at rest. For a page where
+                                        // most tiles are captions and one of them happens to be editable, the field is what
+                                        // makes it stand out; this turns that off. Meaningless on a passive LABEL (there is no
+                                        // field to hide) and ignored there. Note it removes the only visible hint that the tile
+                                        // can be typed into - use it where the operator already knows, or where the caption says so.
+
+    // VIDEO options:
+    string Source = 8;                  // Source spec, interpreted by the panel (e.g. "/dev/video0", "yuyv:<dev>",
+                                        // "mjpg:<dev>", "http://host/stream" MJPEG). EMPTY = the panel's local
+                                        // default feed N, where N is this widget's 1-based ordinal among VIDEO
+                                        // widgets in config order - so remote clients need no device knowledge.
+    enum HiddenPolicyE {                // What the panel does with the source while the widget is offscreen
+        KEEP_DECODING = 0;              //   keep streaming + decoding (instant switch)
+        PAUSE_DECODE = 1;               //   stay connected, skip decode (cheap, near-instant)
+        DISCONNECT = 2;                 //   close the source; reopen when shown again
+    }
+    HiddenPolicyE HiddenPolicy = 9;
+    uint32 SourceWidth = 10;            // Capture hints (0 = source default)
+    uint32 SourceHeight = 11;
+    enum ScalingE {                     // VIDEO: how a source whose aspect differs from the widget is fitted to it
+        STRETCH = 0;                    //   default: fill the widget, ignoring aspect (what panels have always done)
+        FIT     = 1;                    //   preserve aspect, whole picture visible, black bars on the short axis
+        CROP    = 2;                    //   preserve aspect, fill the widget, overflow cropped off centre
+    }
+    ScalingE Scaling = 24;              // VIDEO only; 0 = STRETCH (default). Applied by the panel's decoder, so it
+                                        // costs nothing extra - the source is scaled once, straight to the widget rect.
+    repeated TouchUIMarker Markers = 19;// VIDEO: overlay boxes that are addressable HWCs of their own. At most 8 per
+                                        // widget and 16 per config (the per-HWC overlay box floor).
+}
+
+// TouchUIMarker is one overlay box on a VIDEO widget that is addressable as an HWC in its own right, so an ordinary
+// per-HWC feedback can position it. It exists because HWCOverlay is a whole-set message: a client that can only emit
+// standard per-HWC state (text/color/mode) has no way to contribute ONE box to a widget it shares with others. A
+// marker turns each box into its own HWC, which such a client can drive with nothing but a text feedback.
+//
+// A marker emits no events. It consumes, under its own HWCID:
+//   HWCText.Textline1  the box geometry, as "x,y" or "x,y,w,h" - decimal integers, comma separated, each 0..1000
+//                      normalized within the VIDEO widget's content rect (the same domain and, per WidgetTypeE.VIDEO,
+//                      the same axes as a touch on that widget). The "x,y" form takes W/H below. Anything that does
+//                      not parse - including the empty string - HIDES the box rather than drawing it somewhere
+//                      arbitrary, which is what makes it safe to point a general-purpose text feedback at a marker.
+//   HWCText.Title      box caption. Empty leaves the box unlabelled.
+//   HWCColor           box color, overriding Color below.
+//   HWCMode.State=OFF  hides the box, so visibility is a condition like any other feedback.
+message TouchUIMarker {
+    uint32 HWCID = 1;                   // Addressable HWC for this box. MUST NOT collide with any widget, compressor
+                                        // member or other marker id.
+    uint32 W = 2;                       // Box size 0..1000, used when Textline1 gives only "x,y" (0 = panel default)
+    uint32 H = 3;
+    Color Color = 4;                    // Default border/label color. Unset = panel default; HWCColor overrides.
+    bool Centered = 5;                  // Interpret x,y as the box CENTRE rather than its top-left corner. The natural
+                                        // form for a reticle following a tracked point or a tap.
+}
+
+// TouchUICompressorParam is one member parameter of a COMPRESSOR widget (see TouchUIWidget.WidgetTypeE.COMPRESSOR).
+// Each parameter is a standard fader HWC in its own right: it emits Absolute under its HWCID and is set from the
+// system via HWCExtended(FADER) under the same id, so it stays individually addressable and automatable. Role tells
+// the panel how to place/draw the corresponding handle on the transfer curve; Min/Max give the parameter's natural
+// range (in its unit), linearly mapped onto the Absolute 0..1000 domain.
+message TouchUICompressorParam {
+    uint32 HWCID = 1;                   // Addressable fader HWC for this parameter (own events/states). MUST NOT collide with other HWC ids.
+    enum RoleE {
+        THRESHOLD = 0;                  // dB
+        RATIO     = 1;                  // n:1
+        KNEE      = 2;                  // dB (knee width)
+        MAKEUP    = 3;                  // dB
+        ATTACK    = 4;                  // ms
+        RELEASE   = 5;                  // ms
+    }
+    RoleE  Role  = 2;
+    sint32 Min   = 3;                   // Natural-unit range mapped to Absolute 0..1000 (0/0 = panel default for the role)
+    sint32 Max   = 4;
+    string Label = 5;                   // Optional parameter caption, at most 15 bytes (else the panel uses a role default)
+}
+
+// TouchUICapabilities is normally the answer to Command.SendTouchUICapabilities, but a panel that
+// can rotate also sends it spontaneously whenever its orientation changes - ScreenWidth/ScreenHeight
+// and the grid recommendation swap with it, so this is how a client learns it must re-lay-out.
+message TouchUICapabilities {
+    uint32 ScreenWidth = 1;             // pixels, in the orientation currently rendered
+    uint32 ScreenHeight = 2;
+    uint32 MaxPages = 3;                // 0 = unlimited/unknown
+    uint32 MaxWidgets = 4;              // total, 0 = unlimited/unknown
+    uint32 GridRows = 5;                // native/preferred grid geometry (0 = free-layout only)
+    uint32 GridCols = 6;
+    repeated TouchUIWidgetTypeCap WidgetTypes = 7;  // supported widget types + their abilities
+    bool OrientationSupported = 8;      // the panel can render in more than one orientation
+                                        // (TouchUIGlobalOptions.DisplayOrientation is honored)
+    TouchUIGlobalOptions.DisplayOrientationE CurrentOrientation = 9;  // the orientation in effect
+                                        // right now; a resolved value, never AUTO
+}
+
+message TouchUIWidgetTypeCap {
+    TouchUIWidget.WidgetTypeE Type = 1;
+    uint32 EventMask = 2;               // The UNION of everything this type can emit across all Options combinations -
+                                        // NOT what a default widget of the type emits. Per-widget enablement is the
+                                        // relevant Option (e.g. LABEL advertises Text here, but a widget only emits it
+                                        // when Options.EditKind != NONE); per-widget narrowing is TouchUIWidget.EventMask.
+    uint32 StateMask = 3;               // StateMask bits this type honors (see TouchUIWidget)
+}
