@@ -1070,7 +1070,8 @@ message TouchUIWidget {
                         //   Re-picking the option already selected DOES emit: on a control surface that is a
                         //   deliberate "fire this again" gesture, not a no-op.
         XYPAD  = 10;    // 2D touch surface         -> emits AbsoluteVector[x,y] (position, each 0..1000) or, with Options.Relative,
-                        //   SpeedVector[dx,dy]; plus Binary on touch/release. Honors HWCOverlay (cursor/target markers) / HWCGfx (background).
+                        //   SpeedVector[dx,dy], or, with Options.Joystick, SpeedVector[x-500,y-500] (deflection from the
+                        //   centre); plus Binary on touch/release. Honors HWCOverlay (cursor/target markers) / HWCGfx (background).
                         //   Axes: X is 0 at the LEFT edge, Y is 0 at the BOTTOM edge - Y is inverted relative to screen
                         //   scanout, matching a vertical SLIDER and a joystick, so the geometric centre is exactly
                         //   (500,500). Relative mode uses the same signs (+dy is upward) and the same 0..1000-per-edge
@@ -1157,8 +1158,16 @@ message TouchUIWidgetOptions {
 
     // XYPAD options:
     bool Relative = 14;                 // XYPAD: emit SpeedVector[dx,dy] deltas instead of AbsoluteVector[x,y] position
-    bool CenterReturn = 15;             // XYPAD: joystick behavior - snap back to center (500,500) on release.
+    bool CenterReturn = 15;             // XYPAD: snap the cursor back to center (500,500) on release. With Joystick the
+                                        // pad also emits SpeedVector[0,0] there, so the movement stops when the finger
+                                        // leaves; without it the last deflection - and therefore the last speed - stands.
                                         // Meaningless (and rejected) together with Relative: a delta pad has no position to return to.
+    bool Joystick = 28;                 // XYPAD: emit SpeedVector[x-500,y-500], the deflection from the centre, each
+                                        // -500..+500, instead of the AbsoluteVector position. The finger still lands
+                                        // where it is put - this is what the pad REPORTS, not how it is touched - so a
+                                        // touch at an edge is full speed and the centre is standstill, exactly the domain
+                                        // a physical joystick emits. Rejected together with Relative: both claim the
+                                        // SpeedVector, one as deflection and one as movement.
 
     // COMPRESSOR options:
     repeated TouchUICompressorParam Params = 16;   // COMPRESSOR: member fader parameters that define the transfer curve.
