@@ -1079,6 +1079,14 @@ message TouchUIWidget {
         COMPRESSOR = 11;// dynamics transfer-curve  -> emits nothing itself; drawn from the member fader parameters in Options.Params.
                         //   Each parameter is a standard fader HWC (Absolute out / HWCExtended(FADER) in), individually automatable.
                         //   The COMPRESSOR is a single topology component; its member HWCIDs are known only to compressor-aware clients.
+        EQUALIZER = 12; // EQ frequency-response curve -> emits nothing itself; drawn from the band parameters in Options.EqBands.
+                        //   Each parameter is a standard fader HWC (Absolute out / HWCExtended(FADER) in), individually automatable,
+                        //   exactly like a COMPRESSOR member. Unlike those, the band parameters ARE topology components of their own
+                        //   (see TouchUIEqualizerParam): an EQ is driven from the encoders and faders around it far more often than
+                        //   from the glass, and a client can only bind a feedback to an HWC the panel advertises.
+                        //   Dragging a band's handle on the plot moves that band's FREQ (horizontally) and GAIN (vertically), and the
+                        //   events go out under those parameters' own ids - the container never emits.
+                        //   Honors HWCText (caption) and HWCColor (accent) on the container's own id.
     }
     WidgetTypeE Type = 2;
     string Label = 3;                   // Static label; runtime content comes via HWCText/HWCGfx states
@@ -1172,6 +1180,12 @@ message TouchUIWidgetOptions {
     // COMPRESSOR options:
     repeated TouchUICompressorParam Params = 16;   // COMPRESSOR: member fader parameters that define the transfer curve.
                                         // At most 6 entries, each with a distinct Role.
+
+    // EQUALIZER options:
+    repeated TouchUIEqualizerParam EqBands = 29;   // EQUALIZER: band parameters that define the frequency response.
+                                        // A FLAT list - Band+Role together identify a parameter, there is no per-band
+                                        // message - so the widget has exactly the bands and the controls per band that
+                                        // it declares. At most 8 bands, at most 32 entries, each Band+Role pair once.
 
     // LABEL options - turn a passive text tile into a tap-to-edit field:
     enum EditKindE {
@@ -1270,6 +1284,48 @@ message TouchUICompressorParam {
     sint32 Min   = 3;                   // Natural-unit range mapped to Absolute 0..1000 (0/0 = panel default for the role)
     sint32 Max   = 4;
     string Label = 5;                   // Optional parameter caption, at most 15 bytes (else the panel uses a role default)
+}
+
+// TouchUIEqualizerParam is one parameter of one band of an EQUALIZER widget (see
+// TouchUIWidget.WidgetTypeE.EQUALIZER). Like a compressor member, each parameter is a standard fader HWC in its own
+// right: it emits Absolute under its HWCID and is set from the system via HWCExtended(FADER) under the same id.
+//
+// The list is FLAT - Band and Role together identify a parameter and there is no per-band message. That is what lets a
+// band declare only the controls it has: a high-pass band that offers frequency alone is one entry, not one entry and
+// three zeroed fields. It could not have been expressed by leaving an id out either, since HWCID 0 already means
+// "assign on push".
+//
+// Unlike a compressor's members, these ARE topology components in their own right. An EQ is driven from the encoders
+// and faders around it far more often than from the glass, and a client can only bind a feedback to an HWC the panel
+// advertises - so "Band 3 Freq" has to be a component a configurator can see.
+message TouchUIEqualizerParam {
+    uint32 HWCID = 1;                   // Addressable fader HWC for this parameter (own events/states). MUST NOT collide with other HWC ids.
+    uint32 Band = 2;                    // 1-based band number, at most 8. Bands are drawn and numbered in this order,
+                                        // and the handle on the curve carries the number.
+    enum RoleE {
+        FREQ  = 0;                      // Hz - see the mapping note on Min/Max below
+        GAIN  = 1;                      // dB
+        Q     = 2;                       // Q factor x10, so 0.1..10.0 is the integer range 1..100. Tenths because
+                                        //   Min/Max are integers and a Q range that could not go below 1 would exclude
+                                        //   every wide bell and shelf.
+        SHAPE = 3;                      // ShapeE index below, rounded to the nearest whole value
+    }
+    RoleE  Role  = 3;
+    sint32 Min   = 4;                   // Natural-unit range mapped onto the Absolute 0..1000 domain (0/0 = panel
+    sint32 Max   = 5;                   //   default for the role). The mapping is LINEAR for every role except FREQ,
+                                        //   which is LOGARITHMIC: value = Min * (Max/Min)^(wire/1000). A linear octave
+                                        //   scale would spend four fifths of the travel above 4 kHz and give 20..40 Hz
+                                        //   a single step, and the plot's frequency axis is logarithmic for the same
+                                        //   reason. Clients reading the Absolute event must use the same curve.
+    string Label = 6;                   // Optional parameter caption, at most 15 bytes (else the panel uses a role default)
+    enum ShapeE {                       // What a band does to the response. The value of the band's SHAPE parameter,
+        BELL       = 0;                 //   not a field: a console reports the shape per band at runtime, so it is an
+        LOW_SHELF  = 1;                 //   ordinary addressable parameter like frequency or gain. A band with no SHAPE
+        HIGH_SHELF = 2;                 //   parameter is drawn as a BELL.
+        HIGH_PASS  = 3;
+        LOW_PASS   = 4;
+        NOTCH      = 5;
+    }
 }
 
 // TouchUICapabilities is normally the answer to Command.SendTouchUICapabilities, but a panel that
