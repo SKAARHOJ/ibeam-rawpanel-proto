@@ -140,6 +140,8 @@ message HWCState {
     Processors Processors = 9;
     // 10 is reserved for HWCOverlay (TouchUI)
     HWCJog HWCJog = 11;                 // HWCj#xx=yy - complete configuration of a haptic jog wheel
+    // 12 is reserved for HWCDomain (TouchUI)
+    HWCSegments HWCSegments = 13;       // HWCs#xx=yy - individual state of each LED of a multi LED component
 }
 
 message Processors {
@@ -187,6 +189,28 @@ message HWCExtended {
       }
     InterpretationE Interpretation = 2;      // Value type
     uint32 Value = 3;    // Value, 10 bits
+}
+
+// HWCs#xx=mode,color|mode,color|...
+// Individual state of each LED of a multi LED component, such as an LED bar or tally strip
+// (topology type with ext "steps" and one sub element per LED). Segments are in the order of
+// the topology sub elements (_idx 1..n), one per LED; LEDs beyond the list are off.
+//
+// While set, it REPLACES HWCMode/HWCColor for the component's LEDs. A present but empty
+// message clears it, and the component goes back to its HWCMode/HWCColor. An HWCExtended
+// interpretation (STRENGTH/STEPS/VU) takes precedence over it.
+//
+// Controllers that don't support it ignore it and show HWCMode/HWCColor, so clients should
+// keep those set to a sensible whole component state.
+//
+// In ASCII each LED is "mode,color", with mode and color as the values of HWC# and HWCc#
+// (color left out when not set), separated by "|". An empty value clears it.
+message HWCSegments {
+    message Segment {
+        HWCMode HWCMode = 1;        // State and BlinkPattern of this LED
+        HWCColor HWCColor = 2;      // Color of this LED
+    }
+    repeated Segment Segments = 1;
 }
 
 // HWCj#xx=yy
