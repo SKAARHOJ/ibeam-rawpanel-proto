@@ -457,6 +457,7 @@ message HWCText {
     ScaleM Scale = 13;         // Index 9-13
 
     // Text scrolling configuration (ASCII Index 14)
+    // Optional for panels: only panels announcing RawPanelSupport.TextScroll will scroll the text. Others ignore it and render the text as usual.
     message TextScrollM {
         enum ScrollModeE {
             SCROLL_OFF = 0;       // No scrolling (default)
@@ -471,7 +472,7 @@ message HWCText {
         uint32 PauseDwell = 6;    // 0=default, 1=short, 2=medium, 3=long
         bool AdaptiveSpeed = 7;   // If true, per-field scroll speed adapts so all fields start and finish together
     }
-    TextScrollM TextScroll = 18;  // Protobuf field 18 (next available)
+    TextScrollM TextScroll = 18;
 
     message TextStyle {
         message Font {
