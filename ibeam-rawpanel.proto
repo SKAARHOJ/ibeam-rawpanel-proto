@@ -147,7 +147,7 @@ message HWCState {
     HWCGfx HWCGfx = 6;                  // HWCg#xx=yy   + HWCgRGB#xx=yy+ HWCgGray#xx=yy
 
     PublishRawADCValues PublishRawADCValues = 7;
-    // 8 was temporarily used for HWCGfxConverter which has never been used by anyone, but we avoid it...
+    reserved 8; // was temporarily used for HWCGfxConverter (never used by anyone)
     Processors Processors = 9;
     HWCOverlay HWCOverlay = 10;         // "HWCo#xx={json}" - dynamic overlay boxes (e.g. tracking rectangles on a TouchUI VIDEO widget)
     HWCJog HWCJog = 11;                 // HWCj#xx=yy - complete configuration of a haptic jog wheel
@@ -162,8 +162,8 @@ message HWCCurrentState {
     // ("Up", "Abs:0", "Speed:0") can be told apart from "not reported".
     optional bool Pressed = 2;
     optional uint32 AbsoluteValue = 3;
-    optional int32 Speed = 4;
-    BinaryEvent.EdgeID Edge = 8;  // Edge of the button press (top, left, bottom, right, encoder)
+    optional sint32 Speed = 4;
+    BinaryEvent.EdgeID Edge = 8;  // Edge of the button press (top, left, bottom, right, encoder). Only meaningful when Pressed is set
 
     // Output state (current feedback being displayed)
     HWCMode HWCMode = 5;
@@ -748,12 +748,14 @@ message HWCEvent {
 
     // Vector events carries multiple values, for example a X/Y of a joystick that goes together or X/Y movement on a track pad or track ball.
     // A vector event may be sent along with a normal one-dimensional event - typically the first axis of something like a joystick.
-    // BinaryVectorEvent BinaryVector = 8;
+    // BinaryVectorEvent BinaryVector = 14;
     // PulsedVectorEvent PulsedVector = 9;
     AbsoluteVectorEvent AbsoluteVector = 10;    // e.g. a TouchUI XYPAD position [x, y]
     SpeedVectorEvent SpeedVector = 11;          // e.g. a TouchUI XYPAD relative movement [dx, dy]
 
-    // A future multi-touch/XY TouchEvent should use field 12 (fields 8-11 stay reserved for the Vector events above)
+    // A future multi-touch/XY TouchEvent should use field 12 (fields 9-11 and 14 stay reserved for the Vector events above)
+
+    reserved 8; // was SystemStat SysStat (2021-2022), so it must not be reused
 
     TextEvent Text = 13;    // a string the user entered on the panel, e.g. an editable TouchUI LABEL commit
 
@@ -1074,13 +1076,14 @@ message TouchUIPage {
 // Widget ability masks (shared between TouchUIWidget.EventMask and TouchUIWidgetTypeCap):
 // EventMask: bit0 = Binary, bit1 = Pulsed, bit2 = Absolute, bit3 = Speed, bit4 = Vector (Absolute/Speed carried as a *Vector event, e.g. XYPAD),
 //            bit5 = Text (a string value, e.g. an editable LABEL commit)
-// StateMask: bit0 = HWCMode, bit1 = HWCColor, bit2 = HWCText, bit3 = HWCExtended, bit4 = HWCGfx, bit5 = HWCOverlay
+// StateMask: bit0 = HWCMode, bit1 = HWCColor, bit2 = HWCText, bit3 = HWCExtended, bit4 = HWCGfx, bit5 = HWCOverlay,
+//            bit6 = HWCDomain
 message TouchUIWidget {
     uint32 HWCID = 1;   // Client-assigned HWC id. MUST NOT collide with the panel's native HWC ids.
     enum WidgetTypeE {
         BUTTON = 0;     // momentary push button    -> emits Binary;   honors HWCMode/HWCColor/HWCText/HWCGfx
                         //   With Options.FourWay it is a 4-way pad: taps on the top/left/bottom/right edges emit
-                        //   Binary with the matching Edge (TOP/LEFT/BOTTOM/RIGHT); a plain button emits Edge=NONE.
+                        //   Binary with the matching Edge (TOP/LEFT/BOTTOM/RIGHT); a plain button emits Edge=UNKNOWN (0).
         TOGGLE = 1;     // latching on/off          -> emits Binary;   honors HWCMode/HWCColor/HWCText
         SLIDER = 2;     // linear fader, 0..1000    -> emits Absolute; honors HWCExtended(FADER)/HWCText
         KNOB   = 3;     // rotary fader (analog dial, absolute 0..1000) -> emits Absolute; honors HWCExtended(FADER)/HWCText
