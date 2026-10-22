@@ -158,10 +158,11 @@ message HWCState {
 message HWCCurrentState {
     uint32 HWCID = 1;
 
-    // Input state (current physical position)
-    bool Pressed = 2;
-    uint32 AbsoluteValue = 3;
-    int32 Speed = 4;
+    // Input state (current physical position). `optional` so a reported zero
+    // ("Up", "Abs:0", "Speed:0") can be told apart from "not reported".
+    optional bool Pressed = 2;
+    optional uint32 AbsoluteValue = 3;
+    optional int32 Speed = 4;
     BinaryEvent.EdgeID Edge = 8;  // Edge of the button press (top, left, bottom, right, encoder)
 
     // Output state (current feedback being displayed)
