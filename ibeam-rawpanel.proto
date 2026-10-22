@@ -229,6 +229,7 @@ message HWCExtended {
 //
 // Controllers that don't support it ignore it and show HWCMode/HWCColor, so clients should
 // keep those set to a sensible whole component state.
+// Controllers that support it announce RawPanelSupport.Segments.
 //
 // In ASCII each LED is "mode,color", with mode and color as the values of HWC# and HWCc#
 // (color left out when not set), separated by "|". An empty value clears it.
@@ -912,6 +913,7 @@ message RawPanelSupport {
     bool TouchUI = 25; // Whether TouchUI widget configuration (SetTouchUI et al.) is supported
     bool JogConfig = 26; // Whether the HWCJog message is supported (otherwise only the legacy bit-packed HWCExtended(JOG) encoding)
     bool TextScroll = 27; // Whether text scrolling on displays is supported
+    bool Segments = 28; // Whether individual LEDs of multi LED components can be set with HWCSegments (HWCs#)
 }
 
 message PanelTopology { //  Values only used if not empty
