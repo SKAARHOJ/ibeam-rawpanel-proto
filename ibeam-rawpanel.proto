@@ -458,7 +458,8 @@ message HWCText {
     ScaleM Scale = 13;         // Index 9-13
 
     // Text scrolling configuration (ASCII Index 14)
-    // Optional for panels: only panels announcing RawPanelSupport.TextScroll will scroll the text. Others ignore it and render the text as usual.
+    // Optional for panels: only panels announcing RawPanelSupport.TextScroll will scroll the text. Send it only to those:
+    // UniSketch and Link IO panels read ASCII index 14 as the legacy image index.
     message TextScrollM {
         enum ScrollModeE {
             SCROLL_OFF = 0;       // No scrolling (default)
