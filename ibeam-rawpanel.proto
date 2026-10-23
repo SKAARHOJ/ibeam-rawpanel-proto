@@ -197,9 +197,11 @@ message HWCExtended {
         FADER = 5;
         BUZZER = 6;
         JOG = 7;
+        XY = 8;         // 2D position (TouchUI XYPAD cursor): Value is X, ValueY is Y, each 0..1000 in the XYPAD axes
       }
     InterpretationE Interpretation = 2;      // Value type
     uint32 Value = 3;    // Value, 10 bits
+    uint32 ValueY = 4;   // Interpretation XY only: the Y axis, 10 bits. In ASCII it rides bits 16-27 of the HWCx# integer
 }
 
 // HWCs#xx=mode,color|mode,color|...
@@ -1094,7 +1096,8 @@ message TouchUIWidget {
                         //   deliberate "fire this again" gesture, not a no-op.
         XYPAD  = 10;    // 2D touch surface         -> emits AbsoluteVector[x,y] (position, each 0..1000) or, with Options.Relative,
                         //   SpeedVector[dx,dy], or, with Options.Joystick, SpeedVector[x-500,y-500] (deflection from the
-                        //   centre); plus Binary on touch/release. Honors HWCOverlay (cursor/target markers) / HWCGfx (background).
+                        //   centre); plus Binary on touch/release. Honors HWCExtended XY (cursor position, ignored while a finger
+                        //   is on the pad; FADER moves X only) / HWCOverlay (cursor/target markers) / HWCGfx (background).
                         //   Axes: X is 0 at the LEFT edge, Y is 0 at the BOTTOM edge - Y is inverted relative to screen
                         //   scanout, matching a vertical SLIDER and a joystick, so the geometric centre is exactly
                         //   (500,500). Relative mode uses the same signs (+dy is upward) and the same 0..1000-per-edge
