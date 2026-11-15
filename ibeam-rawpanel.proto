@@ -579,10 +579,35 @@ message ProcAudioMeter {
     string RangeMapping = 6;
     bool RMYAxis = 7;
 
+    // Image type of the generated HWCGfx. Set it from the display's "type" in the topology:
+    // RGB16bit for "color", Gray4bit for "gray", MONO (default) otherwise. BarColors only
+    // take effect with RGB16bit; mono and gray displays keep the plain white bar.
+    HWCGfx.ImageTypeE ImageType = 8;
+
+    // Colour zones of the bars and peak indicators, e.g. green/amber/red. Each stop's colour
+    // applies from its Pos until the next stop; anything below the first stop stays white.
+    // Pos is 0-1000 along the bar after RangeMapping is applied, so it lines up with the scale:
+    // on the Fixed176x32 artwork the ticks sit at multiples of 1000/12 (583 = -18dB,
+    // 833 = 0dB, 916 = +6dB), so stops at 0 GREEN, 583 AMBER, 833 RED give the classic meter.
+    repeated ProcColorStop BarColors = 9;
+
+    // Copy these from the display's "txtscale" and "txtborderpct" in the topology. They make
+    // the meter follow large displays (like the Flywheel TFT) the same way text does there:
+    // fixed meters are magnified by whole pixels to fit, free meters scale their title and
+    // spacing, and the border keeps the meter clear of the display edge. 0 = not set.
+    float TextScale = 14;
+    uint32 TextBorderPct = 15;
+
 	uint32 Data1 =10;
 	uint32 Data2 =11;
 	uint32 Peak1 =12;
 	uint32 Peak2 =13;
+}
+
+// A colour zone boundary for ProcAudioMeter.BarColors
+message ProcColorStop {
+    uint32 Pos = 1;     // 0-1000 along the bar
+    uint32 RGB = 2;     // 24-bit colour as 0xRRGGBB, e.g. 0x00FF00 for green
 }
 
 message ProcStrength {
